@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 TOP Team Combat Control
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 """
 PDF bracket generator for a 16-player single elimination tournament.
 Renders an A3 landscape PDF with fighter boxes, elbow connectors,

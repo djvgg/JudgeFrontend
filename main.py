@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 TOP Team Combat Control
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 """
 JudgeFrontend – 16-player single elimination bracket generator.
 Tkinter GUI: load XLSX → export PDF.

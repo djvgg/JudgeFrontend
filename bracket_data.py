@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 TOP Team Combat Control
+#
+# SPDX-License-Identifier: CC0-1.0
+
 """
 Central data store for the 16-player bracket.
 Fighters list is populated dynamically from XLSX upload.

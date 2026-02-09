@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 TOP Team Combat Control
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 """Script to build the exe with PyInstaller."""
 import subprocess
 import sys

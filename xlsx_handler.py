@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026 TOP Team Combat Control
+#
+# SPDX-License-Identifier: CC0-1.0
+
 """
 XLSX handler: reads a participant spreadsheet, filters by age & weight,
 and selects 16 fighters for the bracket.

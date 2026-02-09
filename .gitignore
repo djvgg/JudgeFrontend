@@ -1,0 +1,9 @@
+# SPDX-FileCopyrightText: 2026 TOP Team Combat Control
+#
+# SPDX-License-Identifier: CC0-1.0
+
+/venv
+*.pdf
+/__pycache__
+/build
+/dist
