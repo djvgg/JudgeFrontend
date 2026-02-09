@@ -1,8 +1,8 @@
 image: python:3.13
 
-stage:
-    - build
-    - test
+stages:
+ - build
+ - test
 
 # For debugging
 before_script:
@@ -12,9 +12,9 @@ before_script:
 
 
 build:
-    stage: build
-    script:
-      - pip install -r requirements.txt
+  stage: build
+  script:
+    - pip install -r requirements.txt
 
 test:
   stage: test
