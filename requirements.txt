@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+opencv-python-headless
+pyzbar
+pytesseract
+pyserial
+openpyxl
+fpdf2
+httpx
+pytest
+pyinstaller
+pandas
