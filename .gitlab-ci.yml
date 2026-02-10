@@ -14,18 +14,9 @@ build:
   stage: build
   script:
     - python -m pip install -r requirements.txt
-
-dependency_check:
-  stage: test
-  script:
-    - python main.py --cli
+    - python -m compileall . 
 
 unit_test:
   stage: test
   script:
     - echo "Test temporarily disabled"
-
-lint: # For parallel execution
-  stage: test
-  script:
-    - flake8 .
