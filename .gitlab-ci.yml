@@ -19,4 +19,5 @@ build:
 unit_test:
   stage: test
   script:
-    - pytest
+    - export PYTHONPATH=$PYTHONPATH:$CI_PROJECT_DIR
+    - pytest -v
