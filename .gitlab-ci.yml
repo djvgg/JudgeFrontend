@@ -9,14 +9,14 @@ before_script:
   - python --version
   - pip --version  
   - python -m pip install --upgrade pip
+  - python -m pip install -r requirements.txt
 
 build:
   stage: build
   script:
-    - python -m pip install -r requirements.txt
     - python -m compileall . 
 
 unit_test:
   stage: test
   script:
-    - echo "Test temporarily disabled"
+    - pytest
