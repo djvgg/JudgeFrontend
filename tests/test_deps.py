@@ -3,11 +3,11 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 """Pytest smoke tests for all dependencies."""
-from main import test_all_imports
+from main import _testImports
 
 
 def test_all_libraries_import():
-    results = test_all_imports()
+    results = _testImports()
     failed = [(name, info) for name, ok, info in results if not ok]
     assert not failed, f"Failed imports: {failed}"
 
