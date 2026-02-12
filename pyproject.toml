@@ -1,0 +1,38 @@
+# SPDX-FileCopyrightText: 2026 TOP Team Combat Control
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+[project]
+name = "judgefrontend"
+version = "1.0.0"
+description = "Tournament bracket generator GUI"
+authors = [{name = "Noah Beisert", email = "inf4245@hs-worms.de"}]
+requires-python = ">=3.13"
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+]
+ignore = [
+    "E501",   # line too long (handled by formatter)
+    "N802",   # function name should be lowercase (we use lowerCamelCase)
+    "N803",   # argument name should be lowercase (we use lowerCamelCase)
+    "N806",   # variable in function should be lowercase (we use lowerCamelCase)
+    "N816",   # variable in global scope should not be mixedCase (we use lowerCamelCase)
+    "N999",   # invalid module name (we use lowerCamelCase for modules)
+    "SIM108", # ternary operator suggestion (optional simplification)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]  # Allow unused imports in __init__.py

@@ -1,0 +1,45 @@
+image: python:3.13
+
+stages:
+  - lint
+  - test
+  - build
+
+before_script:
+  - python --version
+  - pip install --upgrade pip
+  - pip install -r requirements.txt
+
+lint:
+  stage: lint
+  before_script:
+    - pip install ruff
+  script:
+    - echo "Running ruff linter (modern industry standard)..."
+    - ruff check src/ main.py scripts/
+    - echo "✓ Code quality check passed"
+  allow_failure: false
+
+test:
+  stage: test
+  script:
+    - echo "Running import smoke tests..."
+    - python -c "from src.bracketData import ageGroups, getNextPowerOf2; print('✓ bracketData')"
+    - python -c "from src.xlsxHandler import processXlsx; print('✓ xlsxHandler')"
+    - python -c "from src.excelGenerator import generateBracketsForGroups; print('✓ excelGenerator')"
+    - echo "✓ All modules import successfully"
+
+integration_test:
+  stage: test
+  script:
+    - echo "Running basic integration test..."
+    - python -c "from src.bracketData import getNextPowerOf2; result = getNextPowerOf2(17); assert result == 32, f'Expected 32, got {result}'; print('✓ Bracket logic works')"
+    - echo "✓ Integration test passed"
+
+build:
+  stage: build
+  script:
+    - echo "Checking Python syntax..."
+    - python -m compileall src/ main.py scripts/
+    - echo "✓ Syntax check passed"
+    - echo "Note: PyInstaller build skipped (requires Windows for .exe)"

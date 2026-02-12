@@ -1,0 +1,35 @@
+# SPDX-FileCopyrightText: 2026 TOP Team Combat Control
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+*.spec
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Generated files
+generated_brackets/
+*.pdf
+
+# OS
+.DS_Store
+Thumbs.db
