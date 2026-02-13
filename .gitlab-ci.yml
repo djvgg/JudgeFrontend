@@ -2,13 +2,8 @@ image: python:3.13
 
 stages:
   - lint
-  - test
   - build
-
-before_script:
-  - python --version
-  - pip install --upgrade pip
-  - pip install -r requirements.txt
+  - test
 
 lint:
   stage: lint
@@ -22,6 +17,14 @@ lint:
     - ruff check src/ main.py scripts/
     - echo "Code quality check passed"
   allow_failure: false
+
+
+build:
+    stage: build
+    script:
+      - echo "Checking Python syntax..."
+      - python -m compileall src/ main.py scripts/
+      - echo "Syntax check passed"
 
 test:
   stage: test
@@ -39,9 +42,4 @@ integration_test:
     - python -c "from src.bracketData import getNextPowerOf2; result = getNextPowerOf2(17); assert result == 32; print('Bracket logic OK')"
     - echo "Integration test passed"
 
-build:
-  stage: build
-  script:
-    - echo "Checking Python syntax..."
-    - python -m compileall src/ main.py scripts/
-    - echo "Syntax check passed"
+

@@ -190,4 +190,4 @@ python main.py
 ## Contributing
 
 This project is maintained by TOP Team Combat Control.
-Author: Noah Beisert <@inf4245@hs-worms.de>
+Author: Noah Beisert <inf4245@hs-worms.de>
