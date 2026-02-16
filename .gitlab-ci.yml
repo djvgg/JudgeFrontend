@@ -4,20 +4,23 @@ stages:
   - lint
   - build
   - test
+  - docs
+
+before_script:
+  - python --version
+  - pip install --upgrade pip
+  - pip install -r requirements.txt
+  - pip install ruff
+  - apt-get update -y
+  - apt-get install -y doxygen
 
 lint:
   stage: lint
-  before_script:
-    - python --version
-    - pip install --upgrade pip
-    - pip install -r requirements.txt
-    - pip install ruff
   script:
     - echo "Running ruff linter..."
     - ruff check src/ main.py scripts/
     - echo "Code quality check passed"
   allow_failure: false
-
 
 build:
     stage: build
@@ -42,4 +45,11 @@ integration_test:
     - python -c "from src.bracketData import getNextPowerOf2; result = getNextPowerOf2(17); assert result == 32; print('Bracket logic OK')"
     - echo "Integration test passed"
 
-
+build_docs:
+  stage: docs
+  script:
+  - echo "Building Doxygen documentation..."
+  - doxygen Doxyfile
+  artifacts:
+    paths:
+      - html/
