@@ -52,4 +52,4 @@ build_docs:
   - doxygen Doxyfile
   artifacts:
     paths:
-      -html/
+      - html/
