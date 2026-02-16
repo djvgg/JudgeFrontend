@@ -33,3 +33,6 @@ generated_brackets/
 # OS
 .DS_Store
 Thumbs.db
+
+#Doxyfile
+html/
