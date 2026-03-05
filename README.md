@@ -1,4 +1,7 @@
-# Judge Interface - Real-Time Scoring System
+<!-- SPDX-FileCopyrightText: 2026 TOP Team Combat Control
+# SPDX-License-Identifier: CC0-1.0-->
+
+# judgeFrontend
 
 This documentation serves as a guide for the technical presentation of the tournament management software.
 
