@@ -1,7 +1,8 @@
 import os
-from sqlalchemy import create_engine, Column, Integer, String, JSON
-from sqlalchemy.orm import sessionmaker, declarative_base
+
 from dotenv import load_dotenv
+from sqlalchemy import JSON, Column, Integer, String, create_engine
+from sqlalchemy.orm import declarative_base, sessionmaker
 
 # Load environment variables, overriding any cached ones during uvicorn reloads
 load_dotenv(override=True)
@@ -22,21 +23,21 @@ class MatchModel(Base):
     Keep this around if we need to rollback to the old table 'matches'.
     """
     __tablename__ = "matches"
-    
-    matchId = Column(Integer, primary_key=True, index=True)
-    tableId = Column(String)
-    fightNr = Column(Integer)
+
+    match_id = Column(Integer, primary_key=True, index=True)
+    table_id = Column(String)
+    fight_nr = Column(Integer)
     category = Column(String)
-    bracketFile = Column(String)
+    bracket_file = Column(String)
     round = Column(Integer)
-    posInRound = Column(Integer)
+    pos_in_round = Column(Integer)
     p1 = Column(JSON)
     p2 = Column(JSON)
     status = Column(String)
     order = Column(Integer)
-    restTimeMin = Column(Integer)
-    nextMatchId = Column(Integer, nullable=True)
-    nextMatchPos = Column(String, nullable=True)
+    rest_time_min = Column(Integer)
+    next_match_id = Column(Integer, nullable=True)
+    next_match_pos = Column(String, nullable=True)
 
 class ParticipantModel(Base):
     """
@@ -44,7 +45,7 @@ class ParticipantModel(Base):
     """
     __tablename__ = "participants"
     __table_args__ = {'extend_existing': True}
-    
+
     id = Column(Integer, primary_key=True)
     first_name = Column(String)
     last_name = Column(String)
@@ -57,7 +58,7 @@ class FightModel(Base):
     """
     __tablename__ = "fights"
     __table_args__ = {'extend_existing': True}
-    
+
     id = Column(Integer, primary_key=True)
     bracket_id = Column(Integer)
     participant1_id = Column(Integer)

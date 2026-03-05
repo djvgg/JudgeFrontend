@@ -9,6 +9,7 @@ Generate tournament brackets from participant XLSX file.
 
 import os
 import sys
+
 import requests
 
 # Add parent directory to path to import modules
@@ -58,7 +59,7 @@ def main():
     print(f"Generated {len(generated_files)} bracket file(s):")
     for filepath in generated_files:
         print(f"  - {os.path.basename(filepath)}")
-    
+
     # New: Automated push to Judge Interface
     print()
     print("="*70)

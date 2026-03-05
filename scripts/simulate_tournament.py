@@ -1,6 +1,8 @@
 import asyncio
-import websockets
 import json
+
+import websockets
+
 
 async def simulate_tournament_progression():
     """
@@ -10,7 +12,7 @@ async def simulate_tournament_progression():
     try:
         async with websockets.connect(uri) as websocket:
             print("Connected to Tournament WebSocket")
-            
+
             # --- Round 1: Matches 1 to 8 ---
             for match_id in range(1, 9):
                 print(f"Propagating Winner for Match #{match_id} (Round 1)")
@@ -41,7 +43,7 @@ async def simulate_tournament_progression():
             await websocket.send(json.dumps({"type": "SCORE_UPDATE", "matchId": 15, "playerNum": 1, "scoreType": "points", "value": 10}))
             await asyncio.sleep(0.3)
             await websocket.send(json.dumps({"type": "STATUS_UPDATE", "matchId": 15, "status": "finished"}))
-            
+
             print("\nSimulation complete. The tournament tree is now fully updated!")
 
     except Exception as e:

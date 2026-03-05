@@ -5,19 +5,19 @@ import sys
 # Add project root to sys.path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.database import SessionLocal, MatchModel, init_db
-from sqlalchemy import delete
+
+from src.database import MatchModel, SessionLocal, init_db
 
 JSON_FILE = "mock_fights.json"
 
 def migrate():
     print("--- Starting Synchronous Migration: JSON to PostgreSQL ---")
-    
+
     # Initialize tables
     init_db()
-    
+
     try:
-        with open(JSON_FILE, "r", encoding="utf-8") as f:
+        with open(JSON_FILE, encoding="utf-8") as f:
             data = json.load(f)
     except FileNotFoundError:
         print(f"[ERROR] {JSON_FILE} not found. Nothing to migrate.")
@@ -30,7 +30,7 @@ def migrate():
         # Clear existing matches
         print("Clearing existing matches in DB...")
         session.query(MatchModel).delete()
-        
+
         print("Migrating matches...")
         for m_data in matches:
             # Flatten score to just use 'points' to match frontend 5, 7, 10 logic
@@ -45,7 +45,7 @@ def migrate():
 
             match = MatchModel(**m_data)
             session.add(match)
-        
+
         session.commit()
         print(f"[OK] Successfully migrated {len(matches)} matches to PostgreSQL (Sync Mode).")
 

@@ -1,15 +1,11 @@
+import contextlib
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect, Depends
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from typing import List, Dict
-import asyncio
 
-from src.database import init_db, SessionLocal, MatchModel
-from sqlalchemy.orm import Session
-from sqlalchemy import update, delete
-from sqlalchemy.orm.attributes import flag_modified
-import copy
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
+
+from src.database import MatchModel, SessionLocal, init_db
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -31,7 +27,7 @@ app.add_middleware(
 
 class ConnectionManager:
     def __init__(self):
-        self.active_connections: List[WebSocket] = []
+        self.active_connections: list[WebSocket] = []
 
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
@@ -42,10 +38,8 @@ class ConnectionManager:
 
     async def broadcast(self, message: dict):
         for connection in self.active_connections:
-            try:
+            with contextlib.suppress(Exception):
                 await connection.send_json(message)
-            except Exception:
-                pass
 
 manager = ConnectionManager()
 
@@ -53,29 +47,31 @@ manager = ConnectionManager()
 
 @app.get("/api/matches")
 def get_matches():
-    from src.database import ParticipantModel, FightModel
+    from src.database import FightModel, ParticipantModel
     with SessionLocal() as session:
         # Fetch all fights sorted by fight_number
         fights = session.query(FightModel).order_by(FightModel.fight_number).all()
-        
+
         # Build lookup: (bracket_id, phase, round, pos_in_round) → fight.id
         fight_lookup = {}
         for f in fights:
             key = (f.bracket_id, f.bracket_phase, f.round, f.pos_in_round)
             fight_lookup[key] = f.id
-        
+
         # Pre-fetch all participants for efficiency
         participant_ids = set()
         for f in fights:
-            if f.participant1_id: participant_ids.add(f.participant1_id)
-            if f.participant2_id: participant_ids.add(f.participant2_id)
+            if f.participant1_id:
+                participant_ids.add(f.participant1_id)
+            if f.participant2_id:
+                participant_ids.add(f.participant2_id)
         participants = {p.id: p for p in session.query(ParticipantModel).filter(ParticipantModel.id.in_(participant_ids)).all()} if participant_ids else {}
-        
+
         match_list = []
         for f in fights:
             p1_obj = participants.get(f.participant1_id)
             p2_obj = participants.get(f.participant2_id)
-            
+
             p1_data = {
                 "id": str(p1_obj.id) if p1_obj else "WAIT",
                 "firstName": p1_obj.first_name if p1_obj else "",
@@ -83,7 +79,7 @@ def get_matches():
                 "club": p1_obj.club if p1_obj else "",
                 "score": {"points": f.score1 if f.score1 is not None else 0}
             }
-            
+
             p2_data = {
                 "id": str(p2_obj.id) if p2_obj else "WAIT",
                 "firstName": p2_obj.first_name if p2_obj else "",
@@ -91,17 +87,17 @@ def get_matches():
                 "club": p2_obj.club if p2_obj else "",
                 "score": {"points": f.score2 if f.score2 is not None else 0}
             }
-            
+
             # Compute next match in bracket tree dynamically
             next_round = (f.round or 0) + 1
             next_pos = (f.pos_in_round or 0) // 2
             next_key = (f.bracket_id, f.bracket_phase, next_round, next_pos)
             next_match_id = fight_lookup.get(next_key)
             next_match_pos = "p1" if (f.pos_in_round or 0) % 2 == 0 else "p2"
-            
+
             # Distribute fights across tables via round-robin
             table_id = str((f.fight_number or f.id) % 4 + 1)
-            
+
             match_dict = {
                 "matchId": f.id,
                 "tableId": table_id,
@@ -119,7 +115,7 @@ def get_matches():
                 "nextMatchPos": next_match_pos if next_match_id else None
             }
             match_list.append(match_dict)
-            
+
         return {"tournamentName": "Automated Tournament", "matches": match_list}
 
 @app.websocket("/ws")
@@ -128,7 +124,7 @@ async def websocket_endpoint(websocket: WebSocket):
     try:
         while True:
             data = await websocket.receive_json()
-            
+
             with SessionLocal() as session:
                 from src.database import FightModel, ParticipantModel
                 if data["type"] == "SCORE_UPDATE":
@@ -139,19 +135,17 @@ async def websocket_endpoint(websocket: WebSocket):
                             fight.score1 = data["value"]
                         else:
                             fight.score2 = data["value"]
-                            
+
                         session.commit()
                         session.refresh(fight)
-                        
+
                         # Rebuild the dictionary identically to get_matches to broadcast the sync
                         p1_obj = session.query(ParticipantModel).filter(ParticipantModel.id == fight.participant1_id).first() if fight.participant1_id else None
                         p2_obj = session.query(ParticipantModel).filter(ParticipantModel.id == fight.participant2_id).first() if fight.participant2_id else None
-                        
+
                         # Compute next match in bracket tree dynamically
                         next_round = (fight.round or 0) + 1
                         next_pos = (fight.pos_in_round or 0) // 2
-                        next_key = (fight.bracket_id, fight.bracket_phase, next_round, next_pos)
-                        
                         # Find next fight in DB
                         next_fight = session.query(FightModel).filter(
                             FightModel.bracket_id == fight.bracket_id,
@@ -159,11 +153,11 @@ async def websocket_endpoint(websocket: WebSocket):
                             FightModel.round == next_round,
                             FightModel.pos_in_round == next_pos
                         ).first()
-                        
+
                         next_match_id = next_fight.id if next_fight else None
                         next_match_pos = "p1" if (fight.pos_in_round or 0) % 2 == 0 else "p2"
                         table_id = str((fight.fight_number or fight.id) % 4 + 1)
-                        
+
                         match_dict = {
                             "matchId": fight.id,
                             "tableId": table_id,
@@ -192,14 +186,14 @@ async def websocket_endpoint(websocket: WebSocket):
                             "nextMatchId": next_match_id,
                             "nextMatchPos": next_match_pos if next_match_id else None
                         }
-                        
+
                         await manager.broadcast({"type": "SCORE_SYNC", "matchId": data["matchId"], "match": match_dict})
-                        
+
                 elif data["type"] == "STATUS_UPDATE":
                     fight = session.query(FightModel).filter(FightModel.id == data["matchId"]).first()
                     if fight:
                         fight.status = data["status"]
-                        
+
                         # If finished, determine the winner.
                         if data["status"] == "finished":
                             s1 = fight.score1 or 0
@@ -208,19 +202,18 @@ async def websocket_endpoint(websocket: WebSocket):
                                 fight.winner_id = fight.participant1_id
                             elif s2 > s1:
                                 fight.winner_id = fight.participant2_id
-                                
+
                         session.commit()
                         session.refresh(fight)
-                        
+
                         # Rebuild the dictionary to broadcast
                         p1_obj = session.query(ParticipantModel).filter(ParticipantModel.id == fight.participant1_id).first() if fight.participant1_id else None
                         p2_obj = session.query(ParticipantModel).filter(ParticipantModel.id == fight.participant2_id).first() if fight.participant2_id else None
-                        
+
                         # Compute next match in bracket tree dynamically
                         next_round = (fight.round or 0) + 1
                         next_pos = (fight.pos_in_round or 0) // 2
-                        next_key = (fight.bracket_id, fight.bracket_phase, next_round, next_pos)
-                        
+
                         # Find next fight in DB
                         next_fight = session.query(FightModel).filter(
                             FightModel.bracket_id == fight.bracket_id,
@@ -228,11 +221,11 @@ async def websocket_endpoint(websocket: WebSocket):
                             FightModel.round == next_round,
                             FightModel.pos_in_round == next_pos
                         ).first()
-                        
+
                         next_match_id = next_fight.id if next_fight else None
                         next_match_pos = "p1" if (fight.pos_in_round or 0) % 2 == 0 else "p2"
                         table_id = str((fight.fight_number or fight.id) % 4 + 1)
-                        
+
                         match_dict = {
                             "matchId": fight.id,
                             "tableId": table_id,
@@ -276,7 +269,7 @@ async def websocket_endpoint(websocket: WebSocket):
         manager.disconnect(websocket)
 
 @app.post("/api/import-brackets")
-def import_brackets(groups: List[dict]):
+def import_brackets(groups: list[dict]):
     with SessionLocal() as session:
         matches_imported = 0
         for group in groups:
