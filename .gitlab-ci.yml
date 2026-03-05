@@ -4,15 +4,12 @@ stages:
   - lint
   - build
   - test
-  - docs
 
 before_script:
   - python --version
   - pip install --upgrade pip
   - pip install -r requirements.txt
   - pip install ruff
-  - apt-get update -y
-  - apt-get install -y doxygen
 
 lint:
   stage: lint
@@ -44,12 +41,3 @@ integration_test:
     - echo "Running basic integration test..."
     - python -c "from src.bracketData import getNextPowerOf2; result = getNextPowerOf2(17); assert result == 32; print('Bracket logic OK')"
     - echo "Integration test passed"
-
-build_docs:
-  stage: docs
-  script:
-  - echo "Building Doxygen documentation..."
-  - doxygen Doxyfile
-  artifacts:
-    paths:
-      - html/

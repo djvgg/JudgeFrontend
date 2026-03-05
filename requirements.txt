@@ -2,18 +2,18 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+# --- Core Server ---
 fastapi
 uvicorn
-opencv-python-headless
-pyzbar
-pytesseract
-pyserial
+websockets
+sqlalchemy
+psycopg2-binary
+python-dotenv
+
+# --- Bracket Generation ---
 openpyxl
-fpdf2
-httpx
-pytest
-pyinstaller
 pandas
 xlrd
 xlwt
 xlutils
+requests

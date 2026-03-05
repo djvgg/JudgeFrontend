@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#121212">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Global Application State & Table Selection -->
+    <div id="login-screen" class="login-overlay">
+        <div class="login-box">
+            <div class="login-logo">
+                <div class="logo-inner">J</div>
+            </div>
+            <h2>Tisch-Auswahl</h2>
+            <p>Bitte wählen Sie Ihren Tisch aus, um fortzufahren</p>
+
+            <div class="login-form">
+                <div class="input-group">
+                    <label>Zugeordneter Tisch</label>
+                    <select id="login-table" class="login-input">
+                        <option value="1">Tisch 1</option>
+                        <option value="2">Tisch 2</option>
+                        <option value="3">Tisch 3</option>
+                        <option value="4">Tisch 4</option>
+                    </select>
+                </div>
+                <button onclick="App.handleTableSelection()" class="login-btn">ARENA BETRETEN</button>
+                <div id="login-error" class="error-msg" style="display: none;">Fehler bei der Tabellenauswahl</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-content" style="display: none;">
+        <header>
+            <div class="header-content">
+                <div class="header-brand">
+                    <div class="logo-circle">J</div>
+                    <h1 id="tournament-title">Turnier wird geladen...</h1>
+                </div>
+                <div class="header-controls">
+                    <div class="table-badge">
+                        <div class="select-wrapper">
+                            <select id="table-select" class="table-select" onchange="switchTable(this.value)">
+                                <option value="admin">Admin</option>
+                                <option value="1">Tisch 1</option>
+                                <option value="2">Tisch 2</option>
+                                <option value="3">Tisch 3</option>
+                                <option value="4">Tisch 4</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="connection-status" class="status-indicator offline" title="Connection Status"></div>
+                    <button class="logout-btn" id="header-logout-btn" onclick="App.handleLogout()"
+                        title="Log out from the session">Abmelden</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation tabs for switching between list and bracket view -->
+        <nav class="view-tabs" style="display: none;">
+            <button class="view-tab-btn active" id="tab-fights" onclick="UI.switchView('fights')">KAMPFLISTE</button>
+            <button class="view-tab-btn" id="tab-brackets" onclick="UI.switchView('brackets')">LIVE-TURNIERBAUM</button>
+        </nav>
+
+        <main id="fights-view">
+            <div class="dashboard-layout">
+                <div class="controls-bar">
+                    <div class="filter-group">
+                        <label class="toggle-container">
+                            <span class="toggle-label">Nur mein Tisch</span>
+                            <div class="switch">
+                                <input type="checkbox" id="my-table-filter" checked>
+                                <span class="slider"></span>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="header-actions">
+                        <span class="match-count" id="match-count">0 Kämpfe</span>
+                    </div>
+                </div>
+
+                <section class="matches-container">
+                    <div id="fight-list" class="fight-list">
+                        <div class="status-msg">Kämpfe werden geladen...</div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <main id="brackets-view" style="display: none;">
+            <div class="bracket-interface">
+                <div class="bracket-sidebar">
+                    <h3>Kategorie wählen</h3>
+                    <div id="bracket-category-list" class="category-list">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+                <div class="bracket-main">
+                    <div class="bracket-header">
+                        <button class="back-btn" onclick="UI.switchView('fights')">← Zurück zur Liste</button>
+                        <h2 id="current-bracket-title">Kategorie wählen</h2>
+                    </div>
+                    <div class="bracket-content">
+                        <div id="bracket-visualization" class="bracket-viz">
+                            <!-- SVG or Div Tree here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Scoring Modal Refined -->
+        <div id="scoring-modal" class="modal-overlay" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title-group">
+                        <h3 id="modal-category">Category</h3>
+                    </div>
+                    <div class="center-timer">
+                        <div id="match-timer" class="big-timer">04:00</div>
+                    </div>
+                    <div class="timer-controls">
+                        <button id="timer-toggle-btn" class="timer-btn start"
+                            onclick="Scoring.toggleTimer()">START</button>
+                        <button class="timer-btn reset" onclick="Scoring.resetTimer()">ZURÜCKSETZEN</button>
+                    </div>
+                </div>
+
+                <div class="scoring-grid">
+                    <div class="player-panel p1">
+                        <div class="scoring-name" id="p1-name">Fighter 1</div>
+                        <div class="score-main" id="p1-points-display">0</div>
+                        <div class="score-controls" style="margin-top: 15px;">
+                            <button type="button" class="score-btn points-5" onclick="Scoring.addPoints(1, 5)">+5
+                                POINTS</button>
+                            <button type="button" class="score-btn points-7" onclick="Scoring.addPoints(1, 7)">+7
+                                POINTS</button>
+                            <button type="button" class="score-btn points-10" onclick="Scoring.addPoints(1, 10)">+10
+                                POINTS</button>
+                        </div>
+                        <div class="victory-zone">
+                            <button class="victory-btn" onclick="winByDecision(1)">SET AS WINNER</button>
+                        </div>
+                    </div>
+
+                    <div class="vs-label">VS</div>
+
+                    <div class="player-panel p2">
+                        <div class="scoring-name" id="p2-name">Fighter 2</div>
+                        <div class="score-main" id="p2-points-display">0</div>
+                        <div class="score-controls" style="margin-top: 15px;">
+                            <button type="button" class="score-btn points-5" onclick="Scoring.addPoints(2, 5)">+5
+                                POINTS</button>
+                            <button type="button" class="score-btn points-7" onclick="Scoring.addPoints(2, 7)">+7
+                                POINTS</button>
+                            <button type="button" class="score-btn points-10" onclick="Scoring.addPoints(2, 10)">+10
+                                POINTS</button>
+                        </div>
+                        <div class="victory-zone">
+                            <button class="victory-btn" onclick="winByDecision(2)">SET AS WINNER</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="footer-btn btn-undo" id="undo-btn" onclick="Scoring.undo()" disabled>UNDO
+                        ACTION</button>
+                    <button class="footer-btn btn-finish" onclick="Scoring.finishMatch()">END MATCH</button>
+                    <button class="footer-btn btn-undo" onclick="Scoring.closeModal()">CLOSE</button>
+                </div>
+
+                <!-- Victory Overlay -->
+                <div id="victory-overlay" class="victory-overlay" style="display: none;">
+                    <div class="victory-content">
+                        <h2 class="victory-title">MATCH FINISHED!</h2>
+                        <p class="victory-subtitle" id="victory-subtitle">Player wins by reaching 10 points!</p>
+                        <button class="victory-close-btn" onclick="Scoring.finishMatch()">CLOSE MATCH & RETURN TO
+                            LIST</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script src="app.js"></script>
+</body>
+
+</html>
