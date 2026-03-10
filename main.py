@@ -4,7 +4,16 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.database import MatchModel, BracketModel, ParticipantModel, FightModel, SessionLocal, init_db
+from src.database import (
+    BracketModel,
+    FightModel,
+    GroupModel,
+    GroupParticipantModel,
+    MatchModel,
+    ParticipantModel,
+    SessionLocal,
+    init_db,
+)
 from src.bracket_manager import BracketManager
 
 
@@ -44,7 +53,6 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 async def get_match_dict(fight_id: int, session):
-    from src.database import FightModel, ParticipantModel, BracketModel, GroupModel
     fight = session.query(FightModel).filter(FightModel.id == fight_id).first()
     if not fight:
         return None
@@ -108,7 +116,6 @@ async def get_match_dict(fight_id: int, session):
 
 @app.get("/api/matches")
 def get_matches():
-    from src.database import FightModel, ParticipantModel, BracketModel, GroupModel
     with SessionLocal() as session:
         # Fetch all fights sorted by fight_number
         fights = session.query(FightModel).order_by(FightModel.fight_number).all()

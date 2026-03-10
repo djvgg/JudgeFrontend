@@ -8,7 +8,7 @@ Encapsulates rules for Winner/Loser advancement and Pool calculations.
 
 class BracketManager:
     @staticmethod
-    def get_next_winner_coord(bracket_id, round_num, pos_in_round, phase):
+    def get_next_winner_coord(_bracket_id, round_num, pos_in_round, phase):
         """
         Calculates the (round, pos) for the winner of the current match.
         Standard binary tree advancement: next_pos = pos // 2
@@ -21,7 +21,7 @@ class BracketManager:
         }
 
     @staticmethod
-    def get_next_loser_coord(bracket_id, round_num, pos_in_round, phase, bracket_type):
+    def get_next_loser_coord(_bracket_id, round_num, pos_in_round, phase, bracket_type):
         """
         Calculates where the loser goes.
         Mainly used for Double Elimination (Doppel-KO) to drop to Loser Bracket.
