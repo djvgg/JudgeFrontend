@@ -354,7 +354,7 @@ async def websocket_endpoint(websocket: WebSocket):
                                                 else:
                                                     next_fight.participant2_id = winner_id
                                                 session.commit()
-                                                
+   
                                                 # Broadcast the updated target fight
                                                 updated_next = await get_match_dict(next_fight.id, session)
                                                 if updated_next:
@@ -372,7 +372,7 @@ async def websocket_endpoint(websocket: WebSocket):
                                                     FightModel.round == loser_coord["round"],
                                                     FightModel.pos_in_round == loser_coord["pos"]
                                                 ).first()
-                                                
+   
                                                 if target_lb_fight:
                                                     # Put loser in LB
                                                     if loser_coord["slot"] == "p1":
@@ -380,7 +380,7 @@ async def websocket_endpoint(websocket: WebSocket):
                                                     else:
                                                         target_lb_fight.participant2_id = loser_id
                                                     session.commit()
-                                                    
+       
                                                     # Broadcast the updated target LB fight
                                                     updated_lb = await get_match_dict(target_lb_fight.id, session)
                                                     if updated_lb:
@@ -393,8 +393,10 @@ async def websocket_endpoint(websocket: WebSocket):
                                             # Get all unique participant IDs from the fights
                                             p_ids = set()
                                             for f in all_fights:
-                                                if f.participant1_id: p_ids.add(f.participant1_id)
-                                                if f.participant2_id: p_ids.add(f.participant2_id)
+                                                if f.participant1_id:
+                                                    p_ids.add(f.participant1_id)
+                                                if f.participant2_id:
+                                                    p_ids.add(f.participant2_id)
                                             
                                             # We need to map GroupParticipant IDs back to Participants for calculate_pool_standings
                                             gps_with_p = session.query(GroupParticipantModel, ParticipantModel).join(

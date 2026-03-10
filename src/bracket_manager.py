@@ -62,20 +62,20 @@ class BracketManager:
                 "points": 0,
                 "fights_count": 0
             }
-            
+
             for f in fights:
                 if f.status != "completed":
                     continue
-                
+    
                 # Check if participant was in this fight
                 is_p1 = f.participant1_id == p["id"]
                 is_p2 = f.participant2_id == p["id"]
-                
+    
                 if not (is_p1 or is_p2):
                     continue
-                
+    
                 stats["fights_count"] += 1
-                
+
                 # Winner check
                 if f.winner_id == p["id"]:
                     stats["wins"] += 1
