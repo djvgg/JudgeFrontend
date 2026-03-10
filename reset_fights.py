@@ -1,7 +1,7 @@
-import os
 from dotenv import load_dotenv
-from sqlalchemy import create_engine, text
-from src.database import SessionLocal, FightModel
+
+from src.database import FightModel, SessionLocal
+
 
 def reset_fights():
     load_dotenv(override=True)

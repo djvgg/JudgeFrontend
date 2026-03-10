@@ -66,14 +66,14 @@ class BracketManager:
             for f in fights:
                 if f.status != "completed":
                     continue
-    
+
                 # Check if participant was in this fight
                 is_p1 = f.participant1_id == p["id"]
                 is_p2 = f.participant2_id == p["id"]
-    
+
                 if not (is_p1 or is_p2):
                     continue
-    
+
                 stats["fights_count"] += 1
 
                 # Winner check
@@ -83,7 +83,7 @@ class BracketManager:
                     stats["points"] += (f.score1 if is_p1 else f.score2) or 0
 
             standings.append(stats)
-            
+
         # Sort standings: Wins DESC, Points DESC
         standings.sort(key=lambda x: (x["wins"], x["points"]), reverse=True)
         return standings

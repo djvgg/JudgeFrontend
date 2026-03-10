@@ -1,5 +1,7 @@
-from src.database import engine
 from sqlalchemy import text
+
+from src.database import engine
+
 
 def add_table_id_column():
     with engine.connect() as conn:

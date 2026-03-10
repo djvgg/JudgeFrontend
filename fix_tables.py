@@ -1,6 +1,7 @@
-import os
 from dotenv import load_dotenv
-from src.database import SessionLocal, FightModel
+
+from src.database import FightModel, SessionLocal
+
 
 def assign_tables_by_bracket():
     load_dotenv(override=True)

@@ -1,5 +1,7 @@
-from src.database import engine
 from sqlalchemy import text
+
+from src.database import engine
+
 
 def check():
     with engine.connect() as conn:

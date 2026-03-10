@@ -1,8 +1,16 @@
 import os
-from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker
-from src.database import GroupModel, BracketModel, ParticipantModel, FightModel, GroupParticipantModel
+
 from dotenv import load_dotenv
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from src.database import (
+    BracketModel,
+    FightModel,
+    GroupModel,
+    GroupParticipantModel,
+    ParticipantModel,
+)
 
 load_dotenv()
 engine = create_engine(os.getenv("DATABASE_URL"))
@@ -18,7 +26,7 @@ def seed():
             group = GroupModel(gender="m", age_group="U13", weight_class="-28kg")
             session.add(group)
             session.flush()
-        
+
         print(f"Using Group ID: {group.id}")
 
         # 2. Create a Pool Bracket
@@ -27,7 +35,7 @@ def seed():
             bracket_pool = BracketModel(group_id=group.id, bracket_type="POOL", status="ongoing")
             session.add(bracket_pool)
             session.flush()
-        
+
         print(f"Pool Bracket ID: {bracket_pool.id}")
 
         # 3. Create participants for Pool
@@ -39,7 +47,7 @@ def seed():
                 p = ParticipantModel(first_name=first, last_name=last, club="Club Demo")
                 session.add(p)
                 session.flush()
-            
+
             gp = session.query(GroupParticipantModel).filter_by(group_id=group.id, participant_id=p.id).first()
             if not gp:
                 gp = GroupParticipantModel(group_id=group.id, participant_id=p.id)
@@ -72,13 +80,13 @@ def seed():
             group_de = GroupModel(gender="m", age_group="U13", weight_class="-31kg")
             session.add(group_de)
             session.flush()
-            
+
         bracket_de = session.query(BracketModel).filter_by(group_id=group_de.id, bracket_type="DOUBLE_ELIMINATION").first()
         if not bracket_de:
             bracket_de = BracketModel(group_id=group_de.id, bracket_type="DOUBLE_ELIMINATION", status="ongoing")
             session.add(bracket_de)
             session.flush()
-        
+
         print(f"DE Bracket ID: {bracket_de.id}")
 
         # 6. Create DE participants
@@ -90,7 +98,7 @@ def seed():
                 p = ParticipantModel(first_name=first, last_name=last, club="Club DE")
                 session.add(p)
                 session.flush()
-            
+
             gp = session.query(GroupParticipantModel).filter_by(group_id=group_de.id, participant_id=p.id).first()
             if not gp:
                 gp = GroupParticipantModel(group_id=group_de.id, participant_id=p.id)

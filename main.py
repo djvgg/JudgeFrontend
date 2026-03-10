@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
+from src.bracket_manager import BracketManager
 from src.database import (
     BracketModel,
     FightModel,
@@ -14,7 +15,6 @@ from src.database import (
     SessionLocal,
     init_db,
 )
-from src.bracket_manager import BracketManager
 
 
 @asynccontextmanager
@@ -63,7 +63,7 @@ async def get_match_dict(fight_id: int, session):
     # Compute next match in bracket tree dynamically (legacy/ui fallback)
     next_round = (fight.round or 0) + 1
     next_pos = (fight.pos_in_round or 0) // 2
-    
+
     # We don't have the lookup here easily without extra queries, so we do a quick one
     next_fight = session.query(FightModel).filter(
         FightModel.bracket_id == fight.bracket_id,
@@ -122,7 +122,7 @@ def get_matches():
 
         # Build lookup: (bracket_id, phase, round, pos_in_round) → fight.id
         fight_lookup = {(f.bracket_id, f.bracket_phase, f.round, f.pos_in_round): f.id for f in fights}
-        
+
         # Cache bracket/group names
         category_names = {}
         for b_id in {f.bracket_id for f in fights if f.bracket_id}:
@@ -210,7 +210,7 @@ async def websocket_endpoint(websocket: WebSocket):
                         if not fight.participant1_id or not fight.participant2_id:
                             # We don't raise an error to avoid breaking the socket, just ignore
                             return
-                            
+
                         # Direct assignment to native columns
                         if data["playerNum"] == 1:
                             fight.score1 = data["value"]
@@ -275,7 +275,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 elif data["type"] == "REASSIGN_BRACKET":
                     b_id_str = data.get("bracketId")
                     new_table = data.get("newTableId")
-                    
+
                     if b_id_str and new_table is not None:
                         # Extract the actual integer bracket_id. If category was used, it comes in as "Bracket X"
                         try:
@@ -284,15 +284,15 @@ async def websocket_endpoint(websocket: WebSocket):
                                 bracket_id_int = int(b_id_str.replace("Bracket ", ""))
                             else:
                                 bracket_id_int = int(b_id_str)
-                            
+
                             # Find all fights for this bracket
                             fights = session.query(FightModel).filter(FightModel.bracket_id == bracket_id_int).all()
                             for f in fights:
                                 if f.status not in ["completed", "bye"]:
                                     f.table_id = str(new_table)
-                            
+
                             session.commit()
-                            
+
                             # Tell everyone to refresh their lists
                             await manager.broadcast({"type": "REFRESH_LIST"})
 
@@ -316,7 +316,7 @@ async def websocket_endpoint(websocket: WebSocket):
                                 s2 = int(fight.score2 or 0)
                             except (ValueError, TypeError):
                                 s1, s2 = 0, 0
-                                
+
                             winner_id = None
                             loser_id = None
 
@@ -340,7 +340,7 @@ async def websocket_endpoint(websocket: WebSocket):
                                             next_coord = BracketManager.get_next_winner_coord(
                                                 fight.bracket_id, fight.round, fight.pos_in_round, fight.bracket_phase
                                             )
-                                            
+
                                             next_fight = session.query(FightModel).filter(
                                                 FightModel.bracket_id == fight.bracket_id,
                                                 FightModel.bracket_phase == next_coord["phase"],
@@ -354,7 +354,7 @@ async def websocket_endpoint(websocket: WebSocket):
                                                 else:
                                                     next_fight.participant2_id = winner_id
                                                 session.commit()
-   
+
                                                 # Broadcast the updated target fight
                                                 updated_next = await get_match_dict(next_fight.id, session)
                                                 if updated_next:
@@ -372,7 +372,7 @@ async def websocket_endpoint(websocket: WebSocket):
                                                     FightModel.round == loser_coord["round"],
                                                     FightModel.pos_in_round == loser_coord["pos"]
                                                 ).first()
-   
+
                                                 if target_lb_fight:
                                                     # Put loser in LB
                                                     if loser_coord["slot"] == "p1":
@@ -380,16 +380,16 @@ async def websocket_endpoint(websocket: WebSocket):
                                                     else:
                                                         target_lb_fight.participant2_id = loser_id
                                                     session.commit()
-       
+
                                                     # Broadcast the updated target LB fight
                                                     updated_lb = await get_match_dict(target_lb_fight.id, session)
                                                     if updated_lb:
                                                         await manager.broadcast({"type": "SCORE_SYNC", "matchId": target_lb_fight.id, "match": updated_lb})
-                                        
+
                                         # 3. Handle Pool Standings
                                         if bracket.bracket_type == "POOL":
                                             all_fights = session.query(FightModel).filter(FightModel.bracket_id == fight.bracket_id).all()
-                                            
+
                                             # Get all unique participant IDs from the fights
                                             p_ids = set()
                                             for f in all_fights:
@@ -397,12 +397,12 @@ async def websocket_endpoint(websocket: WebSocket):
                                                     p_ids.add(f.participant1_id)
                                                 if f.participant2_id:
                                                     p_ids.add(f.participant2_id)
-                                            
+
                                             # We need to map GroupParticipant IDs back to Participants for calculate_pool_standings
                                             gps_with_p = session.query(GroupParticipantModel, ParticipantModel).join(
                                                 ParticipantModel, GroupParticipantModel.participant_id == ParticipantModel.id
                                             ).filter(GroupParticipantModel.id.in_(list(p_ids))).all()
-                                            
+
                                             participant_data = [
                                                 {
                                                     "id": gp.id,
@@ -411,9 +411,9 @@ async def websocket_endpoint(websocket: WebSocket):
                                                 }
                                                 for gp, p in gps_with_p
                                             ]
-                                            
+
                                             standings = BracketManager.calculate_pool_standings(all_fights, participant_data)
-                                            
+
                                             await manager.broadcast({
                                                 "type": "POOL_STANDINGS",
                                                 "bracketId": fight.bracket_id,
