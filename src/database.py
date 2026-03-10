@@ -39,6 +39,31 @@ class MatchModel(Base):
     next_match_id = Column(Integer, nullable=True)
     next_match_pos = Column(String, nullable=True)
 
+class GroupModel(Base):
+    """
+    Groups participants by gender, age group, and weight class.
+    """
+    __tablename__ = "groups"
+    __table_args__ = {'extend_existing': True}
+
+    id = Column(Integer, primary_key=True)
+    gender = Column(String)
+    age_group = Column(String)
+    weight_class = Column(String)
+
+class BracketModel(Base):
+    """
+    Groups fights into a category and defines the tournament system.
+    """
+    __tablename__ = "brackets"
+    __table_args__ = {'extend_existing': True}
+
+    id = Column(Integer, primary_key=True)
+    group_id = Column(Integer)
+    mat_id = Column(Integer)
+    bracket_type = Column(String) # e.g. 'POOL', 'DOUBLE_ELIMINATION', 'SINGLE_ELIMINATION'
+    status = Column(String)
+
 class ParticipantModel(Base):
     """
     Native 'participants' table from the backend.
@@ -51,6 +76,17 @@ class ParticipantModel(Base):
     last_name = Column(String)
     gender = Column(String)
     club = Column(String)
+
+class GroupParticipantModel(Base):
+    """
+    Intersection table mapping participants to groups.
+    """
+    __tablename__ = "group_participants"
+    __table_args__ = {'extend_existing': True}
+
+    id = Column(Integer, primary_key=True)
+    group_id = Column(Integer)
+    participant_id = Column(Integer)
 
 class FightModel(Base):
     """

@@ -24,7 +24,8 @@ const State = {
         remainingSeconds: 240,
         isRunning: false
     },
-    restTimerInterval: null
+    restTimerInterval: null,
+    poolStandings: {} // bracketId -> standings array
 };
 
 // --- NETWORK & WEBSOCKETS ---
@@ -70,10 +71,18 @@ const Network = {
                 UI.renderFightList();
                 UI.renderBracketVisualization();
             }
+        } else if (data.type === 'POOL_STANDINGS') {
+            State.poolStandings[data.bracketId] = data.standings;
+            if (State.currentBracketCategory === data.bracketId) {
+                UI.renderBracketVisualization();
+            }
         } else if (data.type === 'SIGNAL') {
             Scoring.triggerTimerSignal(data.signalType, false);
         } else if (data.type === 'REFRESH_LIST') {
-            App.init();
+            Network.fetchMatches().then(() => {
+                UI.renderFightList();
+                UI.renderBracketVisualization(); // Refresh bracket as well
+            });
         }
     },
 
@@ -88,11 +97,12 @@ const Network = {
 const UI = {
     switchView(view) {
         const isFights = view === 'fights';
+        const isBrackets = view === 'brackets';
+
         document.getElementById('fights-view').style.display = isFights ? 'block' : 'none';
-        document.getElementById('brackets-view').style.display = isFights ? 'none' : 'flex';
-        document.getElementById('tab-fights').classList.toggle('active', isFights);
-        document.getElementById('tab-brackets').classList.toggle('active', !isFights);
-        if (!isFights) this.updateBracketSidebar();
+        document.getElementById('brackets-view').style.display = isBrackets ? 'flex' : 'none';
+
+        if (isBrackets) this.updateBracketSidebar();
     },
 
     updateTournamentTitle(title) {
@@ -147,6 +157,118 @@ const UI = {
         const isAdminMode = tableNum === 'admin';
         displayMatches.forEach(m => container.appendChild(this.createFightCard(m, assignedTable, nextMatchIds, isAdminMode)));
         document.getElementById('match-count').textContent = `${displayMatches.length} Kämpfe angezeigt`;
+
+        if (isAdminMode) {
+            this.renderAdminDashboard();
+        }
+    },
+
+    renderAdminDashboard() {
+        const cols = {
+            "1": document.getElementById('admin-col-1'),
+            "2": document.getElementById('admin-col-2'),
+            "3": document.getElementById('admin-col-3'),
+            "4": document.getElementById('admin-col-4'),
+            "none": document.getElementById('admin-col-none')
+        };
+        Object.values(cols).forEach(col => { if (col) col.innerHTML = ''; });
+
+        const groups = {};
+        State.activeMatches.forEach(m => {
+            const bId = m.bracketId || m.category; // fallback to category string if no ID
+            if (!groups[bId]) {
+                groups[bId] = {
+                    title: m.category,
+                    tableId: m.tableId || 'none',
+                    total: 0,
+                    finished: 0,
+                    bracketId: bId
+                };
+            }
+            groups[bId].total++;
+            if (m.status === 'finished' || m.status === 'bye') groups[bId].finished++;
+
+            // Re-assign table if a later match in the same bracket has a valid table
+            if (m.tableId && String(m.tableId) !== "0") {
+                groups[bId].tableId = m.tableId;
+            }
+        });
+
+        Object.values(groups).forEach(g => {
+            const tableKey = (g.tableId && g.tableId !== "0") ? String(g.tableId) : "none";
+            const col = cols[tableKey] || cols["none"];
+            if (!col) return;
+
+            const isDone = g.total > 0 && g.finished === g.total;
+            const pct = g.total > 0 ? (g.finished / g.total) * 100 : 0;
+            const colorClass = isDone ? 'var(--success-color)' : `var(--table-${tableKey === 'none' ? 'muted' : tableKey})`;
+
+            const card = document.createElement('div');
+            card.className = 'bracket-card';
+            card.draggable = true;
+            card.dataset.bracketId = g.bracketId;
+            if (tableKey !== 'none') card.style.borderLeftColor = colorClass;
+
+            card.innerHTML = `
+                <div class="bracket-title">${g.title}</div>
+                <div class="bracket-stats">
+                    <span>Fortschritt</span>
+                    <span>${g.finished} / ${g.total} ${isDone ? '(Fertig)' : ''}</span>
+                </div>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: ${pct}%; background-color: ${colorClass};"></div></div>
+            `;
+
+            // Click to open detailed bracket tree
+            card.onclick = () => {
+                State.currentBracketCategory = g.title;
+                UI.switchView('brackets');
+                UI.renderBracketVisualization();
+            };
+
+            // Drag logic
+            card.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', g.bracketId);
+                setTimeout(() => card.classList.add('dragging'), 0);
+            });
+            card.addEventListener('dragend', () => {
+                card.classList.remove('dragging');
+                document.querySelectorAll('.kanban-content').forEach(c => c.classList.remove('drag-over'));
+            });
+
+            col.appendChild(card);
+        });
+
+        this.setupAdminDropZones();
+    },
+
+    setupAdminDropZones() {
+        document.querySelectorAll('.kanban-content').forEach(column => {
+            // Remove old listeners to prevent stacking
+            const newCol = column.cloneNode(true);
+            column.parentNode.replaceChild(newCol, column);
+
+            newCol.addEventListener('dragover', e => {
+                e.preventDefault();
+                newCol.classList.add('drag-over');
+            });
+            newCol.addEventListener('dragleave', () => {
+                newCol.classList.remove('drag-over');
+            });
+            newCol.addEventListener('drop', e => {
+                e.preventDefault();
+                newCol.classList.remove('drag-over');
+                const bracketId = e.dataTransfer.getData('text/plain');
+                let newTableId = newCol.dataset.table;
+                if (newTableId === 'none') newTableId = "0";
+
+                console.log(`Reassigning bracket ${bracketId} to table ${newTableId}`);
+                Network.send({
+                    type: "REASSIGN_BRACKET",
+                    bracketId: bracketId,
+                    newTableId: newTableId
+                });
+            });
+        });
     },
 
     autoInterleaveMatches() {
@@ -194,15 +316,23 @@ const UI = {
                 <a href="#" class="bracket-link" onclick="UI.handleBracketClick(event, ${match.matchId})">Live-Turnierbaum</a>
             </div>
             <div class="fighters-display">
-                <div class="fighter p1">
-                    <span class="fighter-name">${match.p1.lastName}</span>
-                    <span class="fighter-club">${match.p1.club}</span>
-                </div>
-                <div class="vs-divider">VS</div>
-                <div class="fighter p2">
-                    <span class="fighter-name">${match.p2.lastName}</span>
-                    <span class="fighter-club">${match.p2.club}</span>
-                </div>
+                ${match.status === 'bye' ? `
+                    <div class="fighter p1" style="flex: 1; text-align: center;">
+                        <span class="fighter-name">${match.p1.lastName} ${match.p1.firstName}</span>
+                        <span class="fighter-club">${match.p1.club}</span>
+                        <div style="margin-top: 10px; font-weight: 800; color: var(--accent-color); letter-spacing: 2px;">FREILOS</div>
+                    </div>
+                ` : `
+                    <div class="fighter p1">
+                        <span class="fighter-name">${match.p1.lastName}</span>
+                        <span class="fighter-club">${match.p1.club}</span>
+                    </div>
+                    <div class="vs-divider">VS</div>
+                    <div class="fighter p2">
+                        <span class="fighter-name">${match.p2.lastName}</span>
+                        <span class="fighter-club">${match.p2.club}</span>
+                    </div>
+                `}
             </div>
             <div class="status-box">
                 <div class="status-badge ${match.status}">${statusLabel}</div>
@@ -266,47 +396,71 @@ const UI = {
         viz.innerHTML = '';
         if (titleEl) titleEl.textContent = State.currentBracketCategory;
 
-        // Main bracket only for now: filter out Loser Bracket (lb) matches to prevent them breaking the vertical DAG tree
-        const matches = State.activeMatches.filter(m => m.category === State.currentBracketCategory && m.phase !== 'lb');
-        if (matches.length === 0) return;
+        const allMatchesCategory = State.activeMatches.filter(m => m.category === State.currentBracketCategory);
+        if (allMatchesCategory.length === 0) return;
+
+        const isPool = allMatchesCategory.some(m => m.poolIndex !== null && m.poolIndex !== undefined);
+        if (isPool) {
+            this.renderPoolGrid(allMatchesCategory, viz);
+            return;
+        }
+
+        const wbMatches = allMatchesCategory.filter(m => m.phase !== 'lb');
+        const lbMatches = allMatchesCategory.filter(m => m.phase === 'lb');
 
         // Build a map of matches and their children (matches that feed INTO them)
         const matchMap = new Map();
-        matches.forEach(m => matchMap.set(m.matchId, { ...m, children: [] }));
+        allMatchesCategory.forEach(m => matchMap.set(m.matchId, { ...m, children: [] }));
 
-        matches.forEach(m => {
+        allMatchesCategory.forEach(m => {
             if (m.nextMatchId && matchMap.has(m.nextMatchId)) {
                 const parent = matchMap.get(m.nextMatchId);
                 parent.children.push(m.matchId);
             }
         });
 
-        // Identify roots (matches that don't feed into any other match in this category)
-        const roots = [];
-        matches.forEach(m => {
-            if (!m.nextMatchId || !matchMap.has(m.nextMatchId)) {
-                roots.push(m);
-            }
-        });
+        // Identify roots (matches that don't feed into any other match in THIS phase)
+        const getRoots = (matchList) => {
+            const roots = [];
+            matchList.forEach(m => {
+                if (!m.nextMatchId || !matchMap.has(m.nextMatchId) || matchMap.get(m.nextMatchId).phase !== m.phase) {
+                    roots.push(m);
+                }
+            });
+            roots.sort((a, b) => a.matchId - b.matchId);
+            return roots;
+        };
 
-        // Sort roots by matchId ascending (Winner bracket has lower IDs than Loser bracket)
-        roots.sort((a, b) => a.matchId - b.matchId);
+        const wbRoots = getRoots(wbMatches);
+        const lbRoots = getRoots(lbMatches);
 
         const MATCH_WIDTH = 220;
         const MATCH_HEIGHT = 100;
         const X_SPACING = 300;
         const Y_SPACING = 140;
+        const OFFSET_X = 40;
+        const OFFSET_Y = 80;
+
+        const maxRound = Math.max(...allMatchesCategory.map(m => m.round));
+
+        function getRoundName(round, isLb = false) {
+            if (isLb) return `TROSTRUNDE R${round}`;
+            if (round === maxRound) return 'FINALE';
+            if (round === maxRound - 1) return 'HALBFINALE';
+            if (round === maxRound - 2) return 'VIERTELFINALE';
+            return `${round}. RUNDE`;
+        }
 
         let currentY = 0;
         const positions = new Map();
         const visited = new Set();
 
-        function calculatePosDAG(matchId) {
+        function calculatePosDAG(matchId, xOffsetRounds = 0) {
             if (visited.has(matchId)) return positions.get(matchId);
             visited.add(matchId);
 
             const node = matchMap.get(matchId);
-            const children = node.children.map(cid => matchMap.get(cid));
+            const children = node.children.map(cid => matchMap.get(cid)).filter(c => c.phase === node.phase);
 
             // Sort children so p1 is above p2
             children.sort((a, b) => {
@@ -317,7 +471,7 @@ const UI = {
 
             const childPositions = [];
             for (const child of children) {
-                childPositions.push(calculatePosDAG(child.matchId));
+                childPositions.push(calculatePosDAG(child.matchId, xOffsetRounds));
             }
 
             let myY;
@@ -329,14 +483,25 @@ const UI = {
                 myY = sumY / childPositions.length;
             }
 
-            const myX = (node.round - 1) * X_SPACING;
+            const myX = ((node.round - 1) + xOffsetRounds) * X_SPACING;
             const pos = { x: myX, y: myY };
             positions.set(matchId, pos);
             return pos;
         }
 
-        for (const root of roots) {
-            calculatePosDAG(root.matchId);
+        for (const root of wbRoots) {
+            calculatePosDAG(root.matchId, 0);
+            currentY += Y_SPACING;
+        }
+
+        // Add visual separation before Loser bracket
+        if (lbRoots.length > 0 && wbRoots.length > 0) {
+            currentY += Y_SPACING * 0.5;
+        }
+
+        for (const root of lbRoots) {
+            // Loser bracket starts from round 1 visually, but we can offset it if desired.
+            calculatePosDAG(root.matchId, 0);
             currentY += Y_SPACING;
         }
 
@@ -346,9 +511,6 @@ const UI = {
             if (pos.x > maxX) maxX = pos.x;
             if (pos.y > maxY) maxY = pos.y;
         });
-
-        const OFFSET_X = 40;
-        const OFFSET_Y = 40;
 
         viz.style.position = 'relative';
         viz.style.minWidth = `${maxX + MATCH_WIDTH + OFFSET_X * 2}px`;
@@ -366,10 +528,14 @@ const UI = {
         svg.style.height = '100%';
         svg.style.pointerEvents = 'none';
 
-        matches.forEach(m => {
+        allMatchesCategory.forEach(m => {
             if (m.nextMatchId && positions.has(m.nextMatchId)) {
                 const pos = positions.get(m.matchId);
                 const parentPos = positions.get(m.nextMatchId);
+
+                // For double elimination, we don't draw lines between WB and LB for now as it's cleaner
+                const parentNode = allMatchesCategory.find(pm => String(pm.matchId) === String(m.nextMatchId));
+                if (!parentNode || parentNode.phase !== m.phase) return;
 
                 const startX = pos.x + MATCH_WIDTH + OFFSET_X;
                 const startY = pos.y + MATCH_HEIGHT / 2 + OFFSET_Y;
@@ -379,20 +545,37 @@ const UI = {
                 const path = document.createElementNS(svgNS, "path");
                 const midX = startX + (endX - startX) / 2;
                 path.setAttribute('d', `M ${startX} ${startY} H ${midX} V ${endY} H ${endX}`);
-                path.setAttribute('stroke', '#22AAF0'); // accent color from branding palette
-                path.setAttribute('stroke-width', '2');
+
+                // Use Jasmine/Orange for LB, Sky Blue for WB
+                const strokeColor = m.phase === 'lb' ? '#F5CA74' : '#22AAF0';
+                path.setAttribute('stroke', strokeColor);
+                if (m.phase === 'lb') path.setAttribute('stroke-dasharray', '6,4');
+                path.setAttribute('stroke-width', '2.5');
                 path.setAttribute('fill', 'none');
                 svg.appendChild(path);
             }
         });
+
+        // Draw Column Headers
+        for (let r = 1; r <= maxRound; r++) {
+            const header = document.createElement('div');
+            header.className = 'bracket-round-name';
+            header.style.position = 'absolute';
+            header.style.left = `${(r - 1) * X_SPACING + OFFSET_X}px`;
+            header.style.top = '20px';
+            header.style.width = `${MATCH_WIDTH}px`;
+            header.textContent = getRoundName(r);
+            viz.appendChild(header);
+        }
+
         viz.appendChild(svg);
 
         // Draw nodes
-        matches.forEach(m => {
+        allMatchesCategory.forEach(m => {
             const pos = positions.get(m.matchId);
             if (!pos) return;
             const node = document.createElement('div');
-            node.className = 'bracket-match-node absolute-node';
+            node.className = `bracket-match-node absolute-node ${m.phase === 'lb' ? 'loser-bracket' : ''}`;
             node.style.position = 'absolute';
             node.style.left = `${pos.x + OFFSET_X}px`;
             node.style.top = `${pos.y + OFFSET_Y}px`;
@@ -400,21 +583,176 @@ const UI = {
 
             const p1Score = m.p1.score.points || 0;
             const p2Score = m.p2.score.points || 0;
-            const p1Won = m.status === 'finished' && p1Score >= p2Score;
-            const p2Won = m.status === 'finished' && p2Score > p1Score;
+            const p1Won = m.status === 'finished' && m.winnerId && String(m.p1.id) === String(m.winnerId);
+            const p2Won = m.status === 'finished' && m.winnerId && String(m.p2.id) === String(m.winnerId);
+
+            const p1Label = m.p1.lastName;
+            const p2Label = m.p2.lastName;
+
+            // Simple heuristic: If it's a loser bracket match and participant is not decided yet
+            // In a better system, this would come from the backend metadata.
+            const getAltName = (p) => {
+                if (m.phase === 'lb' && p.id === 'WAIT') {
+                    return 'Verlierer Kampf #...';
+                }
+                return 'TBD';
+            };
 
             node.innerHTML = `
+                <div class="match-node-header">
+                    <span class="m-id">Kampf #${m.fightNr}</span>
+                    <span class="m-phase">${m.phase === 'lb' ? 'TROSTRUNDE' : 'HAUPTRUNDE'}</span>
+                </div>
                 <div class="match-node-p ${p1Won ? 'winner' : ''}">
-                    <span class="p-name">${m.p1.lastName || 'TBD'}</span>
+                    <span class="p-name">${p1Label || getAltName(m.p1)}</span>
                     <span class="p-score-box">${p1Score}</span>
                 </div>
                 <div class="match-node-p ${p2Won ? 'winner' : ''}">
-                    <span class="p-name">${m.p2.lastName || 'TBD'}</span>
+                    <span class="p-name">${p2Label || getAltName(m.p2)}</span>
                     <span class="p-score-box">${p2Score}</span>
                 </div>
             `;
             viz.appendChild(node);
         });
+    },
+
+    renderPoolGrid(matches, container) {
+        // Determine unique fighters
+        const fighters = new Map();
+        matches.forEach(m => {
+            if (m.p1 && m.p1.id !== "WAIT" && m.status !== 'bye') fighters.set(String(m.p1.id), m.p1);
+            if (m.p2 && m.p2.id !== "WAIT" && m.status !== 'bye') fighters.set(String(m.p2.id), m.p2);
+        });
+
+        const fighterList = Array.from(fighters.values());
+
+        // Use backend standings if available
+        const backendStandings = State.poolStandings[State.currentBracketCategory];
+        if (backendStandings) {
+            this.renderAuthoritativePoolStandings(backendStandings, container);
+            return;
+        }
+
+        container.style.display = 'block';
+        container.style.position = 'static';
+        container.style.minWidth = 'auto';
+        container.style.minHeight = 'auto';
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'pool-grid-wrapper';
+
+        const table = document.createElement('table');
+        table.className = 'pool-table';
+
+        // Header Row
+        const trHead = document.createElement('tr');
+        trHead.innerHTML = `<th>Kämpfer</th>`;
+        fighterList.forEach(f => {
+            trHead.innerHTML += `<th>${f.firstName} ${f.lastName}</th>`;
+        });
+        trHead.innerHTML += `<th>Punkte</th>`;
+        table.appendChild(trHead);
+
+        // Pre-calculate points to find leader
+        const fighterPoints = fighterList.map(rowFighter => {
+            let pts = 0;
+            fighterList.forEach(colFighter => {
+                if (rowFighter.id !== colFighter.id) {
+                    const match = matches.find(m =>
+                        (String(m.p1.id) === String(rowFighter.id) && String(m.p2.id) === String(colFighter.id)) ||
+                        (String(m.p2.id) === String(rowFighter.id) && String(m.p1.id) === String(colFighter.id))
+                    );
+                    if (match && match.status === 'finished') {
+                        const rScore = Number(String(match.p1.id) === String(rowFighter.id) ? (match.p1.score.points || 0) : (match.p2.score.points || 0));
+                        const cScore = Number(String(match.p1.id) === String(colFighter.id) ? (match.p1.score.points || 0) : (match.p2.score.points || 0));
+                        if (rScore >= cScore) pts += rScore;
+                    }
+                }
+            });
+            return { id: rowFighter.id, points: pts };
+        });
+
+        const maxPoints = Math.max(...fighterPoints.map(fp => fp.points));
+        const hasFinishedMatches = matches.some(m => m.status === 'finished');
+
+        // Rows
+        fighterList.forEach((rowFighter) => {
+            const tr = document.createElement('tr');
+            const pts = fighterPoints.find(fp => fp.id === rowFighter.id).points;
+            const isLeader = hasFinishedMatches && pts === maxPoints && pts > 0;
+
+            if (isLeader) tr.classList.add('pool-leader');
+
+            tr.innerHTML = `<td class="fighter-col">${rowFighter.firstName} ${rowFighter.lastName} ${isLeader ? '🏆' : ''}</td>`;
+
+            fighterList.forEach((colFighter) => {
+                if (rowFighter.id === colFighter.id) {
+                    tr.innerHTML += `<td class="col-cross"></td>`;
+                } else {
+                    const match = matches.find(m =>
+                        (String(m.p1.id) === String(rowFighter.id) && String(m.p2.id) === String(colFighter.id)) ||
+                        (String(m.p2.id) === String(rowFighter.id) && String(m.p1.id) === String(colFighter.id))
+                    );
+
+                    if (!match) {
+                        tr.innerHTML += `<td>-</td>`;
+                    } else if (match.status !== 'finished') {
+                        tr.innerHTML += `<td><span class="status-upcoming">Ausstehend</span></td>`;
+                    } else {
+                        const rScore = Number(String(match.p1.id) === String(rowFighter.id) ? (match.p1.score.points || 0) : (match.p2.score.points || 0));
+                        const cScore = Number(String(match.p1.id) === String(colFighter.id) ? (match.p1.score.points || 0) : (match.p2.score.points || 0));
+
+                        if (rScore > cScore) {
+                            tr.innerHTML += `<td class="cell-win">Sieg<br><small>(${rScore})</small></td>`;
+                        } else if (cScore > rScore) {
+                            tr.innerHTML += `<td class="cell-loss">Ndlg<br><small>(${rScore})</small></td>`;
+                        } else {
+                            tr.innerHTML += `<td class="cell-win" style="background: rgba(255,255,255,0.05)">TIE<br><small>(${rScore})</small></td>`;
+                        }
+                    }
+                }
+            });
+
+            tr.innerHTML += `<td class="total-col">${pts}</td>`;
+            table.appendChild(tr);
+        });
+
+        wrapper.appendChild(table);
+        container.appendChild(wrapper);
+    },
+
+    renderAuthoritativePoolStandings(standings, container) {
+        container.innerHTML = '';
+        const table = document.createElement('table');
+        table.className = 'pool-table';
+
+        const trHead = document.createElement('tr');
+        trHead.innerHTML = `
+            <th>Rang</th>
+            <th>Name</th>
+            <th>Konto/Club</th>
+            <th>Siege</th>
+            <th>Punkte</th>
+        `;
+        table.appendChild(trHead);
+
+        standings.forEach((s, idx) => {
+            const tr = document.createElement('tr');
+            if (idx === 0) tr.classList.add('pool-leader');
+            tr.innerHTML = `
+                <td>${idx + 1}</td>
+                <td class="fighter-col">${s.name} ${idx === 0 ? '🏆' : ''}</td>
+                <td>${s.club || '-'}</td>
+                <td>${s.wins}</td>
+                <td>${s.points}</td>
+            `;
+            table.appendChild(tr);
+        });
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'pool-grid-wrapper';
+        wrapper.appendChild(table);
+        container.appendChild(wrapper);
     },
 
     setupDragAndDrop(card, matchId) {
@@ -479,6 +817,11 @@ const Scoring = {
             if (!confirmOverride) return;
         }
 
+        if (m.p1.id === 'WAIT' || m.p2.id === 'WAIT') {
+            alert("Dieser Kampf ist noch pas bereit (Teilnehmer fehlen).");
+            return;
+        }
+
         State.currentScoringMatch = m;
         State.scoreHistory = [];
         this.resetTimer();
@@ -513,8 +856,9 @@ const Scoring = {
             player.score[type] = 0;
         }
 
-        State.scoreHistory.push({ playerNum, type, prevValue: player.score[type] });
-        player.score[type] += pointsValue;
+        const currentVal = Number(player.score[type] || 0);
+        State.scoreHistory.push({ playerNum, type, prevValue: currentVal });
+        player.score[type] = currentVal + Number(pointsValue);
 
         Network.send({
             type: 'SCORE_UPDATE',
@@ -634,6 +978,12 @@ const App = {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-content').style.display = 'block';
             document.getElementById('table-select').value = table;
+
+            if (table === 'admin') {
+                setTimeout(() => UI.switchView('admin-dashboard'), 100);
+            } else {
+                setTimeout(() => UI.switchView('fights'), 100);
+            }
         }
     },
 
@@ -686,6 +1036,7 @@ window.switchTable = function (tableId) {
             State.isTableFilterActive = false;
         }
     }
+    UI.switchView('fights');
     UI.renderFightList();
 };
 
@@ -697,7 +1048,8 @@ window.winByDecision = function (playerNum) {
     // Ensure the winner has at least 10 points to satisfy auto-progression condition
     if (currentPoints < 10) {
         const type = 'points';
-        State.scoreHistory.push({ playerNum, type, prevValue: currentPoints });
+        const currentVal = Number(currentPoints || 0);
+        State.scoreHistory.push({ playerNum, type, prevValue: currentVal });
         player.score[type] = 10;
 
         Network.send({

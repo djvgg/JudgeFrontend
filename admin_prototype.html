@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard Prototype (Nur Demo)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #121212;
+            --bg-secondary: #1E1E1E;
+            --bg-tertiary: #2D2D2D;
+            --text-main: #FFFFFF;
+            --text-muted: #A0A0A0;
+            --accent-blue: #3B82F6;
+            --table-1: #10B981;
+            /* Green */
+            --table-2: #F59E0B;
+            /* Yellow */
+            --table-3: #8B5CF6;
+            /* Purple */
+            --unassigned: #4B5563;
+            /* Gray */
+        }
+
+        body {
+            font-family: 'Rubik', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+
+        header {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .kanban-board {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+            overflow-x: auto;
+            padding-bottom: 20px;
+        }
+
+        .kanban-column {
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            width: 300px;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .column-header {
+            padding: 15px;
+            font-weight: bold;
+            text-align: center;
+            border-bottom: 2px solid var(--bg-tertiary);
+            border-radius: 8px 8px 0 0;
+        }
+
+        .column-header.t1 {
+            background-color: rgba(16, 185, 129, 0.1);
+            border-color: var(--table-1);
+            color: var(--table-1);
+        }
+
+        .column-header.t2 {
+            background-color: rgba(245, 158, 11, 0.1);
+            border-color: var(--table-2);
+            color: var(--table-2);
+        }
+
+        .column-header.t3 {
+            background-color: rgba(139, 92, 246, 0.1);
+            border-color: var(--table-3);
+            color: var(--table-3);
+        }
+
+        .column-header.unassigned {
+            background-color: rgba(75, 85, 99, 0.1);
+            border-color: var(--unassigned);
+            color: var(--text-muted);
+        }
+
+        .kanban-content {
+            padding: 15px;
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Drag & Drop Styles */
+        .bracket-card {
+            background-color: var(--bg-tertiary);
+            border-radius: 6px;
+            padding: 15px;
+            cursor: grab;
+            user-select: none;
+            border-left: 4px solid var(--accent-blue);
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        .bracket-card:active {
+            cursor: grabbing;
+        }
+
+        .bracket-card.dragging {
+            opacity: 0.5;
+            transform: scale(1.02);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .bracket-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .bracket-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .progress-bar-bg {
+            background-color: #444;
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            background-color: var(--accent-blue);
+            height: 100%;
+        }
+
+        .kanban-content.drag-over {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div>
+            <h1>Admin Dashboard (Prototype)</h1>
+            <div class="subtitle">Glisser-Déposer les catégories (Brackets) pour réassigner les tables dynamiquement.
+            </div>
+        </div>
+        <button
+            style="padding: 10px 20px; background: var(--accent-blue); border: none; color: white; cursor: pointer; border-radius: 4px; font-weight: bold;"
+            onclick="alert('Ceci n\'est qu\'un prototype visuel isolé. Il ne modifie pas ta vraie base de données.')">Prototype
+            Isolée</button>
+    </header>
+
+    <div class="kanban-board">
+        <!-- Tisch 1 -->
+        <div class="kanban-column">
+            <div class="column-header t1">Tisch 1 (Aktiv)</div>
+            <div class="kanban-content" id="col-tisch-1">
+                <div class="bracket-card" draggable="true" id="b1">
+                    <div class="bracket-title">U18 Männlich -66kg</div>
+                    <div class="bracket-stats">
+                        <span>Fortschritt</span>
+                        <span>12 / 24</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" style="width: 50%;"></div>
+                    </div>
+                </div>
+                <div class="bracket-card" draggable="true" id="b2">
+                    <div class="bracket-title">U18 Männlich -73kg</div>
+                    <div class="bracket-stats">
+                        <span>Fortschritt</span>
+                        <span>0 / 16</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tisch 2 -->
+        <div class="kanban-column">
+            <div class="column-header t2">Tisch 2 (Aktiv)</div>
+            <div class="kanban-content" id="col-tisch-2">
+                <div class="bracket-card" draggable="true" id="b3">
+                    <div class="bracket-title">Aktive Frauen -57kg</div>
+                    <div class="bracket-stats">
+                        <span>Fortschritt</span>
+                        <span>8 / 8 (Fertig)</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" style="width: 100%; background-color: #10B981;"></div>
+                    </div>
+                </div>
+                <div class="bracket-card" draggable="true" id="b4" style="border-left-color: var(--table-2)">
+                    <div class="bracket-title">Aktive Frauen -63kg</div>
+                    <div class="bracket-stats">
+                        <span>Fortschritt</span>
+                        <span>4 / 16</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" style="width: 25%; background-color: var(--table-2);"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tisch 3 -->
+        <div class="kanban-column">
+            <div class="column-header t3">Tisch 3 (Aktiv)</div>
+            <div class="kanban-content" id="col-tisch-3">
+                <div class="bracket-card" draggable="true" id="b5">
+                    <div class="bracket-title">U21 Männlich -81kg</div>
+                    <div class="bracket-stats">
+                        <span>Fortschritt</span>
+                        <span>3 / 8</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" style="width: 37%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Unassigned / Pending -->
+        <div class="kanban-column">
+            <div class="column-header unassigned">Warteschlange (Nicht zugewiesen)</div>
+            <div class="kanban-content" id="col-unassigned">
+                <div class="bracket-card" draggable="true" id="b6" style="border-left-color: var(--text-muted)">
+                    <div class="bracket-title">U18 Frauen -48kg</div>
+                    <div class="bracket-stats">
+                        <span>Fortschritt</span>
+                        <span>0 / 12</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+                <div class="bracket-card" draggable="true" id="b7" style="border-left-color: var(--text-muted)">
+                    <div class="bracket-title">U18 Frauen -52kg</div>
+                    <div class="bracket-stats">
+                        <span>Fortschritt</span>
+                        <span>0 / 8</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const cards = document.querySelectorAll('.bracket-card');
+        const columns = document.querySelectorAll('.kanban-content');
+
+        let draggedCard = null;
+
+        cards.forEach(card => {
+            card.addEventListener('dragstart', () => {
+                draggedCard = card;
+                setTimeout(() => card.classList.add('dragging'), 0);
+            });
+
+            card.addEventListener('dragend', () => {
+                draggedCard = null;
+                card.classList.remove('dragging');
+                columns.forEach(col => col.classList.remove('drag-over'));
+            });
+        });
+
+        columns.forEach(column => {
+            column.addEventListener('dragover', e => {
+                e.preventDefault(); // Necessary to allow dropping
+                column.classList.add('drag-over');
+
+                // Optional: determine insert position (append for basic demo)
+            });
+
+            column.addEventListener('dragleave', () => {
+                column.classList.remove('drag-over');
+            });
+
+            column.addEventListener('drop', e => {
+                e.preventDefault();
+                column.classList.remove('drag-over');
+                if (draggedCard) {
+                    column.appendChild(draggedCard);
+
+                    // Demo simulated notification
+                    const colName = column.previousElementSibling.innerText;
+                    console.log(`Assigned ${draggedCard.querySelector('.bracket-title').innerText} to ${colName}`);
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

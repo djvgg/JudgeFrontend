@@ -11,7 +11,7 @@ Follow these steps for a perfect live demonstration:
 1.  **Back-end Service**:
     ```powershell
     # Standard mode (SQLite/PostgreSQL)
-    python -m uvicorn main:app --port 5001 --reload
+    python -m uvicorn main:app --host 0.0.0.0 --port 5001 --reload
     ```
 2.  **Front-end Client**:
     ```powershell
