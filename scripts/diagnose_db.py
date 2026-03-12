@@ -1,6 +1,7 @@
 import os
-from sqlalchemy import create_engine, text
+
 from dotenv import load_dotenv
+from sqlalchemy import create_engine, text
 
 load_dotenv()
 engine = create_engine(os.getenv("DATABASE_URL"))
@@ -18,16 +19,16 @@ def diagnose():
 
         print("\n--- Brackets in Database ---")
         res = conn.execute(text("""
-            SELECT b.id, b.bracket_type, g.age_group, g.weight_class, 
+            SELECT b.id, b.bracket_type, g.age_group, g.weight_class,
                    (SELECT count(*) FROM fights WHERE bracket_id = b.id) as fight_count
-            FROM brackets b 
-            JOIN groups g ON b.group_id = g.id 
+            FROM brackets b
+            JOIN groups g ON b.group_id = g.id
             ORDER BY b.id DESC LIMIT 10
         """))
         rows = res.fetchall()
         for r in rows:
             print(f"ID: {r[0]} | Type: {r[1]} | Category: {r[2]} {r[3]} | Fights: {r[4]}")
-            
+
         print("\n--- Recent Fights (Upcoming) ---")
         res = conn.execute(text("""
             SELECT f.id, f.bracket_id, f.bracket_phase, f.round, f.pos_in_round, f.status, f.participant1_id, f.participant2_id

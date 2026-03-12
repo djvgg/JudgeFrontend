@@ -1,6 +1,7 @@
 from backend.database import engine
 from sqlalchemy import text
 
+
 def check():
     with engine.connect() as conn:
         groups = conn.execute(text("SELECT id FROM groups LIMIT 1")).fetchone()

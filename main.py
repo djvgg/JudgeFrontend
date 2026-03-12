@@ -68,6 +68,7 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 
+
 def get_match_dict(fight_id: int, session):
     fight = session.query(FightModel).filter(FightModel.id == fight_id).first()
     if not fight:
