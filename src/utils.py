@@ -5,6 +5,7 @@ from src.database import (
     ParticipantModel,
 )
 
+
 def format_fight_response(fight, session, fight_lookup=None, category_names=None, participants=None):
     if participants is not None:
         p1_obj = participants.get(fight.participant1_id)
@@ -16,7 +17,7 @@ def format_fight_response(fight, session, fight_lookup=None, category_names=None
     # Compute next match in bracket tree dynamically
     next_round = (fight.round or 0) + 1
     next_pos = (fight.pos_in_round or 0) // 2
-    
+
     if fight_lookup is not None:
         next_key = (fight.bracket_id, fight.bracket_phase, next_round, next_pos)
         next_match_id = fight_lookup.get(next_key)

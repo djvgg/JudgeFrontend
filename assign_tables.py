@@ -1,8 +1,9 @@
-from sqlalchemy import create_engine
 import os
-from sqlalchemy.orm import sessionmaker
+
 from dotenv import load_dotenv
-from src.database import FightModel, BracketModel
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from src.database import BracketModel, FightModel
 
 load_dotenv()
 engine = create_engine(os.getenv("DATABASE_URL"))
@@ -26,7 +27,7 @@ def assign_tables():
                 f.table_id = "1"
             if not f.fight_number:
                 f.fight_number = 100 + i # Give it a high number so it shows up
-        
+
         session.commit()
         print(f"Updated {len(fights)} POOL matches to Table 1.")
 

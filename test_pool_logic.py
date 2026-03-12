@@ -1,10 +1,16 @@
+import os
+
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-import os
-from dotenv import load_dotenv
-
-from src.database import FightModel, BracketModel, GroupModel, ParticipantModel, GroupParticipantModel
 from src.bracket_manager import BracketManager
+from src.database import (
+    BracketModel,
+    FightModel,
+    GroupModel,
+    GroupParticipantModel,
+    ParticipantModel,
+)
 
 load_dotenv()
 engine = create_engine(os.getenv("DATABASE_URL"))
@@ -17,7 +23,7 @@ def test_pool():
         g = GroupModel(gender="m", age_group="TEST", weight_class="POOL")
         session.add(g)
         session.flush()
-        
+
         b = BracketModel(group_id=g.id, bracket_type="POOL", status="ongoing")
         session.add(b)
         session.flush()
@@ -41,7 +47,7 @@ def test_pool():
         # Charlie beats Alpha (10 - 0)
         # Everyone has 1 Win and 10 Points.
         # This tests the point difference fallback (which will also tie here 10-10=0 each).
-        
+
         f1 = FightModel(bracket_id=b.id, participant1_id=p1.id, participant2_id=p2.id, status="completed", winner_id=p1.id, score1=10, score2=0, bracket_phase="pool")
         f2 = FightModel(bracket_id=b.id, participant1_id=p2.id, participant2_id=p3.id, status="completed", winner_id=p2.id, score1=10, score2=0, bracket_phase="pool")
         f3 = FightModel(bracket_id=b.id, participant1_id=p3.id, participant2_id=p1.id, status="completed", winner_id=p3.id, score1=10, score2=0, bracket_phase="pool")
@@ -70,21 +76,21 @@ def test_pool():
         f4 = FightModel(bracket_id=b.id, participant1_id=gp4.id, participant2_id=gp5.id, status="completed", winner_id=gp4.id, score1=10, score2=0, bracket_phase="pool") # D beats E
         f5 = FightModel(bracket_id=b.id, participant1_id=gp4.id, participant2_id=gp6.id, status="completed", winner_id=gp4.id, score1=10, score2=0, bracket_phase="pool") # D beats F
         f6 = FightModel(bracket_id=b.id, participant1_id=gp4.id, participant2_id=gp7.id, status="completed", winner_id=gp7.id, score1=0, score2=10, bracket_phase="pool")  # D loses to G
-        
+
         f7 = FightModel(bracket_id=b.id, participant1_id=gp5.id, participant2_id=gp6.id, status="completed", winner_id=gp5.id, score1=10, score2=0, bracket_phase="pool") # E beats F
         f8 = FightModel(bracket_id=b.id, participant1_id=gp5.id, participant2_id=gp7.id, status="completed", winner_id=gp5.id, score1=10, score2=0, bracket_phase="pool") # E beats G
-        
+
         # D = 2W, 20Pts (wins against E, F). PtsAgst = 10 (loses to G) => Diff = +10
         # E = 2W, 20Pts (wins against F, G). PtsAgst = 10 (loses to D) => Diff = +10
         # Perfect tie!
-        
+
         session.add_all([f4, f5, f6, f7, f8])
         session.flush()
 
         # Run Calculation just for D, E, F, G
         p_data2 = [{"id": gp.id, "name": f"{session.query(ParticipantModel).get(gp.participant_id).first_name}", "club": ""} for gp in participants2]
         all_fights2 = session.query(FightModel).filter_by(bracket_id=b.id).filter(FightModel.participant1_id.in_([gp4.id, gp5.id, gp6.id, gp7.id])).all()
-        
+
         standings2 = BracketManager.calculate_pool_standings(all_fights2, p_data2)
 
         print("--- STANDINGS RESULTS ---")

@@ -1,14 +1,23 @@
+import asyncio as _asyncio
+import json as _json
+import math as _math
+import os as _os
 from contextlib import asynccontextmanager, suppress
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from backend.database import (
-    BracketModel, GroupModel, GroupParticipantModel,
-    ParticipantModel, FightModel, SessionLocal, init_db,
-)
 from backend.bracket_manager import BracketManager
+from backend.database import (
+    BracketModel,
+    FightModel,
+    GroupModel,
+    GroupParticipantModel,
+    ParticipantModel,
+    SessionLocal,
+    init_db,
+)
 
 
 @asynccontextmanager
@@ -203,12 +212,11 @@ def _fill_slot(fight: FightModel, slot: str, participant_id: int, session) -> No
     elif slot == "p2" and not fight.participant2_id:
         fight.participant2_id = participant_id
 
-    if fight.participant1_id and fight.participant2_id:
-        if fight.participant1_id == fight.participant2_id:
-            fight.status = "bye"
-            fight.winner_id = fight.participant1_id
-            session.flush()
-            _advance_winner(fight, session)
+    if fight.participant1_id and fight.participant2_id and fight.participant1_id == fight.participant2_id:
+        fight.status = "bye"
+        fight.winner_id = fight.participant1_id
+        session.flush()
+        _advance_winner(fight, session)
 
 
 def _advance_winner(fight: FightModel, session) -> FightModel | None:
@@ -459,16 +467,16 @@ def heal_bracket_progressions(session) -> bool:
     return total_created
 
 
-import math as _math
-
 
 def _pool_standings_for_index(pool_fights: list, pool_index: int) -> list:
     """Return participant IDs sorted by wins desc, then Ubw (total score) desc."""
     pf = [f for f in pool_fights if f.pool_index == pool_index]
     fighter_ids: set = set()
     for f in pf:
-        if f.participant1_id: fighter_ids.add(f.participant1_id)
-        if f.participant2_id: fighter_ids.add(f.participant2_id)
+        if f.participant1_id:
+            fighter_ids.add(f.participant1_id)
+        if f.participant2_id:
+            fighter_ids.add(f.participant2_id)
 
     stats: dict = {fid: {"wins": 0, "ubw": 0} for fid in fighter_ids}
     for f in pf:
@@ -830,7 +838,6 @@ async def _handle_status_update(data: dict, session) -> None:
 
     if data["status"] == "finished":
         winner_id = None
-        loser_id = None
 
         is_bye = fight.participant1_id and fight.participant1_id == fight.participant2_id
         if is_bye:
@@ -844,10 +851,8 @@ async def _handle_status_update(data: dict, session) -> None:
                 s1, s2 = 0, 0
             if s1 > s2:
                 winner_id = fight.participant1_id
-                loser_id = fight.participant2_id
             elif s2 > s1:
                 winner_id = fight.participant2_id
-                loser_id = fight.participant1_id
 
         if winner_id:
             fight.winner_id = winner_id
@@ -935,7 +940,7 @@ async def _handle_status_update(data: dict, session) -> None:
     match_dict = get_match_dict(fight.id, session)
     if match_dict:
         await manager.broadcast({"type": "SCORE_SYNC", "matchId": data["matchId"], "match": match_dict})
-    
+
     # Broadcast list refresh to show newly created fights
     await manager.broadcast({"type": "REFRESH_LIST"})
 
@@ -943,9 +948,6 @@ async def _handle_status_update(data: dict, session) -> None:
 # ---------------------------------------------------------------------------
 # Ippon Board TCP Bridge
 # ---------------------------------------------------------------------------
-import asyncio as _asyncio
-import json as _json
-import os as _os
 
 IPPON_HOST = _os.getenv("IPPON_HOST", "172.17.192.62")
 IPPON_PORT = int(_os.getenv("IPPON_PORT", "8080"))
@@ -1061,16 +1063,16 @@ async def _handle_manual_override(data: dict, session) -> None:
     fight = session.query(FightModel).filter(FightModel.id == data["matchId"]).first()
     if not fight:
         return
-    
+
     if "p1Score" in data:
         fight.score1 = data["p1Score"]
     if "p2Score" in data:
         fight.score2 = data["p2Score"]
     if "duration" in data:
         fight.duration = data["duration"]
-        
+
     session.commit()
-    
+
     # If the fight was already finished, we might need to re-evaluate the winner
     if fight.status in ["completed", "finished", "bye"]:
         # Basic re-evaluation just based on updated scores
@@ -1086,7 +1088,7 @@ async def _handle_manual_override(data: dict, session) -> None:
         else:
             fight.winner_id = None # Tie
         session.commit()
-    
+
     match_dict = get_match_dict(fight.id, session)
     if match_dict:
         await manager.broadcast({"type": "SCORE_SYNC", "matchId": data["matchId"], "match": match_dict})

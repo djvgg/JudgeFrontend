@@ -952,10 +952,7 @@ const UI = {
         const wrapper = document.createElement('div');
         wrapper.className = 'pool-system-wrapper';
 
-        const sysTitle = document.createElement('div');
-        sysTitle.className = 'pool-system-title';
-        sysTitle.textContent = `Pool System – ${totalFighters} Teilnehmer`;
-        wrapper.appendChild(sysTitle);
+        // Pool System title removed at user request
 
         for (const poolIdx of poolIndices) {
             const pm = allMatches
@@ -998,12 +995,13 @@ const UI = {
                 });
                 return { id: f.id, wins, ubw };
             });
-            const ranked = [...stats].sort((a, b) => b.wins - a.wins);
-            // Dense ranking: fighters with the same wins share the same Platz
-            // (Kampfzeit tiebreaker comes later)
+            const ranked = [...stats].sort((a, b) => {
+                if (b.wins !== a.wins) return b.wins - a.wins;
+                return b.ubw - a.ubw; // Include Ubw. as first tiebreaker
+            });
             const platzOf = id => {
-                const myWins = stats.find(s => s.id === id).wins;
-                return ranked.filter(s => s.wins > myWins).length + 1;
+                const me = stats.find(s => s.id === id);
+                return ranked.filter(s => s.wins > me.wins || (s.wins === me.wins && s.ubw > me.ubw)).length + 1;
             };
             const anyDone = pm.some(m => m.status === 'finished' || m.status === 'completed');
             const allDone = pm.every(m => m.status === 'finished' || m.status === 'completed' || m.status === 'bye');
