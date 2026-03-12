@@ -1,14 +1,23 @@
+import asyncio as _asyncio
+import json as _json
+import math as _math
+import os as _os
 from contextlib import asynccontextmanager, suppress
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from backend.database import (
-    BracketModel, GroupModel, GroupParticipantModel,
-    ParticipantModel, FightModel, SessionLocal, init_db,
-)
 from backend.bracket_manager import BracketManager
+from backend.database import (
+    BracketModel,
+    FightModel,
+    GroupModel,
+    GroupParticipantModel,
+    ParticipantModel,
+    SessionLocal,
+    init_db,
+)
 
 
 @asynccontextmanager
@@ -154,6 +163,7 @@ def get_match_dict(fight_id: int, session):
         "status": "finished" if fight.status == "completed" else (fight.status or "upcoming"),
         "order": fight.fight_number or fight.id,
         "restTimeMin": 0,
+        "duration": fight.duration,
         "phase": fight.bracket_phase,
         "poolIndex": fight.pool_index,
         "bracketType": b_info[0].bracket_type if b_info else None,
@@ -202,12 +212,11 @@ def _fill_slot(fight: FightModel, slot: str, participant_id: int, session) -> No
     elif slot == "p2" and not fight.participant2_id:
         fight.participant2_id = participant_id
 
-    if fight.participant1_id and fight.participant2_id:
-        if fight.participant1_id == fight.participant2_id:
-            fight.status = "bye"
-            fight.winner_id = fight.participant1_id
-            session.flush()
-            _advance_winner(fight, session)
+    if fight.participant1_id and fight.participant2_id and fight.participant1_id == fight.participant2_id:
+        fight.status = "bye"
+        fight.winner_id = fight.participant1_id
+        session.flush()
+        _advance_winner(fight, session)
 
 
 def _advance_winner(fight: FightModel, session) -> FightModel | None:
@@ -245,6 +254,14 @@ def _advance_winner(fight: FightModel, session) -> FightModel | None:
             next_pos  = pos // 2
             next_slot = "p1" if pos % 2 == 0 else "p2"
         else:  # reduction round (even)
+            wb_r_upcoming = (lr + 2) // 2
+            wb_count = session.query(FightModel).filter(
+                FightModel.bracket_id == fight.bracket_id,
+                FightModel.bracket_phase == "wb",
+                FightModel.round == wb_r_upcoming
+            ).count()
+            if wb_count <= 1:
+                return None  # No WB losers dropping down from the final
             next_pos  = pos
             next_slot = "p1"
 
@@ -450,16 +467,16 @@ def heal_bracket_progressions(session) -> bool:
     return total_created
 
 
-import math as _math
-
 
 def _pool_standings_for_index(pool_fights: list, pool_index: int) -> list:
     """Return participant IDs sorted by wins desc, then Ubw (score difference) desc."""
     pf = [f for f in pool_fights if f.pool_index == pool_index]
     fighter_ids: set = set()
     for f in pf:
-        if f.participant1_id: fighter_ids.add(f.participant1_id)
-        if f.participant2_id: fighter_ids.add(f.participant2_id)
+        if f.participant1_id:
+            fighter_ids.add(f.participant1_id)
+        if f.participant2_id:
+            fighter_ids.add(f.participant2_id)
 
     stats: dict = {fid: {"wins": 0, "ubw": 0} for fid in fighter_ids}
     for f in pf:
@@ -755,6 +772,7 @@ def get_matches():
                 "status": "finished" if f.status == "completed" else (f.status or "upcoming"),
                 "order": f.fight_number or f.id,
                 "restTimeMin": 0,
+                "duration": f.duration,
                 "phase": f.bracket_phase,
                 "poolIndex": f.pool_index,
                 "bracketType": b_info[0].bracket_type if b_info else None,
@@ -817,9 +835,11 @@ async def _handle_status_update(data: dict, session) -> None:
 
     fight.status = data["status"]
 
+    if "duration" in data:
+        fight.duration = data["duration"]
+
     if data["status"] == "finished":
         winner_id = None
-        loser_id = None
 
         is_bye = fight.participant1_id and fight.participant1_id == fight.participant2_id
         if is_bye:
@@ -833,10 +853,8 @@ async def _handle_status_update(data: dict, session) -> None:
                 s1, s2 = 0, 0
             if s1 > s2:
                 winner_id = fight.participant1_id
-                loser_id = fight.participant2_id
             elif s2 > s1:
                 winner_id = fight.participant2_id
-                loser_id = fight.participant1_id
 
         if winner_id:
             fight.winner_id = winner_id
@@ -924,60 +942,175 @@ async def _handle_status_update(data: dict, session) -> None:
     match_dict = get_match_dict(fight.id, session)
     if match_dict:
         await manager.broadcast({"type": "SCORE_SYNC", "matchId": data["matchId"], "match": match_dict})
-    
+
     # Broadcast list refresh to show newly created fights
     await manager.broadcast({"type": "REFRESH_LIST"})
 
 
 # ---------------------------------------------------------------------------
-# Ippon Board
+# Ippon Board TCP Bridge
 # ---------------------------------------------------------------------------
-import asyncio as _asyncio
-import os as _os
 
-IPPON_HOST = _os.getenv("IPPON_HOST", "172.17.192.96")
+IPPON_HOST = _os.getenv("IPPON_HOST", "172.17.192.62")
 IPPON_PORT = int(_os.getenv("IPPON_PORT", "8080"))
 
-_GENDER_MAP = {"m": "M", "mannlich": "M", "male": "M", "w": "F", "f": "F", "weiblich": "F", "female": "F"}
 
-# matchId of the fight currently on the board (for routing score updates)
-_ippon_active_match: dict = {}
-
-OUR_HOST = _os.getenv("OUR_HOST", "172.17.192.113")
-OUR_PORT = 5001
+@app.get("/api/ippon-config")
+def get_ippon_config():
+    return {"host": IPPON_HOST, "port": IPPON_PORT}
 
 
-@app.post("/api/ippon-score")
-async def ippon_score_callback(body: dict):
-    """Receive live score updates pushed from the Ippon Board."""
-    print(f"[IPPON] score update received: {body}")
-    match_id = _ippon_active_match.get("matchId")
-    if match_id:
-        await manager.broadcast({"type": "IPPON_UPDATE", "matchId": match_id, "data": body})
-    return {"ok": True}
+@app.post("/api/ippon-config")
+def set_ippon_config(body: dict):
+    global IPPON_HOST, IPPON_PORT
+    if "host" in body:
+        IPPON_HOST = str(body["host"])
+    if "port" in body:
+        IPPON_PORT = int(body["port"])
+    return {"host": IPPON_HOST, "port": IPPON_PORT}
 
 
-def _send_fighters_to_board(match_dict: dict) -> None:
-    import urllib.request as _urllib
-    import json as _json
+# Active connections: matchId → (reader, writer, reader_task)
+_ippon_connections: dict = {}
+
+
+async def _ippon_reader(match_id: int, reader: _asyncio.StreamReader) -> None:
+    """Read newline-delimited JSON from the Ippon Board and broadcast each update."""
+    try:
+        while True:
+            line = await reader.readline()
+            if not line:
+                break
+            try:
+                payload = _json.loads(line.decode().strip())
+                await manager.broadcast({
+                    "type": "IPPON_UPDATE",
+                    "matchId": match_id,
+                    "data": payload,
+                })
+            except _json.JSONDecodeError:
+                pass
+    except Exception:
+        pass
+    finally:
+        _ippon_connections.pop(match_id, None)
+
+
+def _post_fighter_sync(url: str, body: dict) -> None:
+    """Blocking HTTP POST — run in a thread via asyncio.to_thread."""
+    import requests as _requests
+    try:
+        _requests.post(url, json=body, timeout=3)
+    except Exception as e:
+        print(f"Ippon Board POST /fighters failed: {e}")
+
+
+async def _ippon_start(match_id: int, match_dict: dict) -> None:
+    """
+    1. POST both fighters to http://<host>:<port>/fighters
+    2. Open TCP and send fight_start JSON for live score streaming.
+    """
+    if match_id in _ippon_connections:
+        return  # already connected
+
+    gender       = match_dict.get("gender")
+    age_group    = match_dict.get("ageGroup")
+    weight_class = match_dict.get("weightClass")
+
+    def _fighter(p: dict) -> dict:
+        return {
+            "firstname":   p.get("firstName", ""),
+            "lastname":    p.get("lastName", ""),
+            "weightclass": weight_class,
+            "gender":      gender,
+            "agegroup":    age_group,
+        }
+
+    fighters_url = f"http://{IPPON_HOST}:{IPPON_PORT}/fighters"
     p1 = match_dict.get("p1", {})
     p2 = match_dict.get("p2", {})
-    if not p1.get("id") or p1.get("id") == "WAIT" or not p2.get("id") or p2.get("id") == "WAIT":
-        return
-    raw = str(match_dict.get("gender") or "")
-    gender = _GENDER_MAP.get(raw.lower(), raw) or None
-    body = {
-        "fighter1": {"firstname": p1.get("firstName", ""), "lastname": p1.get("lastName", ""), "gender": gender, "weightclass": match_dict.get("weightClass"), "agegroup": match_dict.get("ageGroup")},
-        "fighter2": {"firstname": p2.get("firstName", ""), "lastname": p2.get("lastName", ""), "gender": gender, "weightclass": match_dict.get("weightClass"), "agegroup": match_dict.get("ageGroup")},
-        "callback": f"http://{OUR_HOST}:{OUR_PORT}/api/ippon-score",
-    }
-    _ippon_active_match["matchId"] = match_dict.get("matchId")
+    if p1.get("id") and p1.get("id") != "WAIT" and p2.get("id") and p2.get("id") != "WAIT":
+        await _asyncio.to_thread(_post_fighter_sync, fighters_url, {
+            "fighter1": _fighter(p1),
+            "fighter2": _fighter(p2),
+        })
+
+    # TCP fight_start for live scoring stream
     try:
-        data = _json.dumps(body).encode()
-        req = _urllib.Request(f"http://{IPPON_HOST}:{IPPON_PORT}/fighters", data=data, headers={"Content-Type": "application/json"}, method="POST")
-        _urllib.urlopen(req, timeout=3)
+        reader, writer = await _asyncio.wait_for(
+            _asyncio.open_connection(IPPON_HOST, IPPON_PORT),
+            timeout=3.0,
+        )
+        tcp_payload = _json.dumps({
+            "action":      "fight_start",
+            "matchId":     match_dict.get("matchId"),
+            "fightNr":     match_dict.get("fightNr"),
+            "category":    match_dict.get("category"),
+            "tableId":     match_dict.get("tableId"),
+            "gender":      gender,
+            "ageGroup":    age_group,
+            "weightClass": weight_class,
+            "p1":          _fighter(match_dict.get("p1", {})),
+            "p2":          _fighter(match_dict.get("p2", {})),
+        }) + "\n"
+        writer.write(tcp_payload.encode())
+        await writer.drain()
+        task = _asyncio.create_task(_ippon_reader(match_id, reader))
+        _ippon_connections[match_id] = (reader, writer, task)
+        print(f"Ippon Board connected for match {match_id}")
     except Exception as e:
-        print(f"[IPPON] POST failed: {e}")
+        print(f"Ippon Board TCP connection failed for match {match_id}: {e}")
+
+
+async def _handle_manual_override(data: dict, session) -> None:
+    fight = session.query(FightModel).filter(FightModel.id == data["matchId"]).first()
+    if not fight:
+        return
+
+    if "p1Score" in data:
+        fight.score1 = data["p1Score"]
+    if "p2Score" in data:
+        fight.score2 = data["p2Score"]
+    if "duration" in data:
+        fight.duration = data["duration"]
+
+    session.commit()
+
+    # If the fight was already finished, we might need to re-evaluate the winner
+    if fight.status in ["completed", "finished", "bye"]:
+        try:
+            s1 = int(fight.score1 or 0)
+            s2 = int(fight.score2 or 0)
+        except (ValueError, TypeError):
+            s1, s2 = 0, 0
+        if s1 > s2:
+            fight.winner_id = fight.participant1_id
+        elif s2 > s1:
+            fight.winner_id = fight.participant2_id
+        else:
+            fight.winner_id = None  # Tie
+        session.commit()
+
+    match_dict = get_match_dict(fight.id, session)
+    if match_dict:
+        await manager.broadcast({"type": "SCORE_SYNC", "matchId": data["matchId"], "match": match_dict})
+
+
+async def _ippon_stop(match_id: int) -> None:
+    """Close Ippon Board connection for this fight."""
+    conn = _ippon_connections.pop(match_id, None)
+    if not conn:
+        return
+    _, writer, task = conn
+    task.cancel()
+    try:
+        writer.write((_json.dumps({"action": "fight_end", "matchId": match_id}) + "\n").encode())
+        await writer.drain()
+        writer.close()
+        await writer.wait_closed()
+    except Exception:
+        pass
+    print(f"Ippon Board disconnected for match {match_id}")
 
 
 @app.websocket("/ws")
@@ -988,13 +1121,22 @@ async def websocket_endpoint(websocket: WebSocket):
             data = await websocket.receive_json()
             msg_type = data.get("type")
 
+            # Ippon Board messages don't need a DB session
             if msg_type == "IPPON_START":
                 match_id = data.get("matchId")
+                print(f"[IPPON] START received matchId={match_id}")
                 if match_id:
                     with SessionLocal() as session:
                         md = get_match_dict(match_id, session)
                     if md:
-                        await _asyncio.to_thread(_send_fighters_to_board, md)
+                        _asyncio.create_task(_ippon_start(match_id, md))
+                    else:
+                        print(f"[IPPON] match_dict not found for matchId={match_id}")
+                continue
+            if msg_type == "IPPON_STOP":
+                match_id = data.get("matchId")
+                if match_id:
+                    _asyncio.create_task(_ippon_stop(match_id))
                 continue
 
             with SessionLocal() as session:
@@ -1006,6 +1148,8 @@ async def websocket_endpoint(websocket: WebSocket):
                     await _handle_reorder(data, session)
                 elif msg_type == "STATUS_UPDATE":
                     await _handle_status_update(data, session)
+                elif msg_type == "MANUAL_OVERRIDE":
+                    await _handle_manual_override(data, session)
                 elif msg_type == "SIGNAL":
                     await manager.broadcast(data)
     except WebSocketDisconnect:

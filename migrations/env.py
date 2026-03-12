@@ -5,6 +5,15 @@ from alembic import context
 from dotenv import load_dotenv
 from sqlalchemy import engine_from_config, pool
 
+from backend.database import (  # noqa: F401
+    Base,  # noqa: E402
+    BracketModel,
+    FightModel,
+    GroupModel,
+    GroupParticipantModel,
+    ParticipantModel,
+)
+
 # Load .env so DATABASE_URL is available
 load_dotenv(override=True)
 
@@ -19,15 +28,6 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # Import all models so Alembic can detect them for autogenerate
-from backend.database import Base  # noqa: E402
-from backend.database import (  # noqa: F401
-    GroupModel,
-    BracketModel,
-    ParticipantModel,
-    GroupParticipantModel,
-    FightModel,
-)
-
 target_metadata = Base.metadata
 
 

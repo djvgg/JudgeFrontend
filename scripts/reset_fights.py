@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
-from sqlalchemy import create_engine, text
-from backend.database import SessionLocal, FightModel
+
+from backend.database import FightModel, SessionLocal
 
 
 def reset_fights():
