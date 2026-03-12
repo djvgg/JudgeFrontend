@@ -51,6 +51,7 @@ class BracketManager:
         """
         Calculates standings for a Round Robin pool.
         participant_data: List of dicts with {'id': <GroupParticipantID>, 'name': ..., 'club': ...}
+        Tiebreaker order: Wins DESC → Ubw (score difference, own minus conceded) DESC.
         """
         standings = []
         for p in participant_data:
@@ -59,31 +60,30 @@ class BracketManager:
                 "name": p["name"],
                 "club": p["club"],
                 "wins": 0,
-                "points": 0,
-                "fights_count": 0
+                "ubw": 0,
+                "fights_count": 0,
             }
 
             for f in fights:
-                if f.status != "completed":
+                # Accept both "finished" and "completed" as done fights
+                if f.status not in ("finished", "completed", "bye"):
                     continue
 
-                # Check if participant was in this fight
                 is_p1 = f.participant1_id == p["id"]
                 is_p2 = f.participant2_id == p["id"]
-
                 if not (is_p1 or is_p2):
                     continue
 
                 stats["fights_count"] += 1
+                own_score = int((f.score1 if is_p1 else f.score2) or 0)
+                opp_score = int((f.score2 if is_p1 else f.score1) or 0)
+                stats["ubw"] += own_score - opp_score
 
-                # Winner check
                 if f.winner_id == p["id"]:
                     stats["wins"] += 1
-                    # Points are the scores obtained
-                    stats["points"] += (f.score1 if is_p1 else f.score2) or 0
 
             standings.append(stats)
 
-        # Sort standings: Wins DESC, Points DESC
-        standings.sort(key=lambda x: (x["wins"], x["points"]), reverse=True)
+        # Sort: Wins DESC, then Ubw (score difference) DESC
+        standings.sort(key=lambda x: (x["wins"], x["ubw"]), reverse=True)
         return standings

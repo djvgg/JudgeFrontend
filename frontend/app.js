@@ -79,30 +79,35 @@ const Network = {
                 UI.renderBracketVisualization();
             }
         } else if (data.type === 'IPPON_UPDATE') {
-            // Convert Ippon Board judo scores → numeric points (max 10)
-            // ippon=10, 2×waza_ari=10, waza_ari=7, yuko=5, shido=-1 each
-            const judoToPoints = (s) => {
-                if (!s) return 0;
-                const ippon   = Number(s.ippon   ?? 0);
-                const waza    = Number(s.waza_ari ?? s.wazaari ?? 0);
-                const yuko    = Number(s.yuko    ?? 0);
-                const shido   = Number(s.shido   ?? 0);
-                const hansoku = s.hansoku_make || s.hansokuMake || false;
-                if (ippon >= 1 || waza >= 2 || hansoku) return 10;
-                let pts = waza >= 1 ? 7 : (yuko >= 1 ? 5 : 0);
-                pts = Math.max(0, pts - shido);
-                return pts;
-            };
-
             const m = State.currentScoringMatch;
             if (m && m.matchId === data.matchId && data.data) {
                 const d = data.data;
-                // Board may send per-player objects (blue/white or p1/p2) or flat score1/score2
-                const s1 = d.p1 ?? d.blue  ?? d.white ?? null;
-                const s2 = d.p2 ?? d.white ?? d.blue  ?? null;
 
-                const pts1 = s1 ? judoToPoints(s1) : (d.score1 !== undefined ? Number(d.score1) : null);
-                const pts2 = s2 ? judoToPoints(s2) : (d.score2 !== undefined ? Number(d.score2) : null);
+                // Board sends fighter1/fighter2 objects
+                const s1 = d.fighter1 ?? d.p1 ?? d.blue ?? null;
+                const s2 = d.fighter2 ?? d.p2 ?? d.white ?? null;
+
+                // Convert judo scores to points (0/7/10)
+                // 3 shidos = hansoku-make → opponent gets 10
+                const judoToPoints = (s) => {
+                    if (!s) return 0;
+                    const ippon  = Number(s.ippon   ?? 0);
+                    const waza   = Number(s.wazaari ?? s.waza_ari ?? 0);
+                    const yuko   = Number(s.yuko    ?? 0);
+                    const shido  = Number(s.shido   ?? 0);
+                    if (ippon >= 1 || waza >= 2) return 10;
+                    if (shido >= 3) return -1; // hansoku-make: this fighter loses
+                    if (waza >= 1) return 7;
+                    if (yuko >= 1) return 5;
+                    return 0;
+                };
+
+                let pts1 = s1 ? judoToPoints(s1) : null;
+                let pts2 = s2 ? judoToPoints(s2) : null;
+
+                // Hansoku-make: if one fighter has -1, opponent gets 10
+                if (pts1 === -1) { pts1 = 0; pts2 = 10; }
+                if (pts2 === -1) { pts2 = 0; pts1 = 10; }
 
                 if (pts1 !== null) {
                     m.p1.score = { points: pts1 };
@@ -112,8 +117,18 @@ const Network = {
                     m.p2.score = { points: pts2 };
                     Network.send({ type: 'SCORE_UPDATE', matchId: m.matchId, playerNum: 2, value: pts2 });
                 }
-                if (d.time !== undefined) Scoring.setTimerSeconds(Number(d.time));
-                if (d.duration_seconds !== undefined) Scoring.setTimerSeconds(Number(d.duration_seconds));
+
+                // Parse time string "3:45" → seconds
+                if (d.time !== undefined) {
+                    const t = String(d.time);
+                    if (t.includes(':')) {
+                        const [min, sec] = t.split(':').map(Number);
+                        Scoring.setTimerSeconds(min * 60 + sec);
+                    } else {
+                        Scoring.setTimerSeconds(Number(t));
+                    }
+                }
+
                 UI.updateScoreDisplay();
             }
         } else if (data.type === 'SIGNAL') {
@@ -534,94 +549,83 @@ const UI = {
         return result;
     },
 
-    // Generates virtual LB rounds for fights that don't exist in the DB yet.
-    // LB alternates: even DB rounds = reduction (same count, 1:1), odd = injection (same count as prev, then reduction halves next).
+    // Builds the full LB structure from WB R0 count so the bracket never shrinks
+    // as fights are completed.  Real DB fights are used where they exist; virtual
+    // placeholder fights are created for rounds that haven't been played yet.
+    // LB alternates: even DB rounds = reduction (same count), odd = injection (halve next).
     // DB round is 0-indexed; frontend round is 1-indexed (DB + 1).
-    _expandLb(lbMatches) {
-        if (lbMatches.length <= 1) return lbMatches;
+    _expandLb(lbMatches, wbR0Count, fallbackBase) {
+        const n = wbR0Count ?? 0;
+        // Total LB rounds = 2*log2(n) - 1  (matches backend generate_lb_fights formula)
+        const lbTotalRounds = n >= 2 ? (2 * Math.round(Math.log2(n)) - 1) : 0;
+        if (lbTotalRounds < 1) return lbMatches;
 
-        // Frontier: LB matches with no nextMatchId (haven't advanced yet)
-        const frontier = lbMatches.filter(m => !m.nextMatchId);
-        if (frontier.length <= 1) return lbMatches;
+        const base = lbMatches[0] ?? fallbackBase;
+        if (!base) return lbMatches;
 
-        const frontierRound = Math.max(...frontier.map(m => m.round ?? 1));
-        const expandFrom = frontier
-            .filter(m => m.round === frontierRound)
-            .sort((a, b) => (a.posInRound ?? 0) - (b.posInRound ?? 0));
-
-        if (expandFrom.length <= 1) return lbMatches;
+        // Lookup real LB fights by (frontendRound, posInRound)
+        const realKey = (r, p) => `${r}:${p}`;
+        const realFightMap = new Map();
+        for (const m of lbMatches) realFightMap.set(realKey(m.round, m.posInRound ?? 0), m);
 
         const result = lbMatches.map(m => ({ ...m }));
         const resultMap = new Map(result.map(m => [m.matchId, m]));
-
-        const base = lbMatches[0];
         let virtualId = -2000;
-        // frontierRound is 1-indexed (frontend), DB round = frontierRound - 1
-        let dbRound = frontierRound - 1;
-        let roundNum = frontierRound + 1;
-        let current = expandFrom.map(m => resultMap.get(m.matchId));
-
         const tbd = () => ({ id: 'WAIT', firstName: '', lastName: 'TBD', club: '', score: { points: 0 } });
 
-        while (current.length > 1) {
-            const next = [];
+        // Build each LB round deterministically
+        const roundFights = [];
+        let fightCount = n / 2; // LB R0 (DB round 0) starts with N/2 fights
 
-            if (dbRound % 2 === 0) {
-                // Was REDUCTION → next is INJECTION (same count, 1:1)
-                // Each LB survivor faces one incoming WB loser (p2 = TBD until WB fight resolves)
-                for (let i = 0; i < current.length; i++) {
-                    const m = current[i];
-                    const vm = {
+        for (let dbRound = 0; dbRound < lbTotalRounds; dbRound++) {
+            const frontendRound = dbRound + 1;
+            const roundNodes = [];
+
+            for (let pos = 0; pos < fightCount; pos++) {
+                const key = realKey(frontendRound, pos);
+                let node;
+                if (realFightMap.has(key)) {
+                    node = resultMap.get(realFightMap.get(key).matchId);
+                } else {
+                    node = {
                         matchId: virtualId--, bracketId: base.bracketId, category: base.category,
-                        round: roundNum, posInRound: i, phase: 'lb', fightNr: null,
+                        round: frontendRound, posInRound: pos, phase: 'lb', fightNr: null,
                         p1: tbd(), p2: tbd(),
                         status: 'upcoming', order: 9999,
                         nextMatchId: null, nextMatchPos: null, winnerId: null, poolIndex: null,
                     };
-                    m.nextMatchId = vm.matchId;
-                    m.nextMatchPos = 'p1';
-                    next.push(vm);
-                    result.push(vm);
-                    resultMap.set(vm.matchId, vm);
+                    result.push(node);
+                    resultMap.set(node.matchId, node);
                 }
-            } else {
-                // Was INJECTION → next is REDUCTION (pairs collapse, 2:1)
-                const pairs = Math.floor(current.length / 2);
-                for (let pos = 0; pos < pairs; pos++) {
-                    const c0 = current[pos * 2];
-                    const c1 = current[pos * 2 + 1];
-                    const vm = {
-                        matchId: virtualId--, bracketId: base.bracketId, category: base.category,
-                        round: roundNum, posInRound: pos, phase: 'lb', fightNr: null,
-                        p1: tbd(), p2: tbd(),
-                        status: 'upcoming', order: 9999,
-                        nextMatchId: null, nextMatchPos: null, winnerId: null, poolIndex: null,
-                    };
-                    c0.nextMatchId = vm.matchId; c0.nextMatchPos = 'p1';
-                    c1.nextMatchId = vm.matchId; c1.nextMatchPos = 'p2';
-                    next.push(vm);
-                    result.push(vm);
-                    resultMap.set(vm.matchId, vm);
-                }
-                if (current.length % 2 === 1) {
-                    const lone = current[current.length - 1];
-                    const vm = {
-                        matchId: virtualId--, bracketId: base.bracketId, category: base.category,
-                        round: roundNum, posInRound: pairs, phase: 'lb', fightNr: null,
-                        p1: tbd(), p2: tbd(),
-                        status: 'upcoming', order: 9999,
-                        nextMatchId: null, nextMatchPos: null, winnerId: null, poolIndex: null,
-                    };
-                    lone.nextMatchId = vm.matchId; lone.nextMatchPos = 'p1';
-                    next.push(vm);
-                    result.push(vm);
-                    resultMap.set(vm.matchId, vm);
-                }
+                // Recompute next-match links below for structural consistency
+                node.nextMatchId = null;
+                node.nextMatchPos = null;
+                roundNodes.push(node);
             }
 
-            current = next;
-            dbRound++;
-            roundNum++;
+            roundFights.push(roundNodes);
+
+            // Advance fight count: injection round (odd) → next is reduction (halve)
+            if (dbRound % 2 === 1) fightCount = Math.max(1, Math.floor(fightCount / 2));
+            // Even round (reduction) → next is injection: count unchanged
+        }
+
+        // Wire up nextMatchId between adjacent rounds
+        for (let i = 0; i < roundFights.length - 1; i++) {
+            const current = roundFights[i];
+            const next = roundFights[i + 1];
+            if (i % 2 === 0) {
+                // Reduction → injection: 1:1 same position, slot p1
+                for (let j = 0; j < current.length; j++) {
+                    if (j < next.length) { current[j].nextMatchId = next[j].matchId; current[j].nextMatchPos = 'p1'; }
+                }
+            } else {
+                // Injection → reduction: pairs collapse (2:1)
+                for (let j = 0; j < current.length; j++) {
+                    const t = Math.floor(j / 2);
+                    if (t < next.length) { current[j].nextMatchId = next[t].matchId; current[j].nextMatchPos = j % 2 === 0 ? 'p1' : 'p2'; }
+                }
+            }
         }
 
         return result;
@@ -652,29 +656,8 @@ const UI = {
             m.bracketType === 'ko' || m.bracketType === 'double' || m.bracketType === 'DOUBLE_ELIMINATION'
         );
 
-        // Expand WB first so we can bootstrap LB from WB R0 when no LB fights exist yet
+        // Expand WB first so we can pass R0 count to LB expansion
         const expandedWb = this._expandBracket(wbMatches);
-
-        // If double-elim with no LB fights yet, bootstrap virtual LB R0 from WB R0 shape
-        if (isDouble && lbMatches.length === 0) {
-            const wbR0 = wbMatches.filter(m => m.round === 1)
-                .sort((a, b) => (a.posInRound ?? 0) - (b.posInRound ?? 0));
-            let virtualId = -3000;
-            const base = wbR0[0] ?? wbMatches[0];
-            if (base && wbR0.length >= 2) {
-                const tbd = () => ({ id: 'WAIT', firstName: '', lastName: 'TBD', club: '', score: { points: 0 } });
-                lbMatches = [];
-                for (let i = 0; i < wbR0.length; i += 2) {
-                    lbMatches.push({
-                        matchId: virtualId--, bracketId: base.bracketId, category: base.category,
-                        round: 1, posInRound: i / 2, phase: 'lb', fightNr: null,
-                        p1: tbd(), p2: tbd(),
-                        status: 'upcoming', order: 9999,
-                        nextMatchId: null, nextMatchPos: null, winnerId: null, poolIndex: null,
-                    });
-                }
-            }
-        }
 
         // Show/hide phase toggle
         const hasLb = isDouble || lbMatches.length > 0;
@@ -684,8 +667,9 @@ const UI = {
         document.getElementById('phase-btn-wb')?.classList.toggle('active', !showingLb);
         document.getElementById('phase-btn-lb')?.classList.toggle('active', showingLb);
 
-        // Expand LB with virtual rounds (alternating injection/reduction) the same way
-        const expandedLb = this._expandLb(lbMatches);
+        // Expand LB: derive full structure from WB R0 count so rounds never shrink
+        const wbR0Count = wbMatches.filter(m => m.round === 1).length;
+        const expandedLb = this._expandLb(lbMatches, wbR0Count, wbMatches[0]);
         // Each toggle shows only its own phase — no combined view
         const expandedAll = showingLb ? expandedLb : expandedWb;
 
@@ -979,18 +963,19 @@ const UI = {
                     const isP2 = String(m.p2?.id) === String(f.id);
                     if (!isP1 && !isP2) return;
                     if (m.status !== 'finished' && m.status !== 'completed') return;
-                    const mp = Number(isP1 ? (m.p1.score?.points ?? 0) : (m.p2.score?.points ?? 0));
+                    const own = Number(isP1 ? (m.p1.score?.points ?? 0) : (m.p2.score?.points ?? 0));
+                    const opp = Number(isP1 ? (m.p2.score?.points ?? 0) : (m.p1.score?.points ?? 0));
                     if (String(m.winnerId) === String(f.id)) wins++;
-                    ubw += mp;  // Ubw. = total points scored across ALL fights
+                    ubw += own - opp;  // Ubw. = score difference (own minus conceded)
                 });
                 return { id: f.id, wins, ubw };
             });
-            const ranked = [...stats].sort((a, b) => b.wins - a.wins);
-            // Dense ranking: fighters with the same wins share the same Platz
-            // (Kampfzeit tiebreaker comes later)
+            // Sort by wins DESC, then ubw DESC for tiebreaking
+            const ranked = [...stats].sort((a, b) => b.wins - a.wins || b.ubw - a.ubw);
+            // Dense ranking: fighters with the same wins AND ubw share the same Platz
             const platzOf = id => {
-                const myWins = stats.find(s => s.id === id).wins;
-                return ranked.filter(s => s.wins > myWins).length + 1;
+                const me = stats.find(s => s.id === id);
+                return ranked.filter(s => s.wins > me.wins || (s.wins === me.wins && s.ubw > me.ubw)).length + 1;
             };
             const anyDone = pm.some(m => m.status === 'finished' || m.status === 'completed');
             const allDone = pm.every(m => m.status === 'finished' || m.status === 'completed' || m.status === 'bye');
@@ -1222,16 +1207,12 @@ const Scoring = {
 
         UI.updateScoreDisplay();
         document.getElementById('scoring-modal').style.display = 'flex';
-
-        // Notify Ippon Board
-        console.log('[IPPON] Sending IPPON_START for matchId', m.matchId);
         Network.send({ type: 'IPPON_START', matchId: m.matchId });
     },
 
     closeModal() {
         this.stopTimer();
         const m = State.currentScoringMatch;
-        if (m) Network.send({ type: 'IPPON_STOP', matchId: m.matchId });
         document.getElementById('scoring-modal').style.display = 'none';
         State.currentScoringMatch = null;
     },

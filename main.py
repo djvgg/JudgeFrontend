@@ -454,7 +454,7 @@ import math as _math
 
 
 def _pool_standings_for_index(pool_fights: list, pool_index: int) -> list:
-    """Return participant IDs sorted by wins desc, then Ubw (total score) desc."""
+    """Return participant IDs sorted by wins desc, then Ubw (score difference) desc."""
     pf = [f for f in pool_fights if f.pool_index == pool_index]
     fighter_ids: set = set()
     for f in pf:
@@ -463,17 +463,19 @@ def _pool_standings_for_index(pool_fights: list, pool_index: int) -> list:
 
     stats: dict = {fid: {"wins": 0, "ubw": 0} for fid in fighter_ids}
     for f in pf:
-        if not f.winner_id:
+        # Include all decided fights (even draws where winner_id is null)
+        if f.status not in ("finished", "completed", "bye"):
             continue
         for fid in fighter_ids:
             is_p1 = f.participant1_id == fid
             is_p2 = f.participant2_id == fid
             if not is_p1 and not is_p2:
                 continue
-            mp = int((f.score1 if is_p1 else f.score2) or 0)
+            own = int((f.score1 if is_p1 else f.score2) or 0)
+            opp = int((f.score2 if is_p1 else f.score1) or 0)
+            stats[fid]["ubw"] += own - opp
             if f.winner_id == fid:
                 stats[fid]["wins"] += 1
-            stats[fid]["ubw"] += mp
 
     return sorted(fighter_ids, key=lambda fid: (-stats[fid]["wins"], -stats[fid]["ubw"]))
 
@@ -494,11 +496,11 @@ def _generate_double_pool_ko(bracket_id: int, session) -> list:
     if not pool_fights:
         return []
 
-    # Need both pool_index 0 and 1, and all fights must be decided
+    # Need both pool_index 0 and 1, and all fights must be decided (wins or draws)
     indices = {f.pool_index for f in pool_fights if f.pool_index is not None}
     if 0 not in indices or 1 not in indices:
         return []  # not a double pool
-    if any(not f.winner_id for f in pool_fights):
+    if any(f.status not in ("finished", "completed", "bye") for f in pool_fights):
         return []  # pools not done yet
 
     # KO fights already exist?
@@ -928,137 +930,54 @@ async def _handle_status_update(data: dict, session) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Ippon Board TCP Bridge
+# Ippon Board
 # ---------------------------------------------------------------------------
 import asyncio as _asyncio
-import json as _json
 import os as _os
 
-IPPON_HOST = _os.getenv("IPPON_HOST", "172.17.192.62")
+IPPON_HOST = _os.getenv("IPPON_HOST", "172.17.192.96")
 IPPON_PORT = int(_os.getenv("IPPON_PORT", "8080"))
 
+_GENDER_MAP = {"m": "M", "mannlich": "M", "male": "M", "w": "F", "f": "F", "weiblich": "F", "female": "F"}
 
-@app.get("/api/ippon-config")
-def get_ippon_config():
-    return {"host": IPPON_HOST, "port": IPPON_PORT}
+# matchId of the fight currently on the board (for routing score updates)
+_ippon_active_match: dict = {}
 
-
-@app.post("/api/ippon-config")
-def set_ippon_config(body: dict):
-    global IPPON_HOST, IPPON_PORT
-    if "host" in body:
-        IPPON_HOST = str(body["host"])
-    if "port" in body:
-        IPPON_PORT = int(body["port"])
-    return {"host": IPPON_HOST, "port": IPPON_PORT}
-
-# Active connections: matchId → (reader, writer, reader_task)
-_ippon_connections: dict = {}
+OUR_HOST = _os.getenv("OUR_HOST", "172.17.192.113")
+OUR_PORT = 5001
 
 
-async def _ippon_reader(match_id: int, reader: _asyncio.StreamReader) -> None:
-    """Read newline-delimited JSON from the Ippon Board and broadcast each update."""
-    try:
-        while True:
-            line = await reader.readline()
-            if not line:
-                break
-            try:
-                payload = _json.loads(line.decode().strip())
-                await manager.broadcast({
-                    "type": "IPPON_UPDATE",
-                    "matchId": match_id,
-                    "data": payload,
-                })
-            except _json.JSONDecodeError:
-                pass
-    except Exception:
-        pass
-    finally:
-        _ippon_connections.pop(match_id, None)
+@app.post("/api/ippon-score")
+async def ippon_score_callback(body: dict):
+    """Receive live score updates pushed from the Ippon Board."""
+    print(f"[IPPON] score update received: {body}")
+    match_id = _ippon_active_match.get("matchId")
+    if match_id:
+        await manager.broadcast({"type": "IPPON_UPDATE", "matchId": match_id, "data": body})
+    return {"ok": True}
 
 
-def _post_fighter_sync(url: str, body: dict) -> None:
-    """Blocking HTTP POST — run in a thread via asyncio.to_thread."""
-    import requests as _requests
-    try:
-        _requests.post(url, json=body, timeout=3)
-    except Exception as e:
-        print(f"Ippon Board POST /fighters failed: {e}")
-
-
-async def _ippon_start(match_id: int, match_dict: dict) -> None:
-    """
-    1. POST both fighters to http://<host>:<port>/fighters
-    2. Open TCP and send fight_start JSON for live score streaming.
-    """
-    if match_id in _ippon_connections:
-        return  # already connected
-
-    gender       = match_dict.get("gender")
-    age_group    = match_dict.get("ageGroup")
-    weight_class = match_dict.get("weightClass")
-
-    def _fighter(p: dict) -> dict:
-        return {
-            "firstname":   p.get("firstName", ""),
-            "lastname":    p.get("lastName", ""),
-            "weightclass": weight_class,
-            "gender":      gender,
-            "agegroup":    age_group,
-        }
-
-    fighters_url = f"http://{IPPON_HOST}:{IPPON_PORT}/fighters"
+def _send_fighters_to_board(match_dict: dict) -> None:
+    import urllib.request as _urllib
+    import json as _json
     p1 = match_dict.get("p1", {})
     p2 = match_dict.get("p2", {})
-    if p1.get("id") and p1.get("id") != "WAIT" and p2.get("id") and p2.get("id") != "WAIT":
-        await _asyncio.to_thread(_post_fighter_sync, fighters_url, {
-            "fighter1": _fighter(p1),
-            "fighter2": _fighter(p2),
-        })
-
-    # TCP fight_start for live scoring stream
-    try:
-        reader, writer = await _asyncio.wait_for(
-            _asyncio.open_connection(IPPON_HOST, IPPON_PORT),
-            timeout=3.0,
-        )
-        tcp_payload = _json.dumps({
-            "action":      "fight_start",
-            "matchId":     match_dict.get("matchId"),
-            "fightNr":     match_dict.get("fightNr"),
-            "category":    match_dict.get("category"),
-            "tableId":     match_dict.get("tableId"),
-            "gender":      gender,
-            "ageGroup":    age_group,
-            "weightClass": weight_class,
-            "p1":          _fighter(match_dict.get("p1", {})),
-            "p2":          _fighter(match_dict.get("p2", {})),
-        }) + "\n"
-        writer.write(tcp_payload.encode())
-        await writer.drain()
-        task = _asyncio.create_task(_ippon_reader(match_id, reader))
-        _ippon_connections[match_id] = (reader, writer, task)
-        print(f"Ippon Board connected for match {match_id}")
-    except Exception as e:
-        print(f"Ippon Board TCP connection failed for match {match_id}: {e}")
-
-
-async def _ippon_stop(match_id: int) -> None:
-    """Close Ippon Board connection for this fight."""
-    conn = _ippon_connections.pop(match_id, None)
-    if not conn:
+    if not p1.get("id") or p1.get("id") == "WAIT" or not p2.get("id") or p2.get("id") == "WAIT":
         return
-    _, writer, task = conn
-    task.cancel()
+    raw = str(match_dict.get("gender") or "")
+    gender = _GENDER_MAP.get(raw.lower(), raw) or None
+    body = {
+        "fighter1": {"firstname": p1.get("firstName", ""), "lastname": p1.get("lastName", ""), "gender": gender, "weightclass": match_dict.get("weightClass"), "agegroup": match_dict.get("ageGroup")},
+        "fighter2": {"firstname": p2.get("firstName", ""), "lastname": p2.get("lastName", ""), "gender": gender, "weightclass": match_dict.get("weightClass"), "agegroup": match_dict.get("ageGroup")},
+        "callback": f"http://{OUR_HOST}:{OUR_PORT}/api/ippon-score",
+    }
+    _ippon_active_match["matchId"] = match_dict.get("matchId")
     try:
-        writer.write((_json.dumps({"action": "fight_end", "matchId": match_id}) + "\n").encode())
-        await writer.drain()
-        writer.close()
-        await writer.wait_closed()
-    except Exception:
-        pass
-    print(f"Ippon Board disconnected for match {match_id}")
+        data = _json.dumps(body).encode()
+        req = _urllib.Request(f"http://{IPPON_HOST}:{IPPON_PORT}/fighters", data=data, headers={"Content-Type": "application/json"}, method="POST")
+        _urllib.urlopen(req, timeout=3)
+    except Exception as e:
+        print(f"[IPPON] POST failed: {e}")
 
 
 @app.websocket("/ws")
@@ -1069,22 +988,13 @@ async def websocket_endpoint(websocket: WebSocket):
             data = await websocket.receive_json()
             msg_type = data.get("type")
 
-            # Ippon Board messages don't need a DB session
             if msg_type == "IPPON_START":
                 match_id = data.get("matchId")
-                print(f"[IPPON] START received matchId={match_id}")
                 if match_id:
                     with SessionLocal() as session:
                         md = get_match_dict(match_id, session)
                     if md:
-                        _asyncio.create_task(_ippon_start(match_id, md))
-                    else:
-                        print(f"[IPPON] match_dict not found for matchId={match_id}")
-                continue
-            if msg_type == "IPPON_STOP":
-                match_id = data.get("matchId")
-                if match_id:
-                    _asyncio.create_task(_ippon_stop(match_id))
+                        await _asyncio.to_thread(_send_fighters_to_board, md)
                 continue
 
             with SessionLocal() as session:
