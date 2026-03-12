@@ -1,7 +1,7 @@
 import os
 
 from dotenv import load_dotenv
-from sqlalchemy import JSON, Column, Integer, String, create_engine
+from sqlalchemy import Column, Integer, String, create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 # Load environment variables, overriding any cached ones during uvicorn reloads
@@ -16,28 +16,6 @@ engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
-
-class MatchModel(Base):
-    """
-    Legacy SQLAlchemy model representing our initial JSON structure.
-    Keep this around if we need to rollback to the old table 'matches'.
-    """
-    __tablename__ = "matches"
-
-    match_id = Column(Integer, primary_key=True, index=True)
-    table_id = Column(String)
-    fight_nr = Column(Integer)
-    category = Column(String)
-    bracket_file = Column(String)
-    round = Column(Integer)
-    pos_in_round = Column(Integer)
-    p1 = Column(JSON)
-    p2 = Column(JSON)
-    status = Column(String)
-    order = Column(Integer)
-    rest_time_min = Column(Integer)
-    next_match_id = Column(Integer, nullable=True)
-    next_match_pos = Column(String, nullable=True)
 
 class GroupModel(Base):
     """
@@ -109,15 +87,8 @@ class FightModel(Base):
     pos_in_round = Column(Integer, nullable=True)
     pool_index = Column(Integer, nullable=True)
     winner_id = Column(Integer, nullable=True)
-
-def get_db():
-    """ Dependency for getting a database session """
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+    table_id = Column(String, nullable=True)
 
 def init_db():
-    """ Initialize the database tables if they don't exist """
+    """Ensure all DB tables exist. Alembic migrations are run via `make migrate`."""
     Base.metadata.create_all(bind=engine)

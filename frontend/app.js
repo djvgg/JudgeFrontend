@@ -25,7 +25,9 @@ const State = {
         isRunning: false
     },
     restTimerInterval: null,
-    poolStandings: {} // bracketId -> standings array
+    poolStandings: {},  // bracketId -> standings array
+    bracketViewMode: 'live',   // 'live' | 'finished'
+    bracketPhaseView: 'wb',    // 'wb'  | 'lb'
 };
 
 // --- NETWORK & WEBSOCKETS ---
@@ -76,6 +78,44 @@ const Network = {
             if (State.currentBracketCategory === data.bracketId) {
                 UI.renderBracketVisualization();
             }
+        } else if (data.type === 'IPPON_UPDATE') {
+            // Convert Ippon Board judo scores → numeric points (max 10)
+            // ippon=10, 2×waza_ari=10, waza_ari=7, yuko=5, shido=-1 each
+            const judoToPoints = (s) => {
+                if (!s) return 0;
+                const ippon   = Number(s.ippon   ?? 0);
+                const waza    = Number(s.waza_ari ?? s.wazaari ?? 0);
+                const yuko    = Number(s.yuko    ?? 0);
+                const shido   = Number(s.shido   ?? 0);
+                const hansoku = s.hansoku_make || s.hansokuMake || false;
+                if (ippon >= 1 || waza >= 2 || hansoku) return 10;
+                let pts = waza >= 1 ? 7 : (yuko >= 1 ? 5 : 0);
+                pts = Math.max(0, pts - shido);
+                return pts;
+            };
+
+            const m = State.currentScoringMatch;
+            if (m && m.matchId === data.matchId && data.data) {
+                const d = data.data;
+                // Board may send per-player objects (blue/white or p1/p2) or flat score1/score2
+                const s1 = d.p1 ?? d.blue  ?? d.white ?? null;
+                const s2 = d.p2 ?? d.white ?? d.blue  ?? null;
+
+                const pts1 = s1 ? judoToPoints(s1) : (d.score1 !== undefined ? Number(d.score1) : null);
+                const pts2 = s2 ? judoToPoints(s2) : (d.score2 !== undefined ? Number(d.score2) : null);
+
+                if (pts1 !== null) {
+                    m.p1.score = { points: pts1 };
+                    Network.send({ type: 'SCORE_UPDATE', matchId: m.matchId, playerNum: 1, value: pts1 });
+                }
+                if (pts2 !== null) {
+                    m.p2.score = { points: pts2 };
+                    Network.send({ type: 'SCORE_UPDATE', matchId: m.matchId, playerNum: 2, value: pts2 });
+                }
+                if (d.time !== undefined) Scoring.setTimerSeconds(Number(d.time));
+                if (d.duration_seconds !== undefined) Scoring.setTimerSeconds(Number(d.duration_seconds));
+                UI.updateScoreDisplay();
+            }
         } else if (data.type === 'SIGNAL') {
             Scoring.triggerTimerSignal(data.signalType, false);
         } else if (data.type === 'REFRESH_LIST') {
@@ -105,6 +145,21 @@ const UI = {
         if (isBrackets) this.updateBracketSidebar();
     },
 
+    switchToBrackets(mode) {
+        State.bracketViewMode = mode;
+        State.bracketPhaseView = 'wb';
+        State.currentBracketCategory = null;
+        this.switchView('brackets');
+    },
+
+    setPhaseView(phase) {
+        State.bracketPhaseView = phase;
+        document.getElementById('phase-btn-wb')?.classList.toggle('active', phase === 'wb');
+        document.getElementById('phase-btn-lb')?.classList.toggle('active', phase === 'lb');
+        this.renderBracketVisualization();
+    },
+
+
     updateTournamentTitle(title) {
         document.getElementById('tournament-title').textContent = title;
     },
@@ -133,18 +188,16 @@ const UI = {
 
         let displayMatches = [...State.activeMatches];
 
+        // Hide finished and bye fights — they are done, no longer actionable
+        displayMatches = displayMatches.filter(m => m.status !== 'finished' && m.status !== 'bye');
+
         // Apply table filter if active AND we are not admin
         if (State.isTableFilterActive && tableNum !== 'admin') {
             displayMatches = displayMatches.filter(m => String(m.tableId) === String(tableNum));
         }
 
-        // Always respect the 'order' property, but force finished matches to the bottom
-        displayMatches.sort((a, b) => {
-            const aFinished = (a.status === 'finished' || a.status === 'bye') ? 1 : 0;
-            const bFinished = (b.status === 'finished' || b.status === 'bye') ? 1 : 0;
-            if (aFinished !== bFinished) return aFinished - bFinished;
-            return (a.order || 0) - (b.order || 0);
-        });
+        // Sort by order/fight number
+        displayMatches.sort((a, b) => (a.order || 0) - (b.order || 0));
         // Identify the true "Next" match per table (only the first 'upcoming' per tableId)
         const nextMatchByTable = new Map();
         [...State.activeMatches].sort((a, b) => a.order - b.order).forEach(m => {
@@ -312,7 +365,7 @@ const UI = {
             <div class="fight-nr-badge"><div class="fight-num-circle">${match.fightNr}</div></div>
             <div class="category-box">
                 <span class="table-label">Tisch ${match.tableId}</span>
-                <span class="category-name">${match.category}</span>
+                <span class="category-name">${match.category}${match.phase === 'lb' ? ' <span class="lb-badge">(L)</span>' : ''}</span>
                 <a href="#" class="bracket-link" onclick="UI.handleBracketClick(event, ${match.matchId})">Live-Turnierbaum</a>
             </div>
             <div class="fighters-display">
@@ -372,20 +425,206 @@ const UI = {
 
     updateBracketSidebar() {
         const list = document.getElementById('bracket-category-list');
+        const titleEl = document.getElementById('bracket-sidebar-title');
         if (!list) return;
         list.innerHTML = '';
-        const categories = [...new Set(State.activeMatches.map(m => m.category))];
+
+        const isCatFinished = (cat) => {
+            const ms = State.activeMatches.filter(m => m.category === cat);
+            return ms.length > 0 && ms.every(m => m.status === 'finished' || m.status === 'bye');
+        };
+
+        const allCats = [...new Set(State.activeMatches.map(m => m.category))];
+        const isFinishedMode = State.bracketViewMode === 'finished';
+        const categories = isFinishedMode ? allCats.filter(isCatFinished) : allCats;
+
+        if (titleEl) titleEl.textContent = isFinishedMode ? 'Fertige Brackets' : 'Aktive Brackets';
+
+        if (categories.length === 0 && isFinishedMode) {
+            list.innerHTML = '<div style="color:var(--text-muted);font-size:0.8rem;padding:1rem 0;">Noch keine fertigen Brackets</div>';
+        }
+
         categories.forEach(cat => {
+            const done = isCatFinished(cat);
             const div = document.createElement('div');
             div.className = `category-item ${State.currentBracketCategory === cat ? 'active' : ''}`;
-            div.textContent = cat;
+            div.innerHTML = `<span>${cat}</span>${done ? '<span class="cat-done-badge">&#10003;</span>' : ''}`;
             div.onclick = () => { State.currentBracketCategory = cat; this.renderBracketVisualization(); this.updateBracketSidebar(); };
             list.appendChild(div);
         });
-        if (!State.currentBracketCategory && categories.length > 0) {
-            State.currentBracketCategory = categories[0];
-            this.renderBracketVisualization();
+
+        // Auto-select first if nothing selected
+        if (!categories.includes(State.currentBracketCategory)) {
+            State.currentBracketCategory = categories[0] ?? null;
+            if (State.currentBracketCategory) this.renderBracketVisualization();
         }
+    },
+
+    // Generates virtual advancement rounds for WB brackets.
+    // Computes the expected full structure from WB R0 count (ceil(log2(n)) total rounds),
+    // then fills in virtual fights for any missing positions. This handles partially-progressed
+    // brackets where some later rounds exist in the DB but others don't.
+    _expandBracket(wbMatches) {
+        if (wbMatches.length <= 1) return wbMatches;
+
+        // Shallow-copy so we don't mutate State.activeMatches
+        const result = wbMatches.map(m => ({ ...m }));
+        const resultMap = new Map(result.map(m => [m.matchId, m]));
+
+        const base = wbMatches[0];
+        let virtualId = -1000;
+
+        const getAdvancer = (m) => {
+            if (!m) return null;
+            const isBye = m.status === 'bye' ||
+                (m.p1.id !== 'WAIT' && m.p2.id !== 'WAIT' && String(m.p1.id) === String(m.p2.id));
+            if (isBye) return { ...m.p1, score: { points: 0 } };
+            if (m.winnerId) {
+                if (String(m.p1.id) === String(m.winnerId)) return { ...m.p1, score: { points: 0 } };
+                if (String(m.p2.id) === String(m.winnerId)) return { ...m.p2, score: { points: 0 } };
+            }
+            return null;
+        };
+        const tbd = () => ({ id: 'WAIT', firstName: '', lastName: 'TBD', club: '', score: { points: 0 } });
+
+        // Position lookup: "round-posInRound" → matchId (includes virtual fights as we add them)
+        const posKey = (r, p) => `${r}-${p}`;
+        const posLookup = new Map(result.map(m => [posKey(m.round, m.posInRound ?? 0), m.matchId]));
+
+        const r0count = wbMatches.filter(m => m.round === 1).length;
+        if (r0count < 2) return result;
+
+        // Expected rounds: log2(r0count) + 1 (e.g. 8 R0 fights → 4 total rounds incl. finale)
+        const totalRounds = Math.ceil(Math.log2(r0count)) + 1;
+
+        for (let round = 2; round <= totalRounds; round++) {
+            const currCount = Math.round(r0count / Math.pow(2, round - 1));
+            for (let pos = 0; pos < currCount; pos++) {
+                const key = posKey(round, pos);
+                const c0mid = posLookup.get(posKey(round - 1, pos * 2));
+                const c1mid = posLookup.get(posKey(round - 1, pos * 2 + 1));
+                const c0 = c0mid != null ? resultMap.get(c0mid) : null;
+                const c1 = c1mid != null ? resultMap.get(c1mid) : null;
+
+                if (posLookup.has(key)) {
+                    // Fight already in DB — just wire up any orphaned prev-round matches
+                    const existingId = posLookup.get(key);
+                    if (c0 && !c0.nextMatchId) { c0.nextMatchId = existingId; c0.nextMatchPos = 'p1'; }
+                    if (c1 && !c1.nextMatchId) { c1.nextMatchId = existingId; c1.nextMatchPos = 'p2'; }
+                    continue;
+                }
+
+                // Create virtual fight for this missing position
+                const vm = {
+                    matchId: virtualId--, bracketId: base.bracketId, category: base.category,
+                    round, posInRound: pos, phase: 'wb', fightNr: null,
+                    p1: getAdvancer(c0) ?? tbd(),
+                    p2: getAdvancer(c1) ?? tbd(),
+                    status: 'upcoming', order: 9999,
+                    nextMatchId: null, nextMatchPos: null, winnerId: null, poolIndex: null,
+                };
+                if (c0 && !c0.nextMatchId) { c0.nextMatchId = vm.matchId; c0.nextMatchPos = 'p1'; }
+                if (c1 && !c1.nextMatchId) { c1.nextMatchId = vm.matchId; c1.nextMatchPos = 'p2'; }
+                result.push(vm);
+                resultMap.set(vm.matchId, vm);
+                posLookup.set(key, vm.matchId);
+            }
+        }
+
+        return result;
+    },
+
+    // Generates virtual LB rounds for fights that don't exist in the DB yet.
+    // LB alternates: even DB rounds = reduction (same count, 1:1), odd = injection (same count as prev, then reduction halves next).
+    // DB round is 0-indexed; frontend round is 1-indexed (DB + 1).
+    _expandLb(lbMatches) {
+        if (lbMatches.length <= 1) return lbMatches;
+
+        // Frontier: LB matches with no nextMatchId (haven't advanced yet)
+        const frontier = lbMatches.filter(m => !m.nextMatchId);
+        if (frontier.length <= 1) return lbMatches;
+
+        const frontierRound = Math.max(...frontier.map(m => m.round ?? 1));
+        const expandFrom = frontier
+            .filter(m => m.round === frontierRound)
+            .sort((a, b) => (a.posInRound ?? 0) - (b.posInRound ?? 0));
+
+        if (expandFrom.length <= 1) return lbMatches;
+
+        const result = lbMatches.map(m => ({ ...m }));
+        const resultMap = new Map(result.map(m => [m.matchId, m]));
+
+        const base = lbMatches[0];
+        let virtualId = -2000;
+        // frontierRound is 1-indexed (frontend), DB round = frontierRound - 1
+        let dbRound = frontierRound - 1;
+        let roundNum = frontierRound + 1;
+        let current = expandFrom.map(m => resultMap.get(m.matchId));
+
+        const tbd = () => ({ id: 'WAIT', firstName: '', lastName: 'TBD', club: '', score: { points: 0 } });
+
+        while (current.length > 1) {
+            const next = [];
+
+            if (dbRound % 2 === 0) {
+                // Was REDUCTION → next is INJECTION (same count, 1:1)
+                // Each LB survivor faces one incoming WB loser (p2 = TBD until WB fight resolves)
+                for (let i = 0; i < current.length; i++) {
+                    const m = current[i];
+                    const vm = {
+                        matchId: virtualId--, bracketId: base.bracketId, category: base.category,
+                        round: roundNum, posInRound: i, phase: 'lb', fightNr: null,
+                        p1: tbd(), p2: tbd(),
+                        status: 'upcoming', order: 9999,
+                        nextMatchId: null, nextMatchPos: null, winnerId: null, poolIndex: null,
+                    };
+                    m.nextMatchId = vm.matchId;
+                    m.nextMatchPos = 'p1';
+                    next.push(vm);
+                    result.push(vm);
+                    resultMap.set(vm.matchId, vm);
+                }
+            } else {
+                // Was INJECTION → next is REDUCTION (pairs collapse, 2:1)
+                const pairs = Math.floor(current.length / 2);
+                for (let pos = 0; pos < pairs; pos++) {
+                    const c0 = current[pos * 2];
+                    const c1 = current[pos * 2 + 1];
+                    const vm = {
+                        matchId: virtualId--, bracketId: base.bracketId, category: base.category,
+                        round: roundNum, posInRound: pos, phase: 'lb', fightNr: null,
+                        p1: tbd(), p2: tbd(),
+                        status: 'upcoming', order: 9999,
+                        nextMatchId: null, nextMatchPos: null, winnerId: null, poolIndex: null,
+                    };
+                    c0.nextMatchId = vm.matchId; c0.nextMatchPos = 'p1';
+                    c1.nextMatchId = vm.matchId; c1.nextMatchPos = 'p2';
+                    next.push(vm);
+                    result.push(vm);
+                    resultMap.set(vm.matchId, vm);
+                }
+                if (current.length % 2 === 1) {
+                    const lone = current[current.length - 1];
+                    const vm = {
+                        matchId: virtualId--, bracketId: base.bracketId, category: base.category,
+                        round: roundNum, posInRound: pairs, phase: 'lb', fightNr: null,
+                        p1: tbd(), p2: tbd(),
+                        status: 'upcoming', order: 9999,
+                        nextMatchId: null, nextMatchPos: null, winnerId: null, poolIndex: null,
+                    };
+                    lone.nextMatchId = vm.matchId; lone.nextMatchPos = 'p1';
+                    next.push(vm);
+                    result.push(vm);
+                    resultMap.set(vm.matchId, vm);
+                }
+            }
+
+            current = next;
+            dbRound++;
+            roundNum++;
+        }
+
+        return result;
     },
 
     renderBracketVisualization() {
@@ -406,24 +645,66 @@ const UI = {
         }
 
         const wbMatches = allMatchesCategory.filter(m => m.phase !== 'lb');
-        const lbMatches = allMatchesCategory.filter(m => m.phase === 'lb');
+        let lbMatches = allMatchesCategory.filter(m => m.phase === 'lb');
+
+        // Detect double-elimination even before any LB fights exist in DB
+        const isDouble = allMatchesCategory.some(m =>
+            m.bracketType === 'ko' || m.bracketType === 'double' || m.bracketType === 'DOUBLE_ELIMINATION'
+        );
+
+        // Expand WB first so we can bootstrap LB from WB R0 when no LB fights exist yet
+        const expandedWb = this._expandBracket(wbMatches);
+
+        // If double-elim with no LB fights yet, bootstrap virtual LB R0 from WB R0 shape
+        if (isDouble && lbMatches.length === 0) {
+            const wbR0 = wbMatches.filter(m => m.round === 1)
+                .sort((a, b) => (a.posInRound ?? 0) - (b.posInRound ?? 0));
+            let virtualId = -3000;
+            const base = wbR0[0] ?? wbMatches[0];
+            if (base && wbR0.length >= 2) {
+                const tbd = () => ({ id: 'WAIT', firstName: '', lastName: 'TBD', club: '', score: { points: 0 } });
+                lbMatches = [];
+                for (let i = 0; i < wbR0.length; i += 2) {
+                    lbMatches.push({
+                        matchId: virtualId--, bracketId: base.bracketId, category: base.category,
+                        round: 1, posInRound: i / 2, phase: 'lb', fightNr: null,
+                        p1: tbd(), p2: tbd(),
+                        status: 'upcoming', order: 9999,
+                        nextMatchId: null, nextMatchPos: null, winnerId: null, poolIndex: null,
+                    });
+                }
+            }
+        }
+
+        // Show/hide phase toggle
+        const hasLb = isDouble || lbMatches.length > 0;
+        const phaseToggle = document.getElementById('phase-toggle');
+        if (phaseToggle) phaseToggle.style.display = hasLb ? 'flex' : 'none';
+        const showingLb = hasLb && State.bracketPhaseView === 'lb';
+        document.getElementById('phase-btn-wb')?.classList.toggle('active', !showingLb);
+        document.getElementById('phase-btn-lb')?.classList.toggle('active', showingLb);
+
+        // Expand LB with virtual rounds (alternating injection/reduction) the same way
+        const expandedLb = this._expandLb(lbMatches);
+        // Each toggle shows only its own phase — no combined view
+        const expandedAll = showingLb ? expandedLb : expandedWb;
 
         // Build a map of matches and their children (matches that feed INTO them)
         const matchMap = new Map();
-        allMatchesCategory.forEach(m => matchMap.set(m.matchId, { ...m, children: [] }));
+        expandedAll.forEach(m => matchMap.set(m.matchId, { ...m, children: [] }));
 
-        allMatchesCategory.forEach(m => {
+        expandedAll.forEach(m => {
             if (m.nextMatchId && matchMap.has(m.nextMatchId)) {
                 const parent = matchMap.get(m.nextMatchId);
                 parent.children.push(m.matchId);
             }
         });
 
-        // Identify roots (matches that don't feed into any other match in THIS phase)
+        // Identify roots (matches that don't feed into any other match in THIS set)
         const getRoots = (matchList) => {
             const roots = [];
             matchList.forEach(m => {
-                if (!m.nextMatchId || !matchMap.has(m.nextMatchId) || matchMap.get(m.nextMatchId).phase !== m.phase) {
+                if (!m.nextMatchId || !matchMap.has(m.nextMatchId)) {
                     roots.push(m);
                 }
             });
@@ -431,20 +712,31 @@ const UI = {
             return roots;
         };
 
-        const wbRoots = getRoots(wbMatches);
-        const lbRoots = getRoots(lbMatches);
+        const wbRoots = showingLb ? getRoots(expandedLb) : getRoots(expandedWb);
+        const lbRoots = []; // no combined view — LB only visible in toggle
 
-        const MATCH_WIDTH = 220;
-        const MATCH_HEIGHT = 100;
-        const X_SPACING = 300;
-        const Y_SPACING = 140;
+        const MATCH_WIDTH = 185;
+        const MATCH_HEIGHT = 48;
+        const X_SPACING = 260;
+        const Y_SPACING = 80;
         const OFFSET_X = 40;
         const OFFSET_Y = 80;
 
-        const maxRound = Math.max(...allMatchesCategory.map(m => m.round));
+        const maxRound = Math.max(...expandedAll.map(m => m.round));
 
-        function getRoundName(round, isLb = false) {
-            if (isLb) return `TROSTRUNDE R${round}`;
+        function getRoundName(round) {
+            if (showingLb) {
+                const dbRound = round - 1; // convert to 0-indexed
+                if (round === maxRound) return '3. PLATZ';
+                // Even DB rounds = Reduktion (LB survivors fight each other)
+                // Odd DB rounds = Einspielung (WB loser injects into LB survivor)
+                if (dbRound % 2 === 0) {
+                    const lbRoundNum = Math.floor(dbRound / 2) + 1;
+                    return `VB RUNDE ${lbRoundNum}`;
+                }
+                const injNum = Math.ceil(dbRound / 2);
+                return `EINSPIELUNG ${injNum}`;
+            }
             if (round === maxRound) return 'FINALE';
             if (round === maxRound - 1) return 'HALBFINALE';
             if (round === maxRound - 2) return 'VIERTELFINALE';
@@ -494,13 +786,14 @@ const UI = {
             currentY += Y_SPACING;
         }
 
-        // Add visual separation before Loser bracket
+        // Record where LB section starts so we can draw a divider label
+        let lbSectionY = -1;
         if (lbRoots.length > 0 && wbRoots.length > 0) {
-            currentY += Y_SPACING * 0.5;
+            lbSectionY = currentY + Y_SPACING * 0.25;
+            currentY += Y_SPACING * 1.5;  // extra breathing room for the label
         }
 
         for (const root of lbRoots) {
-            // Loser bracket starts from round 1 visually, but we can offset it if desired.
             calculatePosDAG(root.matchId, 0);
             currentY += Y_SPACING;
         }
@@ -528,13 +821,13 @@ const UI = {
         svg.style.height = '100%';
         svg.style.pointerEvents = 'none';
 
-        allMatchesCategory.forEach(m => {
+        expandedAll.forEach(m => {
             if (m.nextMatchId && positions.has(m.nextMatchId)) {
                 const pos = positions.get(m.matchId);
                 const parentPos = positions.get(m.nextMatchId);
 
-                // For double elimination, we don't draw lines between WB and LB for now as it's cleaner
-                const parentNode = allMatchesCategory.find(pm => String(pm.matchId) === String(m.nextMatchId));
+                // Skip cross-phase lines (e.g. WB→LB injection); use matchMap to support virtual fights
+                const parentNode = matchMap.get(m.nextMatchId);
                 if (!parentNode || parentNode.phase !== m.phase) return;
 
                 const startX = pos.x + MATCH_WIDTH + OFFSET_X;
@@ -546,11 +839,10 @@ const UI = {
                 const midX = startX + (endX - startX) / 2;
                 path.setAttribute('d', `M ${startX} ${startY} H ${midX} V ${endY} H ${endX}`);
 
-                // Use Jasmine/Orange for LB, Sky Blue for WB
-                const strokeColor = m.phase === 'lb' ? '#F5CA74' : '#22AAF0';
+                const strokeColor = m.phase === 'lb' ? '#c08040' : '#a0b8d0';
                 path.setAttribute('stroke', strokeColor);
-                if (m.phase === 'lb') path.setAttribute('stroke-dasharray', '6,4');
-                path.setAttribute('stroke-width', '2.5');
+                if (m.phase === 'lb') path.setAttribute('stroke-dasharray', '5,3');
+                path.setAttribute('stroke-width', '1.5');
                 path.setAttribute('fill', 'none');
                 svg.appendChild(path);
             }
@@ -570,188 +862,279 @@ const UI = {
 
         viz.appendChild(svg);
 
-        // Draw nodes
-        allMatchesCategory.forEach(m => {
+        // Draw "VERLIERERSEITE" section divider when showing combined WB + LB
+        if (!showingLb && lbSectionY >= 0) {
+            const divider = document.createElement('div');
+            divider.className = 'lb-section-divider';
+            divider.style.cssText = `position:absolute;top:${lbSectionY + OFFSET_Y}px;left:${OFFSET_X}px;`;
+            divider.innerHTML = '<span class="lb-section-label">VERLIERERSEITE</span>';
+            viz.appendChild(divider);
+        }
+
+        // Draw nodes (EDV-style)
+        expandedAll.forEach(m => {
             const pos = positions.get(m.matchId);
             if (!pos) return;
-            const node = document.createElement('div');
-            node.className = `bracket-match-node absolute-node ${m.phase === 'lb' ? 'loser-bracket' : ''}`;
-            node.style.position = 'absolute';
-            node.style.left = `${pos.x + OFFSET_X}px`;
-            node.style.top = `${pos.y + OFFSET_Y}px`;
-            node.style.width = `${MATCH_WIDTH}px`;
 
-            const p1Score = m.p1.score.points || 0;
-            const p2Score = m.p2.score.points || 0;
+            const nodeData = matchMap.get(m.matchId);
+            const childP1 = nodeData.children.map(cid => matchMap.get(cid)).find(c => c.nextMatchPos === 'p1');
+            const childP2 = nodeData.children.map(cid => matchMap.get(cid)).find(c => c.nextMatchPos === 'p2');
+
             const p1Won = m.status === 'finished' && m.winnerId && String(m.p1.id) === String(m.winnerId);
             const p2Won = m.status === 'finished' && m.winnerId && String(m.p2.id) === String(m.winnerId);
 
-            const p1Label = m.p1.lastName;
-            const p2Label = m.p2.lastName;
-
-            // Simple heuristic: If it's a loser bracket match and participant is not decided yet
-            // In a better system, this would come from the backend metadata.
-            const getAltName = (p) => {
-                if (m.phase === 'lb' && p.id === 'WAIT') {
-                    return 'Verlierer Kampf #...';
+            // Determine label + CSS class for each participant slot.
+            // If a child match feeds this slot but the participant is already known
+            // (pre-filled from a bye or previous result), show the name — not "Winner X".
+            const slotInfo = (p, child, won) => {
+                if (child && p.id === 'WAIT') {
+                    const label = child.fightNr ? `Winner ${child.fightNr}` : '?';
+                    return { label, cls: 'edv-pending', score: null };
                 }
-                return 'TBD';
+                const isBye = !p.lastName || p.lastName === 'TBD' || p.id === 'WAIT';
+                if (isBye) return { label: 'Freilos', cls: 'edv-freilos', score: null };
+                const name = p.lastName + (p.firstName ? ', ' + p.firstName : '');
+                const club = p.club ? ` [${p.club}]` : '';
+                const score = m.status !== 'upcoming' ? (p.score?.points ?? 0) : null;
+                return { label: name + club, cls: won ? 'edv-winner' : 'edv-participant', score };
             };
 
+            // Bye fight: same participant in both slots → show participant once, Freilos for the other
+            const isByeFight = m.status === 'bye' ||
+                (m.p1.id !== 'WAIT' && m.p2.id !== 'WAIT' && String(m.p1.id) === String(m.p2.id));
+
+            const s1 = slotInfo(m.p1, childP1, isByeFight || p1Won);
+            const s2 = isByeFight
+                ? { label: 'Freilos', cls: 'edv-freilos', score: null }
+                : slotInfo(m.p2, childP2, p2Won);
+
+            const scoreHtml = (s) => s.score !== null
+                ? `<span class="edv-score">${s.score}</span>` : '';
+
+            const node = document.createElement('div');
+            node.className = `edv-node absolute-node ${m.phase === 'lb' ? 'edv-lb' : ''}`;
+            node.style.cssText = `position:absolute;left:${pos.x + OFFSET_X}px;top:${pos.y + OFFSET_Y}px;width:${MATCH_WIDTH}px;`;
             node.innerHTML = `
-                <div class="match-node-header">
-                    <span class="m-id">Kampf #${m.fightNr}</span>
-                    <span class="m-phase">${m.phase === 'lb' ? 'TROSTRUNDE' : 'HAUPTRUNDE'}</span>
+                <div class="edv-slot ${s1.cls}">
+                    <span class="edv-name">${s1.label}</span>${scoreHtml(s1)}
                 </div>
-                <div class="match-node-p ${p1Won ? 'winner' : ''}">
-                    <span class="p-name">${p1Label || getAltName(m.p1)}</span>
-                    <span class="p-score-box">${p1Score}</span>
-                </div>
-                <div class="match-node-p ${p2Won ? 'winner' : ''}">
-                    <span class="p-name">${p2Label || getAltName(m.p2)}</span>
-                    <span class="p-score-box">${p2Score}</span>
+                <div class="edv-divider"></div>
+                <div class="edv-slot ${s2.cls}">
+                    <span class="edv-name">${s2.label}</span>${scoreHtml(s2)}
                 </div>
             `;
             viz.appendChild(node);
         });
     },
 
-    renderPoolGrid(matches, container) {
-        // Determine unique fighters
-        const fighters = new Map();
-        matches.forEach(m => {
-            if (m.p1 && m.p1.id !== "WAIT" && m.status !== 'bye') fighters.set(String(m.p1.id), m.p1);
-            if (m.p2 && m.p2.id !== "WAIT" && m.status !== 'bye') fighters.set(String(m.p2.id), m.p2);
-        });
+    renderPoolGrid(allMatches, container) {
+        container.innerHTML = '';
+        container.style.cssText = 'display:block;position:static;min-width:auto;min-height:auto;';
 
-        const fighterList = Array.from(fighters.values());
-
-        // Use backend standings if available
-        const backendStandings = State.poolStandings[State.currentBracketCategory];
-        if (backendStandings) {
-            this.renderAuthoritativePoolStandings(backendStandings, container);
-            return;
-        }
-
-        container.style.display = 'block';
-        container.style.position = 'static';
-        container.style.minWidth = 'auto';
-        container.style.minHeight = 'auto';
+        const poolIndices = [...new Set(allMatches.map(m => m.poolIndex ?? 0))].sort((a, b) => a - b);
+        const totalFighters = new Set(
+            allMatches.flatMap(m => [m.p1?.id, m.p2?.id]).filter(id => id && id !== 'WAIT')
+        ).size;
 
         const wrapper = document.createElement('div');
-        wrapper.className = 'pool-grid-wrapper';
+        wrapper.className = 'pool-system-wrapper';
 
-        const table = document.createElement('table');
-        table.className = 'pool-table';
+        const sysTitle = document.createElement('div');
+        sysTitle.className = 'pool-system-title';
+        sysTitle.textContent = `Pool System – ${totalFighters} Teilnehmer`;
+        wrapper.appendChild(sysTitle);
 
-        // Header Row
-        const trHead = document.createElement('tr');
-        trHead.innerHTML = `<th>Kämpfer</th>`;
-        fighterList.forEach(f => {
-            trHead.innerHTML += `<th>${f.firstName} ${f.lastName}</th>`;
-        });
-        trHead.innerHTML += `<th>Punkte</th>`;
-        table.appendChild(trHead);
+        for (const poolIdx of poolIndices) {
+            const pm = allMatches
+                .filter(m => (m.poolIndex ?? 0) === poolIdx)
+                .sort((a, b) => (a.posInRound ?? 0) - (b.posInRound ?? 0));
+            if (!pm.length) continue;
 
-        // Pre-calculate points to find leader
-        const fighterPoints = fighterList.map(rowFighter => {
-            let pts = 0;
-            fighterList.forEach(colFighter => {
-                if (rowFighter.id !== colFighter.id) {
-                    const match = matches.find(m =>
-                        (String(m.p1.id) === String(rowFighter.id) && String(m.p2.id) === String(colFighter.id)) ||
-                        (String(m.p2.id) === String(rowFighter.id) && String(m.p1.id) === String(colFighter.id))
-                    );
-                    if (match && match.status === 'finished') {
-                        const rScore = Number(String(match.p1.id) === String(rowFighter.id) ? (match.p1.score.points || 0) : (match.p2.score.points || 0));
-                        const cScore = Number(String(match.p1.id) === String(colFighter.id) ? (match.p1.score.points || 0) : (match.p2.score.points || 0));
-                        if (rScore >= cScore) pts += rScore;
+            // Collect fighters in schedule order (first appearance = start nr 1, 2, …)
+            const fMap = new Map();
+            const fList = [];
+            pm.forEach(m => {
+                for (const p of [m.p1, m.p2]) {
+                    if (p?.id && p.id !== 'WAIT' && !fMap.has(String(p.id))) {
+                        const entry = { ...p, startNr: fList.length + 1 };
+                        fMap.set(String(p.id), entry);
+                        fList.push(entry);
                     }
                 }
             });
-            return { id: rowFighter.id, points: pts };
-        });
+            const numFights = pm.length;
 
-        const maxPoints = Math.max(...fighterPoints.map(fp => fp.points));
-        const hasFinishedMatches = matches.some(m => m.status === 'finished');
+            if (poolIndices.length > 1) {
+                const pt = document.createElement('div');
+                pt.className = 'pool-subtitle';
+                pt.textContent = `Pool ${poolIdx + 1}`;
+                wrapper.appendChild(pt);
+            }
 
-        // Rows
-        fighterList.forEach((rowFighter) => {
-            const tr = document.createElement('tr');
-            const pts = fighterPoints.find(fp => fp.id === rowFighter.id).points;
-            const isLeader = hasFinishedMatches && pts === maxPoints && pts > 0;
+            // --- Compute per-fighter stats ---
+            const stats = fList.map(f => {
+                let wins = 0, ubw = 0;
+                pm.forEach(m => {
+                    const isP1 = String(m.p1?.id) === String(f.id);
+                    const isP2 = String(m.p2?.id) === String(f.id);
+                    if (!isP1 && !isP2) return;
+                    if (m.status !== 'finished' && m.status !== 'completed') return;
+                    const mp = Number(isP1 ? (m.p1.score?.points ?? 0) : (m.p2.score?.points ?? 0));
+                    if (String(m.winnerId) === String(f.id)) wins++;
+                    ubw += mp;  // Ubw. = total points scored across ALL fights
+                });
+                return { id: f.id, wins, ubw };
+            });
+            const ranked = [...stats].sort((a, b) => b.wins - a.wins);
+            // Dense ranking: fighters with the same wins share the same Platz
+            // (Kampfzeit tiebreaker comes later)
+            const platzOf = id => {
+                const myWins = stats.find(s => s.id === id).wins;
+                return ranked.filter(s => s.wins > myWins).length + 1;
+            };
+            const anyDone = pm.some(m => m.status === 'finished' || m.status === 'completed');
+            const allDone = pm.every(m => m.status === 'finished' || m.status === 'completed' || m.status === 'bye');
 
-            if (isLeader) tr.classList.add('pool-leader');
+            // --- Build table ---
+            const tbl = document.createElement('table');
+            tbl.className = 'pool-edv-table';
 
-            tr.innerHTML = `<td class="fighter-col">${rowFighter.firstName} ${rowFighter.lastName} ${isLeader ? '🏆' : ''}</td>`;
+            // Header row 1
+            const thead = tbl.createTHead();
+            const th1 = thead.insertRow();
+            const mkTH = (html, cls, rs, cs) => {
+                const t = document.createElement('th');
+                t.innerHTML = html; t.className = cls ?? '';
+                if (rs) t.rowSpan = rs; if (cs) t.colSpan = cs;
+                return t;
+            };
+            th1.appendChild(mkTH('Start<br>nr', 'pth pth-startnr', 2));
+            th1.appendChild(mkTH('Kämpfername<br>Verein', 'pth pth-name', 2));
+            th1.appendChild(mkTH('Kampfnummer', 'pth pth-kampfnr', null, 2));
+            for (let i = 1; i <= numFights; i++) th1.appendChild(mkTH(String(i), 'pth pth-fight', 2));
+            th1.appendChild(mkTH('Punkte', 'pth pth-sum', 2));
+            th1.appendChild(mkTH('Ubw.', 'pth pth-sum', 2));
+            th1.appendChild(mkTH('Platz', 'pth pth-sum', 2));
 
-            fighterList.forEach((colFighter) => {
-                if (rowFighter.id === colFighter.id) {
-                    tr.innerHTML += `<td class="col-cross"></td>`;
-                } else {
-                    const match = matches.find(m =>
-                        (String(m.p1.id) === String(rowFighter.id) && String(m.p2.id) === String(colFighter.id)) ||
-                        (String(m.p2.id) === String(rowFighter.id) && String(m.p1.id) === String(colFighter.id))
-                    );
+            // Header row 2: sub-headers under Kampfnummer
+            const th2 = thead.insertRow();
+            th2.appendChild(mkTH('Pkt', 'pth pth-sub'));
+            th2.appendChild(mkTH('Ubw.', 'pth pth-sub'));
 
-                    if (!match) {
-                        tr.innerHTML += `<td>-</td>`;
-                    } else if (match.status !== 'finished') {
-                        tr.innerHTML += `<td><span class="status-upcoming">Ausstehend</span></td>`;
+            // Body
+            const tbody = tbl.createTBody();
+            fList.forEach(f => {
+                const s = stats.find(x => x.id === f.id);
+                const platz = platzOf(f.id);
+                const isLeader = allDone && platz === 1;
+                const tr = tbody.insertRow();
+                if (isLeader) tr.classList.add('pool-leader');
+
+                const name = `${f.lastName}${f.firstName ? ', ' + f.firstName : ''} [${f.club || '?'}]`;
+                tr.appendChild(Object.assign(document.createElement('td'), { className: 'ptd ptd-startnr', textContent: String(f.startNr) }));
+                tr.appendChild(Object.assign(document.createElement('td'), { className: 'ptd ptd-name', textContent: name }));
+                tr.appendChild(Object.assign(document.createElement('td'), { className: 'ptd ptd-lbl', textContent: 'Punkte' }));
+                tr.appendChild(Object.assign(document.createElement('td'), { className: 'ptd ptd-lbl', textContent: 'Ubw.' }));
+
+                pm.forEach(m => {
+                    const isP1 = String(m.p1?.id) === String(f.id);
+                    const isP2 = String(m.p2?.id) === String(f.id);
+                    const td = document.createElement('td');
+                    if (!isP1 && !isP2) {
+                        td.className = 'ptd ptd-nopart';
                     } else {
-                        const rScore = Number(String(match.p1.id) === String(rowFighter.id) ? (match.p1.score.points || 0) : (match.p2.score.points || 0));
-                        const cScore = Number(String(match.p1.id) === String(colFighter.id) ? (match.p1.score.points || 0) : (match.p2.score.points || 0));
-
-                        if (rScore > cScore) {
-                            tr.innerHTML += `<td class="cell-win">Sieg<br><small>(${rScore})</small></td>`;
-                        } else if (cScore > rScore) {
-                            tr.innerHTML += `<td class="cell-loss">Ndlg<br><small>(${rScore})</small></td>`;
+                        const done = m.status === 'finished' || m.status === 'completed';
+                        if (!done) {
+                            td.className = 'ptd ptd-pending';
                         } else {
-                            tr.innerHTML += `<td class="cell-win" style="background: rgba(255,255,255,0.05)">TIE<br><small>(${rScore})</small></td>`;
+                            const myPts  = Number(isP1 ? (m.p1.score?.points ?? 0) : (m.p2.score?.points ?? 0));
+                            const oppPts = Number(isP1 ? (m.p2.score?.points ?? 0) : (m.p1.score?.points ?? 0));
+                            const won = String(m.winnerId) === String(f.id);
+                            td.className = `ptd ${won ? 'ptd-win' : 'ptd-loss'}`;
+                            // Show "myScore | oppScore" — mirrored for each row
+                            td.innerHTML = `<span class="ps-my">${myPts}</span><span class="ps-sep">|</span><span class="ps-opp">${oppPts}</span>`;
                         }
                     }
-                }
+                    tr.appendChild(td);
+                });
+
+                const mkSum = (val, show) => Object.assign(document.createElement('td'), { className: 'ptd ptd-sum', textContent: show ? String(val) : '' });
+                tr.appendChild(mkSum(s.wins, anyDone));
+                tr.appendChild(mkSum(s.ubw, anyDone));
+                tr.appendChild(mkSum(platz, allDone));
             });
 
-            tr.innerHTML += `<td class="total-col">${pts}</td>`;
-            table.appendChild(tr);
-        });
+            // Kampfzeit row
+            const trTime = tbody.insertRow();
+            trTime.classList.add('pool-kampfzeit-row');
+            const tdLabel = document.createElement('td');
+            tdLabel.colSpan = 4; tdLabel.className = 'ptd ptd-kampfzeit';
+            tdLabel.textContent = 'Kampfzeit';
+            trTime.appendChild(tdLabel);
+            for (let i = 0; i < numFights; i++) {
+                trTime.appendChild(Object.assign(document.createElement('td'), { className: 'ptd ptd-time' }));
+            }
+            const tdSumSpacer = document.createElement('td');
+            tdSumSpacer.colSpan = 3; tdSumSpacer.className = 'ptd';
+            trTime.appendChild(tdSumSpacer);
 
-        wrapper.appendChild(table);
-        container.appendChild(wrapper);
-    },
+            wrapper.appendChild(tbl);
 
-    renderAuthoritativePoolStandings(standings, container) {
-        container.innerHTML = '';
-        const table = document.createElement('table');
-        table.className = 'pool-table';
+            const footer = document.createElement('div');
+            footer.className = 'pool-footer';
+            footer.textContent = `${fList.length} Kämpfer • Round-Robin Format`;
+            wrapper.appendChild(footer);
+        }
 
-        const trHead = document.createElement('tr');
-        trHead.innerHTML = `
-            <th>Rang</th>
-            <th>Name</th>
-            <th>Konto/Club</th>
-            <th>Siege</th>
-            <th>Punkte</th>
-        `;
-        table.appendChild(trHead);
+        // KO phase: WB fights generated after both pools complete
+        const koMatches = allMatches.filter(m => m.phase === 'wb')
+            .sort((a, b) => (a.round - b.round) || (a.posInRound - b.posInRound));
 
-        standings.forEach((s, idx) => {
-            const tr = document.createElement('tr');
-            if (idx === 0) tr.classList.add('pool-leader');
-            tr.innerHTML = `
-                <td>${idx + 1}</td>
-                <td class="fighter-col">${s.name} ${idx === 0 ? '🏆' : ''}</td>
-                <td>${s.club || '-'}</td>
-                <td>${s.wins}</td>
-                <td>${s.points}</td>
-            `;
-            table.appendChild(tr);
-        });
+        if (koMatches.length > 0) {
+            const koDivider = document.createElement('div');
+            koDivider.className = 'pool-ko-divider';
+            koDivider.textContent = 'KO-Phase';
+            wrapper.appendChild(koDivider);
 
-        const wrapper = document.createElement('div');
-        wrapper.className = 'pool-grid-wrapper';
-        wrapper.appendChild(table);
+            const koTable = document.createElement('table');
+            koTable.className = 'pool-edv-table pool-ko-table';
+
+            const koHead = koTable.createTHead().insertRow();
+            ['Kampf', 'Kämpfer 1', 'Ergebnis', 'Kämpfer 2'].forEach(h => {
+                koHead.appendChild(Object.assign(document.createElement('th'), {
+                    className: 'pth', textContent: h
+                }));
+            });
+
+            const koBody = koTable.createTBody();
+            const sfFights = koMatches.filter(m => m.round === 1);  // round=1 (DB R0) = SFs
+            const finalFight = koMatches.find(m => m.round === 2);  // round=2 (DB R1) = Final
+
+            const koLabels = sfFights.map((_, i) => `Halbfinale ${i + 1}`);
+            koLabels.push('Finale');
+
+            [...sfFights, ...(finalFight ? [finalFight] : [])].forEach((m, i) => {
+                const tr = koBody.insertRow();
+                const done = m.status === 'finished' || m.status === 'completed';
+                const p1Name = m.p1?.id === 'WAIT' ? '—' : `${m.p1?.lastName || ''}${m.p1?.firstName ? ', ' + m.p1.firstName : ''}`;
+                const p2Name = m.p2?.id === 'WAIT' ? '—' : `${m.p2?.lastName || ''}${m.p2?.firstName ? ', ' + m.p2.firstName : ''}`;
+                const score = done
+                    ? `${Number(m.p1?.score?.points ?? 0)} : ${Number(m.p2?.score?.points ?? 0)}`
+                    : (m.p1?.id !== 'WAIT' && m.p2?.id !== 'WAIT' ? 'vs' : '—');
+                const isP1Won = done && String(m.winnerId) === String(m.p1?.id);
+                const isP2Won = done && String(m.winnerId) === String(m.p2?.id);
+
+                tr.innerHTML = `
+                    <td class="ptd ptd-lbl">${koLabels[i]}</td>
+                    <td class="ptd ptd-name ${isP1Won ? 'ptd-win' : ''}">${p1Name}</td>
+                    <td class="ptd ptd-ko-score">${score}</td>
+                    <td class="ptd ptd-name ${isP2Won ? 'ptd-win' : ''}">${p2Name}</td>
+                `;
+            });
+
+            wrapper.appendChild(koTable);
+        }
+
         container.appendChild(wrapper);
     },
 
@@ -839,10 +1222,16 @@ const Scoring = {
 
         UI.updateScoreDisplay();
         document.getElementById('scoring-modal').style.display = 'flex';
+
+        // Notify Ippon Board
+        console.log('[IPPON] Sending IPPON_START for matchId', m.matchId);
+        Network.send({ type: 'IPPON_START', matchId: m.matchId });
     },
 
     closeModal() {
         this.stopTimer();
+        const m = State.currentScoringMatch;
+        if (m) Network.send({ type: 'IPPON_STOP', matchId: m.matchId });
         document.getElementById('scoring-modal').style.display = 'none';
         State.currentScoringMatch = null;
     },
@@ -920,6 +1309,12 @@ const Scoring = {
 
     resetTimer() {
         this.stopTimer(); State.timer.remainingSeconds = 240; this.updateTimerUI();
+    },
+
+    // Set timer to a specific elapsed or remaining seconds from Ippon Board
+    setTimerSeconds(seconds) {
+        State.timer.remainingSeconds = Math.max(0, seconds);
+        this.updateTimerUI();
     },
 
     updateTimerUI() {

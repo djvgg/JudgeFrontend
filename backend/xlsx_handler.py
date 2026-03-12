@@ -7,7 +7,7 @@ from collections import defaultdict
 
 import pandas as pd
 
-from src.bracketData import ageGroups, getNextPowerOf2, weightBreakpoints
+from backend.bracket_data import ageGroups, getNextPowerOf2, weightBreakpoints
 
 columnCandidates = {
     "id":       ["Startnummer", "ID", "Id", "Teilnehmer-ID", "TeilnehmerID", "Nr", "Nummer"],

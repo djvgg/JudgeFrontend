@@ -1,0 +1,41 @@
+# Virtual environment — rebuilt inside image via pip install
+.venv/
+venv/
+env/
+ENV/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+*.spec
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+.ruff_cache/
+
+# Runtime outputs — not part of the image
+generated_brackets/
+*.pdf
+html/
+
+# Secrets — injected at runtime via docker-compose environment:
+.env
+
+# Git
+.git/
+.gitignore
+
+# Dev-only
+requirements-dev.txt

@@ -1,4 +1,4 @@
-from src.database import engine
+from backend.database import engine
 from sqlalchemy import text
 
 def seed():

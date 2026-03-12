@@ -1,0 +1,66 @@
+import os
+from logging.config import fileConfig
+
+from alembic import context
+from dotenv import load_dotenv
+from sqlalchemy import engine_from_config, pool
+
+# Load .env so DATABASE_URL is available
+load_dotenv(override=True)
+
+# Alembic Config object
+config = context.config
+
+# Set sqlalchemy.url from environment
+config.set_main_option("sqlalchemy.url", os.environ["DATABASE_URL"])
+
+# Logging setup
+if config.config_file_name is not None:
+    fileConfig(config.config_file_name)
+
+# Import all models so Alembic can detect them for autogenerate
+from backend.database import Base  # noqa: E402
+from backend.database import (  # noqa: F401
+    GroupModel,
+    BracketModel,
+    ParticipantModel,
+    GroupParticipantModel,
+    FightModel,
+)
+
+target_metadata = Base.metadata
+
+
+def run_migrations_offline() -> None:
+    url = config.get_main_option("sqlalchemy.url")
+    context.configure(
+        url=url,
+        target_metadata=target_metadata,
+        literal_binds=True,
+        dialect_opts={"paramstyle": "named"},
+        version_table="alembic_version_jf",  # Separate table from edv_backend
+    )
+    with context.begin_transaction():
+        context.run_migrations()
+
+
+def run_migrations_online() -> None:
+    connectable = engine_from_config(
+        config.get_section(config.config_ini_section, {}),
+        prefix="sqlalchemy.",
+        poolclass=pool.NullPool,
+    )
+    with connectable.connect() as connection:
+        context.configure(
+            connection=connection,
+            target_metadata=target_metadata,
+            version_table="alembic_version_jf",  # Separate table from edv_backend
+        )
+        with context.begin_transaction():
+            context.run_migrations()
+
+
+if context.is_offline_mode():
+    run_migrations_offline()
+else:
+    run_migrations_online()

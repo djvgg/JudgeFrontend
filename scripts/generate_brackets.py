@@ -15,8 +15,8 @@ import requests
 # Add parent directory to path to import modules
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.excelGenerator import generateBracketsForGroups
-from src.xlsxHandler import processXlsx
+from backend.excel_generator import generateBracketsForGroups
+from backend.xlsx_handler import processXlsx
 
 
 def main():

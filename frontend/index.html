@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=10">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#121212">
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -44,6 +44,9 @@
                     <h1 id="tournament-title">Turnier wird geladen...</h1>
                 </div>
                 <div class="header-controls">
+                    <div class="select-wrapper" onclick="UI.switchToBrackets('finished')" style="cursor:pointer" title="Fertige Brackets anzeigen">
+                        <span class="finished-brackets-btn">Fertige Brackets</span>
+                    </div>
                     <div class="table-badge">
                         <div class="select-wrapper">
                             <select id="table-select" class="table-select" onchange="switchTable(this.value)">
@@ -91,7 +94,7 @@
         <main id="brackets-view" style="display: none;">
             <div class="bracket-interface">
                 <div class="bracket-sidebar">
-                    <h3>Kategorie wählen</h3>
+                    <h3 id="bracket-sidebar-title">Kategorie wählen</h3>
                     <div id="bracket-category-list" class="category-list">
                         <!-- Loaded dynamically -->
                     </div>
@@ -100,6 +103,10 @@
                     <div class="bracket-header">
                         <button class="back-btn" onclick="UI.switchView('fights')">← Zurück zur Liste</button>
                         <h2 id="current-bracket-title">Kategorie wählen</h2>
+                        <div class="phase-toggle" id="phase-toggle" style="display:none">
+                            <button class="phase-btn active" id="phase-btn-wb" onclick="UI.setPhaseView('wb')">Gewinnerbaum</button>
+                            <button class="phase-btn" id="phase-btn-lb" onclick="UI.setPhaseView('lb')">Verliererseite</button>
+                        </div>
                     </div>
                     <div class="bracket-content">
                         <div id="bracket-visualization" class="bracket-viz">
@@ -185,7 +192,7 @@
         </div>
 
     </div>
-    <script src="app.js"></script>
+    <script src="app.js?v=12"></script>
 </body>
 
 </html>

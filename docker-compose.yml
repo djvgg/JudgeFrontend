@@ -1,0 +1,26 @@
+# SPDX-FileCopyrightText: 2026 TOP Team Combat Control
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"
+
+    # host.docker.internal resolves to the Windows host, which forwards to WSL2
+    # where PostgreSQL is running. This replaces the WSL IP in .env which is
+    # not reachable from inside a container.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - DATABASE_URL=postgresql://myuser:mypassword@host.docker.internal:5432/mydatabase
+
+    # Bind-mount source so --reload picks up edits without rebuilding the image
+    volumes:
+      - .:/app
+      # Prevent host __pycache__ from shadowing container's compiled .pyc files
+      - /app/__pycache__
+
+    restart: unless-stopped
