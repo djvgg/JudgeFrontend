@@ -154,6 +154,7 @@ def get_match_dict(fight_id: int, session):
         "status": "finished" if fight.status == "completed" else (fight.status or "upcoming"),
         "order": fight.fight_number or fight.id,
         "restTimeMin": 0,
+        "duration": fight.duration,
         "phase": fight.bracket_phase,
         "poolIndex": fight.pool_index,
         "bracketType": b_info[0].bracket_type if b_info else None,
@@ -245,6 +246,14 @@ def _advance_winner(fight: FightModel, session) -> FightModel | None:
             next_pos  = pos // 2
             next_slot = "p1" if pos % 2 == 0 else "p2"
         else:  # reduction round (even)
+            wb_r_upcoming = (lr + 2) // 2
+            wb_count = session.query(FightModel).filter(
+                FightModel.bracket_id == fight.bracket_id,
+                FightModel.bracket_phase == "wb",
+                FightModel.round == wb_r_upcoming
+            ).count()
+            if wb_count <= 1:
+                return None  # No WB losers dropping down from the final
             next_pos  = pos
             next_slot = "p1"
 
@@ -753,6 +762,7 @@ def get_matches():
                 "status": "finished" if f.status == "completed" else (f.status or "upcoming"),
                 "order": f.fight_number or f.id,
                 "restTimeMin": 0,
+                "duration": f.duration,
                 "phase": f.bracket_phase,
                 "poolIndex": f.pool_index,
                 "bracketType": b_info[0].bracket_type if b_info else None,
@@ -814,6 +824,9 @@ async def _handle_status_update(data: dict, session) -> None:
         return
 
     fight.status = data["status"]
+
+    if "duration" in data:
+        fight.duration = data["duration"]
 
     if data["status"] == "finished":
         winner_id = None
@@ -1044,6 +1057,41 @@ async def _ippon_start(match_id: int, match_dict: dict) -> None:
         print(f"Ippon Board TCP connection failed for match {match_id}: {e}")
 
 
+async def _handle_manual_override(data: dict, session) -> None:
+    fight = session.query(FightModel).filter(FightModel.id == data["matchId"]).first()
+    if not fight:
+        return
+    
+    if "p1Score" in data:
+        fight.score1 = data["p1Score"]
+    if "p2Score" in data:
+        fight.score2 = data["p2Score"]
+    if "duration" in data:
+        fight.duration = data["duration"]
+        
+    session.commit()
+    
+    # If the fight was already finished, we might need to re-evaluate the winner
+    if fight.status in ["completed", "finished", "bye"]:
+        # Basic re-evaluation just based on updated scores
+        try:
+            s1 = int(fight.score1 or 0)
+            s2 = int(fight.score2 or 0)
+        except (ValueError, TypeError):
+            s1, s2 = 0, 0
+        if s1 > s2:
+            fight.winner_id = fight.participant1_id
+        elif s2 > s1:
+            fight.winner_id = fight.participant2_id
+        else:
+            fight.winner_id = None # Tie
+        session.commit()
+    
+    match_dict = get_match_dict(fight.id, session)
+    if match_dict:
+        await manager.broadcast({"type": "SCORE_SYNC", "matchId": data["matchId"], "match": match_dict})
+
+
 async def _ippon_stop(match_id: int) -> None:
     """Close Ippon Board connection for this fight."""
     conn = _ippon_connections.pop(match_id, None)
@@ -1096,6 +1144,8 @@ async def websocket_endpoint(websocket: WebSocket):
                     await _handle_reorder(data, session)
                 elif msg_type == "STATUS_UPDATE":
                     await _handle_status_update(data, session)
+                elif msg_type == "MANUAL_OVERRIDE":
+                    await _handle_manual_override(data, session)
                 elif msg_type == "SIGNAL":
                     await manager.broadcast(data)
     except WebSocketDisconnect:

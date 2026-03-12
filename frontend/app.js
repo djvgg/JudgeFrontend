@@ -639,7 +639,10 @@ const UI = {
         if (allMatchesCategory.length === 0) return;
 
         const isPool = allMatchesCategory.some(m => m.poolIndex !== null && m.poolIndex !== undefined);
+        const phaseToggle = document.getElementById('phase-toggle');
+        
         if (isPool) {
+            if (phaseToggle) phaseToggle.style.display = 'none';
             this.renderPoolGrid(allMatchesCategory, viz);
             return;
         }
@@ -649,7 +652,7 @@ const UI = {
 
         // Detect double-elimination even before any LB fights exist in DB
         const isDouble = allMatchesCategory.some(m =>
-            m.bracketType === 'ko' || m.bracketType === 'double' || m.bracketType === 'DOUBLE_ELIMINATION'
+            m.bracketType === 'double' || m.bracketType === 'DOUBLE_ELIMINATION'
         );
 
         // Expand WB first so we can bootstrap LB from WB R0 when no LB fights exist yet
@@ -678,7 +681,6 @@ const UI = {
 
         // Show/hide phase toggle
         const hasLb = isDouble || lbMatches.length > 0;
-        const phaseToggle = document.getElementById('phase-toggle');
         if (phaseToggle) phaseToggle.style.display = hasLb ? 'flex' : 'none';
         const showingLb = hasLb && State.bracketPhaseView === 'lb';
         document.getElementById('phase-btn-wb')?.classList.toggle('active', !showingLb);
@@ -691,9 +693,12 @@ const UI = {
 
         // Build a map of matches and their children (matches that feed INTO them)
         const matchMap = new Map();
-        expandedAll.forEach(m => matchMap.set(m.matchId, { ...m, children: [] }));
+        
+        // Add BOTH WB and LB matches to matchMap so we can trace cross-phase children
+        expandedWb.forEach(m => matchMap.set(m.matchId, { ...m, children: [] }));
+        expandedLb.forEach(m => matchMap.set(m.matchId, { ...m, children: [] }));
 
-        expandedAll.forEach(m => {
+        matchMap.forEach(m => {
             if (m.nextMatchId && matchMap.has(m.nextMatchId)) {
                 const parent = matchMap.get(m.nextMatchId);
                 parent.children.push(m.matchId);
@@ -833,7 +838,13 @@ const UI = {
                 const startX = pos.x + MATCH_WIDTH + OFFSET_X;
                 const startY = pos.y + MATCH_HEIGHT / 2 + OFFSET_Y;
                 const endX = parentPos.x + OFFSET_X;
-                const endY = parentPos.y + MATCH_HEIGHT / 2 + OFFSET_Y;
+                let endY = parentPos.y + MATCH_HEIGHT / 2 + OFFSET_Y;
+                
+                if (m.nextMatchPos === 'p1') {
+                    endY = parentPos.y + (MATCH_HEIGHT * 0.25) + OFFSET_Y;
+                } else if (m.nextMatchPos === 'p2') {
+                    endY = parentPos.y + (MATCH_HEIGHT * 0.75) + OFFSET_Y;
+                }
 
                 const path = document.createElementNS(svgNS, "path");
                 const midX = startX + (endX - startX) / 2;
@@ -888,7 +899,9 @@ const UI = {
             // (pre-filled from a bye or previous result), show the name — not "Winner X".
             const slotInfo = (p, child, won) => {
                 if (child && p.id === 'WAIT') {
-                    const label = child.fightNr ? `Winner ${child.fightNr}` : '?';
+                    const isFromWb = child.phase === 'wb' && m.phase === 'lb';
+                    const prefix = isFromWb ? 'Loser' : 'Winner';
+                    const label = child.fightNr ? `${prefix} ${child.fightNr}` : '?';
                     return { label, cls: 'edv-pending', score: null };
                 }
                 const isBye = !p.lastName || p.lastName === 'TBD' || p.id === 'WAIT';
@@ -908,19 +921,19 @@ const UI = {
                 ? { label: 'Freilos', cls: 'edv-freilos', score: null }
                 : slotInfo(m.p2, childP2, p2Won);
 
-            const scoreHtml = (s) => s.score !== null
-                ? `<span class="edv-score">${s.score}</span>` : '';
+            const scoreHtml = (s, pNum) => s.score !== null
+                ? `<span class="edv-score editable-score" contenteditable="true" data-match="${m.matchId}" data-player="${pNum}" onblur="App.handleInlineScoreEdit(event)">${s.score}</span>` : '';
 
             const node = document.createElement('div');
             node.className = `edv-node absolute-node ${m.phase === 'lb' ? 'edv-lb' : ''}`;
             node.style.cssText = `position:absolute;left:${pos.x + OFFSET_X}px;top:${pos.y + OFFSET_Y}px;width:${MATCH_WIDTH}px;`;
             node.innerHTML = `
                 <div class="edv-slot ${s1.cls}">
-                    <span class="edv-name">${s1.label}</span>${scoreHtml(s1)}
+                    <span class="edv-name">${s1.label}</span>${scoreHtml(s1, 1)}
                 </div>
                 <div class="edv-divider"></div>
                 <div class="edv-slot ${s2.cls}">
-                    <span class="edv-name">${s2.label}</span>${scoreHtml(s2)}
+                    <span class="edv-name">${s2.label}</span>${scoreHtml(s2, 2)}
                 </div>
             `;
             viz.appendChild(node);
@@ -1051,8 +1064,17 @@ const UI = {
                             const oppPts = Number(isP1 ? (m.p2.score?.points ?? 0) : (m.p1.score?.points ?? 0));
                             const won = String(m.winnerId) === String(f.id);
                             td.className = `ptd ${won ? 'ptd-win' : 'ptd-loss'}`;
-                            // Show "myScore | oppScore" — mirrored for each row
-                            td.innerHTML = `<span class="ps-my">${myPts}</span><span class="ps-sep">|</span><span class="ps-opp">${oppPts}</span>`;
+                            // Show "myScore | oppScore" mirrored, and make them editable
+                            const p1Num = isP1 ? 1 : 2;
+                            const p2Num = isP1 ? 2 : 1;
+                            td.innerHTML = `
+                                <span class="ps-my editable-score" contenteditable="true" 
+                                      data-match="${m.matchId}" data-player="${p1Num}"
+                                      onblur="App.handleInlineScoreEdit(event)">${myPts}</span>
+                                <span class="ps-sep">|</span>
+                                <span class="ps-opp editable-score" contenteditable="true" 
+                                      data-match="${m.matchId}" data-player="${p2Num}"
+                                      onblur="App.handleInlineScoreEdit(event)">${oppPts}</span>`;
                         }
                     }
                     tr.appendChild(td);
@@ -1072,18 +1094,27 @@ const UI = {
             tdLabel.textContent = 'Kampfzeit';
             trTime.appendChild(tdLabel);
             for (let i = 0; i < numFights; i++) {
-                trTime.appendChild(Object.assign(document.createElement('td'), { className: 'ptd ptd-time' }));
+                const trTd = document.createElement('td');
+                trTd.className = 'ptd ptd-time editable-time';
+                trTd.contentEditable = 'true';
+                
+                const m = pm[i];
+                if (m && (m.status === 'finished' || m.status === 'completed') && m.duration != null) {
+                    trTd.textContent = UI.formatTime(m.duration);
+                }
+                
+                if (m) {
+                    trTd.dataset.match = m.matchId;
+                    trTd.onblur = (e) => App.handleInlineTimeEdit(e);
+                }
+                
+                trTime.appendChild(trTd);
             }
             const tdSumSpacer = document.createElement('td');
             tdSumSpacer.colSpan = 3; tdSumSpacer.className = 'ptd';
             trTime.appendChild(tdSumSpacer);
 
             wrapper.appendChild(tbl);
-
-            const footer = document.createElement('div');
-            footer.className = 'pool-footer';
-            footer.textContent = `${fList.length} Kämpfer • Round-Robin Format`;
-            wrapper.appendChild(footer);
         }
 
         // KO phase: WB fights generated after both pools complete
@@ -1347,7 +1378,8 @@ const Scoring = {
     finishMatch() {
         if (!State.currentScoringMatch) return;
         State.currentScoringMatch.status = 'finished';
-        Network.send({ type: 'STATUS_UPDATE', matchId: State.currentScoringMatch.matchId, status: 'finished' });
+        const duration = 240 - Math.max(0, State.timer.remainingSeconds);
+        Network.send({ type: 'STATUS_UPDATE', matchId: State.currentScoringMatch.matchId, status: 'finished', duration: duration });
         this.closeModal();
         UI.renderFightList();
     }
@@ -1417,6 +1449,48 @@ const App = {
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(console.error);
         }
+    },
+
+    handleInlineScoreEdit(e) {
+        const el = e.target;
+        const matchId = parseInt(el.dataset.match, 10);
+        const playerNum = parseInt(el.dataset.player, 10);
+        const newScore = parseInt(el.textContent, 10);
+
+        if (isNaN(newScore)) return;
+
+        console.log(`Manual Score Edit: Match ${matchId}, P${playerNum} -> ${newScore}`);
+        Network.send({
+            type: 'MANUAL_OVERRIDE',
+            matchId: matchId,
+            ...(playerNum === 1 ? { p1Score: newScore } : { p2Score: newScore })
+        });
+    },
+
+    handleInlineTimeEdit(e) {
+        const el = e.target;
+        const matchId = parseInt(el.dataset.match, 10);
+        const rawTime = el.textContent.trim();
+
+        if (!rawTime) return;
+
+        // Parse MM:SS or raw seconds
+        let newDuration = 0;
+        if (rawTime.includes(':')) {
+            const parts = rawTime.split(':');
+            newDuration = parseInt(parts[0] || '0', 10) * 60 + parseInt(parts[1] || '0', 10);
+        } else {
+            newDuration = parseInt(rawTime, 10);
+        }
+
+        if (isNaN(newDuration)) return;
+
+        console.log(`Manual Time Edit: Match ${matchId} -> ${newDuration}s`);
+        Network.send({
+            type: 'MANUAL_OVERRIDE',
+            matchId: matchId,
+            duration: newDuration
+        });
     }
 };
 

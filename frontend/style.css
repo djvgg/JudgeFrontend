@@ -48,6 +48,26 @@ body {
     min-height: 100vh;
 }
 
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-secondary);
+}
+
 h1,
 h2,
 h3,
@@ -624,12 +644,34 @@ input:checked+.slider:before {
     font-size: 0.82rem;
     padding: 8px 12px;
 }
-.pth-startnr { min-width: 54px; }
-.pth-name    { min-width: 260px; text-align: left !important; }
-.pth-kampfnr { min-width: 110px; }
-.pth-sub     { font-size: 0.76rem; padding: 5px 8px; min-width: 52px; color: #6a8fa8; }
-.pth-fight   { min-width: 72px; }
-.pth-sum     { min-width: 64px; }
+
+.pth-startnr {
+    min-width: 54px;
+}
+
+.pth-name {
+    min-width: 260px;
+    text-align: left !important;
+}
+
+.pth-kampfnr {
+    min-width: 110px;
+}
+
+.pth-sub {
+    font-size: 0.76rem;
+    padding: 5px 8px;
+    min-width: 52px;
+    color: #6a8fa8;
+}
+
+.pth-fight {
+    min-width: 72px;
+}
+
+.pth-sum {
+    min-width: 64px;
+}
 
 /* Data cells */
 .pool-edv-table .ptd {
@@ -637,43 +679,133 @@ input:checked+.slider:before {
     background: #202c3a;
     height: 38px;
 }
-.ptd-startnr { font-weight: 600; color: #8ab4cc; font-size: 0.95rem; }
-.ptd-name    { text-align: left; font-weight: 500; min-width: 260px; font-size: 0.9rem; }
-.ptd-lbl     { font-size: 0.76rem; color: #6a8fa8; min-width: 52px; }
+
+.ptd-startnr {
+    font-weight: 600;
+    color: #8ab4cc;
+    font-size: 0.95rem;
+}
+
+.ptd-name {
+    text-align: left;
+    font-weight: 500;
+    min-width: 260px;
+    font-size: 0.9rem;
+}
+
+.ptd-lbl {
+    font-size: 0.76rem;
+    color: #6a8fa8;
+    min-width: 52px;
+}
 
 /* Fight result cells — show "myScore | oppScore" */
-.ptd-nopart  { background: #111820 !important; }          /* black — not participating */
-.ptd-pending { background: #202c3a; min-width: 72px; }    /* empty — fight pending     */
-.ptd-win     { background: rgba(33,150,243,0.12); font-weight: 700; min-width: 72px; }
-.ptd-loss    { min-width: 72px; }
+.ptd-nopart {
+    background: #111820 !important;
+}
+
+/* black — not participating */
+.ptd-pending {
+    background: #202c3a;
+    min-width: 72px;
+}
+
+/* empty — fight pending     */
+.ptd-win {
+    background: rgba(33, 150, 243, 0.12);
+    font-weight: 700;
+    min-width: 72px;
+}
+
+.ptd-loss {
+    min-width: 72px;
+}
 
 /* Score display inside fight cells */
-.ps-my  { color: #64b0e0; font-weight: 700; font-size: 1rem; }
-.ps-sep { color: #3a4a5c; margin: 0 4px; font-size: 0.85rem; }
-.ps-opp { color: #8a9aaa; font-size: 0.9rem; }
-.ptd-loss .ps-my  { color: #8a9aaa; font-weight: 400; }
-.ptd-loss .ps-opp { color: #64b0e0; font-weight: 700; font-size: 1rem; }
+.ps-my {
+    color: #64b0e0;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.ps-sep {
+    color: #3a4a5c;
+    margin: 0 4px;
+    font-size: 0.85rem;
+}
+
+.ps-opp {
+    color: #8a9aaa;
+    font-size: 0.9rem;
+}
+
+.ptd-loss .ps-my {
+    color: #8a9aaa;
+    font-weight: 400;
+}
+
+.ptd-loss .ps-opp {
+    color: #64b0e0;
+    font-weight: 700;
+    font-size: 1rem;
+}
 
 /* Summary columns */
-.ptd-sum { background: #1a2535; font-weight: 600; font-size: 0.95rem; }
+.ptd-sum {
+    background: #1a2535;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
 
 /* Kampfzeit row */
-.pool-kampfzeit-row .ptd { background: #1a2535; }
-.ptd-kampfzeit { color: #64b0e0; font-weight: 600; text-align: left; font-size: 0.85rem; }
+.pool-kampfzeit-row .ptd {
+    background: #1a2535;
+}
+
+.ptd-kampfzeit {
+    color: #64b0e0;
+    font-weight: 600;
+    text-align: left;
+    font-size: 0.85rem;
+}
+
 .ptd-time {
     min-width: 72px;
     height: 30px;
     background: #2a3f52;
     border: 1px solid #4a7a9b !important;
-    cursor: pointer;
+    cursor: text;
     transition: background 0.15s;
+    text-align: center;
 }
 .ptd-time:hover { background: #355570; }
+.ptd-time:focus { outline: 2px solid var(--accent-color); background-color: rgba(0, 0, 0, 0.5); }
+
+.editable-score:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    cursor: text;
+    padding: 0 4px;
+}
+.editable-score:focus {
+    outline: 2px solid var(--accent-color);
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+    padding: 0 4px;
+}
 
 /* Pool leader highlight */
-.pool-edv-table tr.pool-leader .ptd-name    { color: #f0c040; }
-.pool-edv-table tr.pool-leader .ptd-sum     { color: #f0c040; }
-.pool-edv-table tr.pool-leader .ptd-startnr { color: #f0c040; }
+.pool-edv-table tr.pool-leader .ptd-name {
+    color: #f0c040;
+}
+
+.pool-edv-table tr.pool-leader .ptd-sum {
+    color: #f0c040;
+}
+
+.pool-edv-table tr.pool-leader .ptd-startnr {
+    color: #f0c040;
+}
 
 .pool-footer {
     font-size: 0.75rem;
@@ -692,7 +824,11 @@ input:checked+.slider:before {
     border-top: 1px solid #3a4a5c;
     padding-top: 1rem;
 }
-.pool-ko-table { width: auto; }
+
+.pool-ko-table {
+    width: auto;
+}
+
 .ptd-ko-score {
     min-width: 80px;
     font-weight: 700;
@@ -1160,7 +1296,7 @@ input:checked+.slider:before {
 
 .phase-btn:not(.active):hover {
     color: var(--text-main);
-    background: rgba(255,255,255,0.06);
+    background: rgba(255, 255, 255, 0.06);
 }
 
 
@@ -1757,4 +1893,5 @@ input:checked+.slider:before {
 .fight-card.bye .fighter-name {
     font-size: 1.1rem;
     color: var(--text-muted);
-}
+}. e d i t a b l e - s c o r e ,   . e d i t a b l e - t i m e   {   c u r s o r :   t e x t ;   }  
+ 
