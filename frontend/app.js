@@ -82,6 +82,7 @@ const Network = {
             const m = State.currentScoringMatch;
             if (m && m.matchId === data.matchId && data.data) {
                 const d = data.data;
+                console.log('[IPPON] update received:', d);
 
                 // Board sends fighter1/fighter2 objects
                 const s1 = d.fighter1 ?? d.p1 ?? d.blue ?? null;
@@ -127,6 +128,15 @@ const Network = {
                     } else {
                         Scoring.setTimerSeconds(Number(t));
                     }
+                }
+
+                // Fight decision from the board (winner field set by board when fight ends)
+                // Guard with _ipponWon to avoid triggering multiple times per fight
+                if (d.winner && d.winner !== 'none' && !m._ipponWon) {
+                    m._ipponWon = true;
+                    const winnerPlayerNum = d.winner === 'fighter1' ? 1 : 2;
+                    console.log(`[IPPON] fight decided by board: fighter${winnerPlayerNum} wins`);
+                    winByDecision(winnerPlayerNum);
                 }
 
                 UI.updateScoreDisplay();
@@ -1238,6 +1248,7 @@ const Scoring = {
 
         UI.updateScoreDisplay();
         document.getElementById('scoring-modal').style.display = 'flex';
+        console.log('[IPPON] sending IPPON_START, matchId:', m.matchId, '| WS state:', Network.socket?.readyState);
         Network.send({ type: 'IPPON_START', matchId: m.matchId });
     },
 
