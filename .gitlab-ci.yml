@@ -15,7 +15,7 @@ lint:
   stage: lint
   script:
     - echo "Running ruff linter..."
-    - ruff check src/ main.py scripts/
+    - ruff check backend/ main.py scripts/ migrations/
     - echo "Code quality check passed"
   allow_failure: false
 
@@ -23,21 +23,21 @@ build:
     stage: build
     script:
       - echo "Checking Python syntax..."
-      - python -m compileall src/ main.py scripts/
+      - python -m compileall backend/ main.py scripts/ migrations/
       - echo "Syntax check passed"
 
 test:
   stage: test
   script:
     - echo "Running import smoke tests..."
-    - python -c "from src.bracketData import ageGroups, getNextPowerOf2; print('bracketData OK')"
-    - python -c "from src.xlsxHandler import processXlsx; print('xlsxHandler OK')"
-    - python -c "from src.excelGenerator import generateBracketsForGroups; print('excelGenerator OK')"
+    - python -c "from backend.bracket_data import ageGroups, getNextPowerOf2; print('bracketData OK')"
+    - python -c "from backend.xlsx_handler import processXlsx; print('xlsxHandler OK')"
+    - python -c "from backend.excel_generator import generateBracketsForGroups; print('excelGenerator OK')"
     - echo "All modules import successfully"
 
 integration_test:
   stage: test
   script:
     - echo "Running basic integration test..."
-    - python -c "from src.bracketData import getNextPowerOf2; result = getNextPowerOf2(17); assert result == 32; print('Bracket logic OK')"
+    - python -c "from backend.bracket_data import getNextPowerOf2; result = getNextPowerOf2(17); assert result == 32; print('Bracket logic OK')"
     - echo "Integration test passed"
