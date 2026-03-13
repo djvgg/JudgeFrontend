@@ -778,8 +778,15 @@ input:checked+.slider:before {
     transition: background 0.15s;
     text-align: center;
 }
-.ptd-time:hover { background: #355570; }
-.ptd-time:focus { outline: 2px solid var(--accent-color); background-color: rgba(0, 0, 0, 0.5); }
+
+.ptd-time:hover {
+    background: #355570;
+}
+
+.ptd-time:focus {
+    outline: 2px solid var(--accent-color);
+    background-color: rgba(0, 0, 0, 0.5);
+}
 
 .editable-score:hover {
     background-color: rgba(255, 255, 255, 0.1);
@@ -787,6 +794,7 @@ input:checked+.slider:before {
     cursor: text;
     padding: 0 4px;
 }
+
 .editable-score:focus {
     outline: 2px solid var(--accent-color);
     background-color: rgba(0, 0, 0, 0.5);
@@ -1885,6 +1893,201 @@ input:checked+.slider:before {
 }
 
 /* Freilos (Bye) Card Styling */
+
+
+.loser-bracket {
+    border-color: rgba(255, 152, 0, 0.5);
+}
+
+.loser-bracket .m-phase {
+    color: #FF9800;
+}
+
+
+
+
+.match-node-p {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.match-node-p:last-child {
+    border-bottom: none;
+}
+
+.match-node-p.winner {
+    background: rgba(0, 230, 118, 0.1);
+    color: var(--success-color);
+}
+
+.match-node-p.winner .p-score-box {
+    background: var(--success-color);
+    color: #000;
+}
+
+.p-name {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 10px;
+}
+
+.p-score-box {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-weight: 800;
+    min-width: 24px;
+    text-align: center;
+}
+
+/* =========================================================================
+   12. Admin Dashboard (Kanban)
+   ========================================================================= */
+
+.kanban-board {
+    display: flex;
+    gap: 20px;
+    height: calc(100vh - var(--header-height) - 40px);
+    overflow-x: auto;
+    padding: 20px;
+}
+
+.kanban-column {
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    width: 320px;
+    min-width: 320px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--border-color);
+}
+
+.column-header {
+    padding: 15px;
+    font-weight: 600;
+    text-align: center;
+    border-bottom: 2px solid var(--bg-tertiary);
+    border-radius: 8px 8px 0 0;
+    font-size: 1.1rem;
+    color: var(--text-main);
+    background-color: var(--bg-tertiary);
+}
+
+.column-header.t1 {
+    border-top: 4px solid var(--success-color);
+}
+
+.column-header.t2 {
+    border-top: 4px solid var(--warning-color);
+}
+
+.column-header.t3 {
+    border-top: 4px solid var(--accent-color);
+}
+
+.column-header.t4 {
+    border-top: 4px solid var(--error-color);
+}
+
+.column-header.unassigned {
+    border-top: 4px solid var(--text-muted);
+}
+
+.kanban-content {
+    padding: 15px;
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.kanban-content.drag-over {
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: 6px;
+    border: 2px dashed var(--accent-color);
+}
+
+.bracket-card {
+    background-color: var(--bg-primary);
+    border-radius: 6px;
+    padding: 15px;
+    cursor: grab;
+    user-select: none;
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--accent-secondary);
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.bracket-card:active {
+    cursor: grabbing;
+}
+
+.bracket-card.dragging {
+    opacity: 0.5;
+    transform: scale(1.02);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.5);
+    border-color: var(--accent-color);
+}
+
+.bracket-card:hover {
+    border-left-color: var(--accent-color);
+}
+
+.bracket-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-main);
+}
+
+.bracket-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.progress-bar-bg {
+    background-color: var(--bg-tertiary);
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    background-color: var(--accent-color);
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+/* Pool Matrix Leader Highlighting */
+.pool-leader {
+    background: rgba(255, 215, 0, 0.1) !important;
+}
+
+.pool-leader .fighter-col {
+    color: #FFD700 !important;
+    font-weight: 800;
+}
+
+.pool-leader .total-col {
+    color: #FFD700 !important;
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+
+/* Freilos (Bye) Card Styling */
 .fight-card.bye {
     opacity: 0.7;
     background: rgba(255, 255, 255, 0.02);
@@ -1893,5 +2096,9 @@ input:checked+.slider:before {
 .fight-card.bye .fighter-name {
     font-size: 1.1rem;
     color: var(--text-muted);
-}. e d i t a b l e - s c o r e ,   . e d i t a b l e - t i m e   {   c u r s o r :   t e x t ;   }  
- 
+}
+
+.editable-score,
+.editable-time {
+    cursor: text;
+}

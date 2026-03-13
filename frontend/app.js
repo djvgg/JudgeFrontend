@@ -91,10 +91,10 @@ const Network = {
                 // 3 shidos = hansoku-make → opponent gets 10
                 const judoToPoints = (s) => {
                     if (!s) return 0;
-                    const ippon  = Number(s.ippon   ?? 0);
-                    const waza   = Number(s.wazaari ?? s.waza_ari ?? 0);
-                    const yuko   = Number(s.yuko    ?? 0);
-                    const shido  = Number(s.shido   ?? 0);
+                    const ippon = Number(s.ippon ?? 0);
+                    const waza = Number(s.wazaari ?? s.waza_ari ?? 0);
+                    const yuko = Number(s.yuko ?? 0);
+                    const shido = Number(s.shido ?? 0);
                     if (ippon >= 1 || waza >= 2) return 10;
                     if (shido >= 3) return -1; // hansoku-make: this fighter loses
                     if (waza >= 1) return 7;
@@ -385,10 +385,16 @@ const UI = {
             </div>
             <div class="fighters-display">
                 ${match.status === 'bye' ? `
-                    <div class="fighter p1" style="flex: 1; text-align: center;">
-                        <span class="fighter-name">${match.p1.lastName} ${match.p1.firstName}</span>
-                        <span class="fighter-club">${match.p1.club}</span>
-                        <div style="margin-top: 10px; font-weight: 800; color: var(--accent-color); letter-spacing: 2px;">FREILOS</div>
+                    <div class="fighters-display" style="flex: 1; justify-content: space-around;">
+                        <div class="fighter p1">
+                            <span class="fighter-name">${match.p1.lastName} ${match.p1.firstName}</span>
+                            <span class="fighter-club">${match.p1.club}</span>
+                        </div>
+                        <div class="vs-divider" style="opacity: 0.5;">VS</div>
+                        <div class="fighter p2" style="opacity: 0.4;">
+                            <span class="fighter-name">${match.p1.lastName} ${match.p1.firstName}</span>
+                            <span class="fighter-club">${match.p1.club}</span>
+                        </div>
                     </div>
                 ` : `
                     <div class="fighter p1">
@@ -644,7 +650,7 @@ const UI = {
 
         const isPool = allMatchesCategory.some(m => m.poolIndex !== null && m.poolIndex !== undefined);
         const phaseToggle = document.getElementById('phase-toggle');
-        
+
         if (isPool) {
             if (phaseToggle) phaseToggle.style.display = 'none';
             this.renderPoolGrid(allMatchesCategory, viz);
@@ -677,7 +683,7 @@ const UI = {
 
         // Build a map of matches and their children (matches that feed INTO them)
         const matchMap = new Map();
-        
+
         // Add BOTH WB and LB matches to matchMap so we can trace cross-phase children
         expandedWb.forEach(m => matchMap.set(m.matchId, { ...m, children: [] }));
         expandedLb.forEach(m => matchMap.set(m.matchId, { ...m, children: [] }));
@@ -823,7 +829,7 @@ const UI = {
                 const startY = pos.y + MATCH_HEIGHT / 2 + OFFSET_Y;
                 const endX = parentPos.x + OFFSET_X;
                 let endY = parentPos.y + MATCH_HEIGHT / 2 + OFFSET_Y;
-                
+
                 if (m.nextMatchPos === 'p1') {
                     endY = parentPos.y + (MATCH_HEIGHT * 0.25) + OFFSET_Y;
                 } else if (m.nextMatchPos === 'p2') {
@@ -881,7 +887,7 @@ const UI = {
             // Determine label + CSS class for each participant slot.
             // If a child match feeds this slot but the participant is already known
             // (pre-filled from a bye or previous result), show the name — not "Winner X".
-            const slotInfo = (p, child, won) => {
+            const slotInfo = (p, child, won, isSecondByeSlot = false) => {
                 if (child && p.id === 'WAIT') {
                     const isFromWb = child.phase === 'wb' && m.phase === 'lb';
                     const prefix = isFromWb ? 'Loser' : 'Winner';
@@ -889,20 +895,21 @@ const UI = {
                     return { label, cls: 'edv-pending', score: null };
                 }
                 const isBye = !p.lastName || p.lastName === 'TBD' || p.id === 'WAIT';
-                if (isBye) return { label: 'Freilos', cls: 'edv-freilos', score: null };
+                if (isBye) return { label: '-', cls: 'edv-freilos', score: null };
                 const name = p.lastName + (p.firstName ? ', ' + p.firstName : '');
                 const club = p.club ? ` [${p.club}]` : '';
                 const score = m.status !== 'upcoming' ? (p.score?.points ?? 0) : null;
-                return { label: name + club, cls: won ? 'edv-winner' : 'edv-participant', score };
+                const cls = won ? 'edv-winner' : 'edv-participant';
+                return { label: name + club, cls, score, style: isSecondByeSlot ? 'opacity:0.4' : '' };
             };
 
-            // Bye fight: same participant in both slots → show participant once, Freilos for the other
+            // Bye fight: same participant in both slots → show participant once, then dimmed duplicate
             const isByeFight = m.status === 'bye' ||
-                (m.p1.id !== 'WAIT' && m.p2.id !== 'WAIT' && String(m.p1.id) === String(m.p2.id));
+                (m.p1.id !== 'WAIT' && m.p2.id !== 'WAIT' && String(m.p1.id) === String(m.winnerId || m.p1.id) && String(m.p1.id) === String(m.p2.id));
 
             const s1 = slotInfo(m.p1, childP1, isByeFight || p1Won);
             const s2 = isByeFight
-                ? { label: 'Freilos', cls: 'edv-freilos', score: null }
+                ? slotInfo(m.p1, null, false, true)
                 : slotInfo(m.p2, childP2, p2Won);
 
             const scoreHtml = (s, pNum) => s.score !== null
@@ -912,11 +919,11 @@ const UI = {
             node.className = `edv-node absolute-node ${m.phase === 'lb' ? 'edv-lb' : ''}`;
             node.style.cssText = `position:absolute;left:${pos.x + OFFSET_X}px;top:${pos.y + OFFSET_Y}px;width:${MATCH_WIDTH}px;`;
             node.innerHTML = `
-                <div class="edv-slot ${s1.cls}">
+                <div class="edv-slot ${s1.cls}" style="${s1.style || ''}">
                     <span class="edv-name">${s1.label}</span>${scoreHtml(s1, 1)}
                 </div>
                 <div class="edv-divider"></div>
-                <div class="edv-slot ${s2.cls}">
+                <div class="edv-slot ${s2.cls}" style="${s2.style || ''}">
                     <span class="edv-name">${s2.label}</span>${scoreHtml(s2, 2)}
                 </div>
             `;
@@ -1045,7 +1052,7 @@ const UI = {
                         if (!done) {
                             td.className = 'ptd ptd-pending';
                         } else {
-                            const myPts  = Number(isP1 ? (m.p1.score?.points ?? 0) : (m.p2.score?.points ?? 0));
+                            const myPts = Number(isP1 ? (m.p1.score?.points ?? 0) : (m.p2.score?.points ?? 0));
                             const oppPts = Number(isP1 ? (m.p2.score?.points ?? 0) : (m.p1.score?.points ?? 0));
                             const won = String(m.winnerId) === String(f.id);
                             td.className = `ptd ${won ? 'ptd-win' : 'ptd-loss'}`;
@@ -1082,17 +1089,17 @@ const UI = {
                 const trTd = document.createElement('td');
                 trTd.className = 'ptd ptd-time editable-time';
                 trTd.contentEditable = 'true';
-                
+
                 const m = pm[i];
                 if (m && (m.status === 'finished' || m.status === 'completed') && m.duration != null) {
                     trTd.textContent = UI.formatTime(m.duration);
                 }
-                
+
                 if (m) {
                     trTd.dataset.match = m.matchId;
                     trTd.onblur = (e) => App.handleInlineTimeEdit(e);
                 }
-                
+
                 trTime.appendChild(trTd);
             }
             const tdSumSpacer = document.createElement('td');

@@ -1,8 +1,11 @@
 import asyncio as _asyncio
 import json as _json
+import logging as _logging
 import math as _math
 import os as _os
+import sys as _sys
 from contextlib import asynccontextmanager, suppress
+from datetime import datetime
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
@@ -19,10 +22,21 @@ from backend.database import (
     init_db,
 )
 
+# --- LOGGING SETUP ---
+_logging.basicConfig(
+    level=_logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(name)s: %(message)s',
+    handlers=[
+        _logging.FileHandler("tournament.log", encoding='utf-8'),
+        _logging.StreamHandler(_sys.stdout)
+    ]
+)
+logger = _logging.getLogger("JudoApp")
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Initialize DB (create tables if needed)
+    logger.info("Starting up Judo Real-Time API...")
     init_db()
     with SessionLocal() as session:
         # Pre-create WB R1+ and all LB fight shells for every double-elimination
@@ -43,6 +57,7 @@ async def lifespan(app: FastAPI):
             generate_lb_fights(b.id, session)
         session.commit()
         # Catch up with any fights finished externally while the server was down
+        logger.info("Healing bracket progressions...")
         heal_bracket_progressions(session)
     yield
 
@@ -56,6 +71,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.middleware("http")
+async def log_requests(request, call_next):
+    start_time = datetime.now()
+    response = await call_next(request)
+    duration = (datetime.now() - start_time).total_seconds()
+    logger.info(f"API {request.method} {request.url.path} - Status: {response.status_code} - {duration:.3f}s")
+    return response
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request, exc):
+    logger.error(f"Global Error: {request.method} {request.url.path} - {str(exc)}", exc_info=True)
+    from fastapi.responses import JSONResponse
+    return JSONResponse(
+        status_code=500,
+        content={"detail": f"Serverfehler: {str(exc)}"}
+    )
+
 # --- WebSocket Manager ---
 
 class ConnectionManager:
@@ -65,11 +97,15 @@ class ConnectionManager:
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
         self.active_connections.append(websocket)
+        logger.info(f"New client connected. Total connections: {len(self.active_connections)}")
 
     def disconnect(self, websocket: WebSocket):
-        self.active_connections.remove(websocket)
+        if websocket in self.active_connections:
+            self.active_connections.remove(websocket)
+            logger.info(f"Client disconnected. Total connections: {len(self.active_connections)}")
 
     async def broadcast(self, message: dict):
+        logger.debug(f"Broadcasting message: {message.get('type')}")
         for connection in self.active_connections:
             with suppress(Exception):
                 await connection.send_json(message)
@@ -267,6 +303,7 @@ def _advance_winner(fight: FightModel, session) -> FightModel | None:
 
         next_fight = _make_fight(fight.bracket_id, "lb", lr + 1, next_pos, fight.table_id, session)
         _fill_slot(next_fight, next_slot, winner_id, session)
+        logger.info(f"Advancing Winner {winner_id} from Fight {fight.id} to LB Fight {next_fight.id} ({next_slot})")
         return next_fight
 
     # ── Winners Bracket ───────────────────────────────────────────────────────
@@ -285,11 +322,11 @@ def _advance_winner(fight: FightModel, session) -> FightModel | None:
         fight.bracket_id, lr, pos, fight.bracket_phase
     )
     next_fight = _make_fight(
-        fight.bracket_id, next_coord["phase"],
-        next_coord["round"], next_coord["pos"],
+        fight.bracket_id, next_coord["phase"], next_coord["round"], next_coord["pos"],
         fight.table_id, session,
     )
     _fill_slot(next_fight, next_coord["slot"], winner_id, session)
+    logger.info(f"Advancing Winner {winner_id} from Fight {fight.id} to {next_coord['phase'].upper()} Fight {next_fight.id} ({next_coord['slot']})")
     return next_fight
 
 
@@ -790,6 +827,7 @@ async def _handle_score_update(data: dict, session) -> None:
     fight = session.query(FightModel).filter(FightModel.id == data["matchId"]).first()
     if not fight:
         return
+    logger.info(f"Score Update: Match {fight.id}, P{data['playerNum']} -> {data['value']}")
     if not fight.participant1_id or not fight.participant2_id:
         return
     if data["playerNum"] == 1:
@@ -809,6 +847,7 @@ async def _handle_reassign_bracket(data: dict, session) -> None:
         return
     try:
         bracket_id_int = int(b_id_str.replace("Bracket ", "")) if "Bracket" in b_id_str else int(b_id_str)
+        logger.info(f"Reassigning Bracket {bracket_id_int} to Table {new_table}")
         fights = session.query(FightModel).filter(FightModel.bracket_id == bracket_id_int).all()
         for f in fights:
             if f.status not in ["completed", "bye"]:
@@ -820,6 +859,7 @@ async def _handle_reassign_bracket(data: dict, session) -> None:
 
 
 async def _handle_reorder(data: dict, session) -> None:
+    logger.info(f"Reordering {len(data['orders'])} fights")
     for m_id, order in data["orders"].items():
         session.query(FightModel).filter(FightModel.id == int(m_id)).update({"fight_number": order})
     session.commit()
@@ -833,6 +873,7 @@ async def _handle_status_update(data: dict, session) -> None:
     if data["status"] == "finished" and (not fight.participant1_id or not fight.participant2_id):
         return
 
+    logger.info(f"Status Update: Match {fight.id} -> {data['status']}")
     fight.status = data["status"]
 
     if "duration" in data:
@@ -858,6 +899,7 @@ async def _handle_status_update(data: dict, session) -> None:
 
         if winner_id:
             fight.winner_id = winner_id
+            logger.info(f"MATCH_FINISHED: Fight {fight.id}, Winner: {winner_id}, Duration: {fight.duration}s")
             session.commit()
             try:
                 bracket = session.query(BracketModel).filter(BracketModel.id == fight.bracket_id).first()
@@ -1066,6 +1108,7 @@ async def _handle_manual_override(data: dict, session) -> None:
     fight = session.query(FightModel).filter(FightModel.id == data["matchId"]).first()
     if not fight:
         return
+    logger.info(f"MANUAL_OVERRIDE: Match {fight.id}, Data: {data}")
 
     if "p1Score" in data:
         fight.score1 = data["p1Score"]
@@ -1110,7 +1153,7 @@ async def _ippon_stop(match_id: int) -> None:
         await writer.wait_closed()
     except Exception:
         pass
-    print(f"Ippon Board disconnected for match {match_id}")
+    logger.info(f"Ippon Board disconnected for match {match_id}")
 
 
 @app.websocket("/ws")
@@ -1124,14 +1167,14 @@ async def websocket_endpoint(websocket: WebSocket):
             # Ippon Board messages don't need a DB session
             if msg_type == "IPPON_START":
                 match_id = data.get("matchId")
-                print(f"[IPPON] START received matchId={match_id}")
+                logger.info(f"IPPON START requested for Match {match_id}")
                 if match_id:
                     with SessionLocal() as session:
                         md = get_match_dict(match_id, session)
-                    if md:
-                        _asyncio.create_task(_ippon_start(match_id, md))
-                    else:
-                        print(f"[IPPON] match_dict not found for matchId={match_id}")
+                        if md:
+                            _asyncio.create_task(_ippon_start(match_id, md))
+                        else:
+                            logger.error(f"IPPON START failed: match_dict not found for Match {match_id}")
                 continue
             if msg_type == "IPPON_STOP":
                 match_id = data.get("matchId")
@@ -1140,18 +1183,25 @@ async def websocket_endpoint(websocket: WebSocket):
                 continue
 
             with SessionLocal() as session:
-                if msg_type == "SCORE_UPDATE":
-                    await _handle_score_update(data, session)
-                elif msg_type == "REASSIGN_BRACKET":
-                    await _handle_reassign_bracket(data, session)
-                elif msg_type == "REORDER":
-                    await _handle_reorder(data, session)
-                elif msg_type == "STATUS_UPDATE":
-                    await _handle_status_update(data, session)
-                elif msg_type == "MANUAL_OVERRIDE":
-                    await _handle_manual_override(data, session)
-                elif msg_type == "SIGNAL":
-                    await manager.broadcast(data)
+                try:
+                    if msg_type == "SCORE_UPDATE":
+                        await _handle_score_update(data, session)
+                    elif msg_type == "REASSIGN_BRACKET":
+                        await _handle_reassign_bracket(data, session)
+                    elif msg_type == "REORDER":
+                        await _handle_reorder(data, session)
+                    elif msg_type == "STATUS_UPDATE":
+                        await _handle_status_update(data, session)
+                    elif msg_type == "MANUAL_OVERRIDE":
+                        await _handle_manual_override(data, session)
+                    elif msg_type == "SIGNAL":
+                        await manager.broadcast(data)
+                except Exception as e:
+                    logger.error(f"WebSocket Task Error ({msg_type}): {e}", exc_info=True)
+                    await websocket.send_json({
+                        "type": "ERROR",
+                        "message": f"Operation fehlgeschlagen: {str(e)}"
+                    })
     except WebSocketDisconnect:
         manager.disconnect(websocket)
 
