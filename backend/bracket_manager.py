@@ -78,7 +78,7 @@ class BracketManager:
                 stats["fights_count"] += 1
                 own_score = int((f.score1 if is_p1 else f.score2) or 0)
                 opp_score = int((f.score2 if is_p1 else f.score1) or 0)
-                stats["ubw"] += own_score - opp_score
+                stats["ubw"] += max(0, own_score - opp_score)
 
                 if f.winner_id == p["id"]:
                     stats["wins"] += 1

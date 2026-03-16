@@ -993,7 +993,9 @@ input:checked+.slider:before {
 
 .modal-title-group {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
 }
 
 #modal-category {
@@ -1099,6 +1101,11 @@ input:checked+.slider:before {
     background-color: var(--bg-tertiary);
     border: 1px solid var(--border-color);
     color: var(--text-main);
+}
+
+.timer-btn.ippon-board-btn {
+    padding: 0.4rem 0.7rem;
+    font-size: 0.75rem;
 }
 
 /* Score Buttons Base */
