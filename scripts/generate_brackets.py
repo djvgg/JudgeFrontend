@@ -29,16 +29,16 @@ def main():
         print(f"[ERROR] Participant file not found: {participant_file}")
         return
 
-    print("="*70)
+    print("=" * 70)
     print("TOURNAMENT BRACKET GENERATOR")
-    print("="*70)
+    print("=" * 70)
     print(f"Participant file: {participant_file}")
     print()
 
     # Process the xlsx file
-    print("="*70)
+    print("=" * 70)
     print("PROCESSING PARTICIPANT LIST")
-    print("="*70)
+    print("=" * 70)
     groups = processXlsx(participant_file)
 
     if not groups:
@@ -52,9 +52,9 @@ def main():
     generated_files = generateBracketsForGroups(groups, output_folder)
 
     print()
-    print("="*70)
+    print("=" * 70)
     print("SUMMARY")
-    print("="*70)
+    print("=" * 70)
     print(f"Output folder: {output_folder}")
     print(f"Generated {len(generated_files)} bracket file(s):")
     for filepath in generated_files:
@@ -62,14 +62,16 @@ def main():
 
     # New: Automated push to Judge Interface
     print()
-    print("="*70)
+    print("=" * 70)
     print("PUSHING TO JUDGE INTERFACE")
-    print("="*70)
+    print("=" * 70)
     try:
         url = "http://localhost:5001/api/import-brackets"
         response = requests.post(url, json=groups, timeout=5)
         if response.status_code == 200:
-            print(f"[OK] Successfully pushed {response.json()['matches_imported']} matches to real-time server.")
+            print(
+                f"[OK] Successfully pushed {response.json()['matches_imported']} matches to real-time server."
+            )
         else:
             print(f"[WARNING] Server returned status code {response.status_code}")
     except requests.exceptions.ConnectionError:

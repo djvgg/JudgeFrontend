@@ -53,15 +53,15 @@ def generate8Bracket(group, templatePath, outputFolder):
     Generates 8-person bracket from template.
     Writes: B3 (weight class), N3 (sport type), N5 (date), B12-B19 (names)
     """
-    fighters = group['fighters']
+    fighters = group["fighters"]
 
     if len(fighters) > 8:
         print(f"  [SKIP] Group has {len(fighters)} fighters, need <=8 for this template")
         return None
 
-    genderLabel = {"M": "Maennlich", "W": "Weiblich"}.get(group['gender'], group['gender'])
-    ageLabel = group['ageGroup'] if group['ageGroup'] else "Alle"
-    weightLabel = group['weightClass'].replace(' ', '_')
+    genderLabel = {"M": "Maennlich", "W": "Weiblich"}.get(group["gender"], group["gender"])
+    ageLabel = group["ageGroup"] if group["ageGroup"] else "Alle"
+    weightLabel = group["weightClass"].replace(" ", "_")
 
     filename = f"8_Doppel-KO-System_{genderLabel}_{ageLabel}_{weightLabel}.xls"
     outputPath = os.path.join(outputFolder, filename)
@@ -73,7 +73,7 @@ def generate8Bracket(group, templatePath, outputFolder):
 
     styleB3 = copyCellStyle(readBook, readSheet.cell(2, 1))
     styleB3.font.height = 20 * 20
-    writeSheet.write(2, 1, group['weightClass'], styleB3)
+    writeSheet.write(2, 1, group["weightClass"], styleB3)
 
     styleN3 = copyCellStyle(readBook, readSheet.cell(2, 13))
     writeSheet.write(2, 13, "Judo", styleN3)
@@ -98,15 +98,15 @@ def generate16Bracket(group, templatePath, outputFolder):
     Generates 16-person bracket from template.
     Writes: B3 (weight class), N3 (sport type), N5 (date), B12-B27 (names)
     """
-    fighters = group['fighters']
+    fighters = group["fighters"]
 
     if len(fighters) > 16:
         print(f"  [SKIP] Group has {len(fighters)} fighters, need <=16 for this template")
         return None
 
-    genderLabel = {"M": "Maennlich", "W": "Weiblich"}.get(group['gender'], group['gender'])
-    ageLabel = group['ageGroup'] if group['ageGroup'] else "Alle"
-    weightLabel = group['weightClass'].replace(' ', '_')
+    genderLabel = {"M": "Maennlich", "W": "Weiblich"}.get(group["gender"], group["gender"])
+    ageLabel = group["ageGroup"] if group["ageGroup"] else "Alle"
+    weightLabel = group["weightClass"].replace(" ", "_")
 
     filename = f"16_Doppel-KO-System_{genderLabel}_{ageLabel}_{weightLabel}.xls"
     outputPath = os.path.join(outputFolder, filename)
@@ -118,7 +118,7 @@ def generate16Bracket(group, templatePath, outputFolder):
 
     styleB3 = copyCellStyle(readBook, readSheet.cell(2, 1))
     styleB3.font.height = 20 * 20
-    writeSheet.write(2, 1, group['weightClass'], styleB3)
+    writeSheet.write(2, 1, group["weightClass"], styleB3)
 
     styleN3 = copyCellStyle(readBook, readSheet.cell(2, 13))
     writeSheet.write(2, 13, "Judo", styleN3)
@@ -144,22 +144,50 @@ def generate32Bracket(group, templatePath, outputFolder):
     ONLY writes D10-D41 (contestant names). Template cells remain unchanged.
     Uses seedToRow32 mapping based on 'los' (seeding position).
     """
-    fighters = group['fighters']
+    fighters = group["fighters"]
 
     if len(fighters) > 32:
         print(f"  [SKIP] Group has {len(fighters)} fighters, need <=32 for this template")
         return None
 
     seedToRow32 = {
-        1: 10, 2: 26, 3: 18, 4: 34, 5: 14, 6: 30, 7: 22, 8: 38,
-        9: 12, 10: 28, 11: 20, 12: 36, 13: 16, 14: 32, 15: 24, 16: 40,
-        17: 11, 18: 27, 19: 19, 20: 35, 21: 15, 22: 31, 23: 23, 24: 39,
-        25: 13, 26: 29, 27: 21, 28: 37, 29: 17, 30: 33, 31: 25, 32: 41
+        1: 10,
+        2: 26,
+        3: 18,
+        4: 34,
+        5: 14,
+        6: 30,
+        7: 22,
+        8: 38,
+        9: 12,
+        10: 28,
+        11: 20,
+        12: 36,
+        13: 16,
+        14: 32,
+        15: 24,
+        16: 40,
+        17: 11,
+        18: 27,
+        19: 19,
+        20: 35,
+        21: 15,
+        22: 31,
+        23: 23,
+        24: 39,
+        25: 13,
+        26: 29,
+        27: 21,
+        28: 37,
+        29: 17,
+        30: 33,
+        31: 25,
+        32: 41,
     }
 
-    genderLabel = {"M": "Maennlich", "W": "Weiblich"}.get(group['gender'], group['gender'])
-    ageLabel = group['ageGroup'] if group['ageGroup'] else "Alle"
-    weightLabel = group['weightClass'].replace(' ', '_')
+    genderLabel = {"M": "Maennlich", "W": "Weiblich"}.get(group["gender"], group["gender"])
+    ageLabel = group["ageGroup"] if group["ageGroup"] else "Alle"
+    weightLabel = group["weightClass"].replace(" ", "_")
 
     filename = f"32_mod.Doppel-KO-System_{genderLabel}_{ageLabel}_{weightLabel}.xls"
     outputPath = os.path.join(outputFolder, filename)
@@ -170,14 +198,14 @@ def generate32Bracket(group, templatePath, outputFolder):
     readSheet = readBook.sheet_by_index(0)
 
     for fighter in fighters:
-        los = fighter.get('los', 0)
+        los = fighter.get("los", 0)
         if los < 1 or los > 32:
             continue
 
         row = seedToRow32.get(los)
         if row:
-            nachname = fighter['name']
-            vorname = fighter['vorname']
+            nachname = fighter["name"]
+            vorname = fighter["vorname"]
             fullName = f"{nachname}, {vorname}".strip()
             style = copyCellStyle(readBook, readSheet.cell(row - 1, 3))
             writeSheet.write(row - 1, 3, fullName, style)
@@ -210,12 +238,12 @@ def generateBracketsForGroups(groups, outputFolder="generated_brackets"):
 
     generatedFiles = []
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("GENERATING BRACKET EXCEL FILES")
-    print("="*60)
+    print("=" * 60)
 
     for group in groups:
-        numFighters = len(group['fighters'])
+        numFighters = len(group["fighters"])
 
         if numFighters <= 8 and os.path.exists(template8):
             print(f"\nProcessing: {group['label']} ({numFighters} fighters)")
@@ -233,10 +261,12 @@ def generateBracketsForGroups(groups, outputFolder="generated_brackets"):
             if outputPath:
                 generatedFiles.append(outputPath)
         else:
-            print(f"\n[SKIP] {group['label']}: {numFighters} fighters (need template for this size)")
+            print(
+                f"\n[SKIP] {group['label']}: {numFighters} fighters (need template for this size)"
+            )
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print(f"Generated {len(generatedFiles)} bracket file(s)")
-    print("="*60)
+    print("=" * 60)
 
     return generatedFiles

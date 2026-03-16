@@ -16,11 +16,13 @@ ageGroups = [
 
 weightBreakpoints = [60, 66, 73, 81, 90, 100]
 
+
 def getNextPowerOf2(number):
     power = 2
     while power < number:
         power *= 2
     return power
+
 
 def generateSeedingOrder(number):
     """Recursively generates tournament seeding order for balanced brackets"""

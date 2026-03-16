@@ -11,8 +11,11 @@ def check():
             return
 
         for b_id, b_type in brackets:
-            fights_count = conn.execute(text(f"SELECT COUNT(*) FROM fights WHERE bracket_id = {b_id}")).scalar()
+            fights_count = conn.execute(
+                text(f"SELECT COUNT(*) FROM fights WHERE bracket_id = {b_id}")
+            ).scalar()
             print(f"Bracket ID: {b_id}, Type: {b_type}, Fights: {fights_count}")
+
 
 if __name__ == "__main__":
     check()

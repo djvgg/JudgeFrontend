@@ -9,6 +9,7 @@ load_dotenv()
 engine = create_engine(os.getenv("DATABASE_URL"))
 SessionLocal = sessionmaker(bind=engine)
 
+
 def assign_tables():
     session = SessionLocal()
     try:
@@ -26,7 +27,7 @@ def assign_tables():
             if not f.table_id:
                 f.table_id = "1"
             if not f.fight_number:
-                f.fight_number = 100 + i # Give it a high number so it shows up
+                f.fight_number = 100 + i  # Give it a high number so it shows up
 
         session.commit()
         print(f"Updated {len(fights)} POOL matches to Table 1.")
@@ -36,6 +37,7 @@ def assign_tables():
         print(f"Error: {e}")
     finally:
         session.close()
+
 
 if __name__ == "__main__":
     assign_tables()

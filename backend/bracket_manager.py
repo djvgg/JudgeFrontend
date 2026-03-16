@@ -6,6 +6,7 @@ Bracket Manager - Handles tournament progression and standings.
 Encapsulates rules for Winner/Loser advancement and Pool calculations.
 """
 
+
 class BracketManager:
     @staticmethod
     def get_next_winner_coord(_bracket_id, round_num, pos_in_round, phase):
@@ -17,7 +18,7 @@ class BracketManager:
             "round": round_num + 1,
             "pos": pos_in_round // 2,
             "phase": phase,
-            "slot": "p1" if pos_in_round % 2 == 0 else "p2"
+            "slot": "p1" if pos_in_round % 2 == 0 else "p2",
         }
 
     @staticmethod
@@ -34,7 +35,7 @@ class BracketManager:
                     "round": 1,
                     "pos": pos_in_round // 2,
                     "phase": "lb",
-                    "slot": "p1" if pos_in_round % 2 == 0 else "p2"
+                    "slot": "p1" if pos_in_round % 2 == 0 else "p2",
                 }
             # For round 2 and further, the logic depends on the specific bracket size.
             # Defaulting to a simple drop-down for now.
@@ -42,7 +43,7 @@ class BracketManager:
                 "round": round_num,
                 "pos": pos_in_round,
                 "phase": "lb",
-                "slot": "p2" # Usually drops to p2 for odd rounds
+                "slot": "p2",  # Usually drops to p2 for odd rounds
             }
         return None
 

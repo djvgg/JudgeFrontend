@@ -10,13 +10,13 @@ import pandas as pd
 from backend.bracket_data import ageGroups, getNextPowerOf2, weightBreakpoints
 
 columnCandidates = {
-    "id":       ["Startnummer", "ID", "Id", "Teilnehmer-ID", "TeilnehmerID", "Nr", "Nummer"],
-    "name":     ["Name", "Nachname", "Surname"],
-    "vorname":  ["Vorname", "First Name", "Firstname"],
-    "age":      ["Alter", "Age", "Jahrgang"],
-    "weight":   ["Gewichtsklasse", "Gewicht (kg)", "Gewicht", "Gewicht(kg)", "Weight", "Weight (kg)"],
-    "club":     ["Verein", "Club", "Verband"],
-    "gender":   ["Geschlecht", "Gender", "M/W", "Sex", "m/w", "Ges"],
+    "id": ["Startnummer", "ID", "Id", "Teilnehmer-ID", "TeilnehmerID", "Nr", "Nummer"],
+    "name": ["Name", "Nachname", "Surname"],
+    "vorname": ["Vorname", "First Name", "Firstname"],
+    "age": ["Alter", "Age", "Jahrgang"],
+    "weight": ["Gewichtsklasse", "Gewicht (kg)", "Gewicht", "Gewicht(kg)", "Weight", "Weight (kg)"],
+    "club": ["Verein", "Club", "Verband"],
+    "gender": ["Geschlecht", "Gender", "M/W", "Sex", "m/w", "Ges"],
 }
 
 
@@ -89,9 +89,11 @@ def parseParticipants(df):
 
     hasAge = cols["age"] is not None
 
-    print(f"  Detected columns -> "
-          f"ID: {cols['id']}, Nachname: {cols['name']}, Vorname: {cols['vorname']}, "
-          f"Alter: {cols['age']}, Gewicht: {cols['weight']}, Verein: {cols['club']}, Geschlecht: {cols['gender']}")
+    print(
+        f"  Detected columns -> "
+        f"ID: {cols['id']}, Nachname: {cols['name']}, Vorname: {cols['vorname']}, "
+        f"Alter: {cols['age']}, Gewicht: {cols['weight']}, Verein: {cols['club']}, Geschlecht: {cols['gender']}"
+    )
 
     participants = []
 
@@ -114,15 +116,15 @@ def parseParticipants(df):
             gender = "Gemischt"
 
         if cols["vorname"] and cols["name"]:
-            vorname  = str(row.get(cols["vorname"], "")).strip()
+            vorname = str(row.get(cols["vorname"], "")).strip()
             nachname = str(row.get(cols["name"], "")).strip()
         elif cols["name"]:
             fullName = str(row.get(cols["name"], "")).strip()
-            parts    = fullName.split()
-            vorname  = parts[0] if len(parts) >= 2 else ""
+            parts = fullName.split()
+            vorname = parts[0] if len(parts) >= 2 else ""
             nachname = " ".join(parts[1:]) if len(parts) >= 2 else fullName
         else:
-            vorname  = str(row.get(cols["vorname"], "")).strip()
+            vorname = str(row.get(cols["vorname"], "")).strip()
             nachname = ""
 
         rawId = str(row.get(cols["id"], "")) if cols["id"] else ""
@@ -130,15 +132,17 @@ def parseParticipants(df):
 
         club = str(row.get(cols["club"], "")) if cols["club"] else ""
 
-        participants.append({
-            "id":         numericId,
-            "name":       nachname,
-            "vorname":    vorname,
-            "alter":      age,
-            "gewicht":    weight,
-            "verein":     club,
-            "geschlecht": gender,
-        })
+        participants.append(
+            {
+                "id": numericId,
+                "name": nachname,
+                "vorname": vorname,
+                "alter": age,
+                "gewicht": weight,
+                "verein": club,
+                "geschlecht": gender,
+            }
+        )
 
     return participants
 
@@ -158,8 +162,8 @@ def groupParticipants(participants, minAge=18):
             skippedAge += 1
             continue
 
-        gender      = participant["geschlecht"]
-        ageGroup    = getAgeGroup(age) if age is not None else None
+        gender = participant["geschlecht"]
+        ageGroup = getAgeGroup(age) if age is not None else None
         weightClass = getWeightClass(participant["gewicht"])
 
         key = (gender, ageGroup, weightClass)
@@ -188,13 +192,15 @@ def groupParticipants(participants, minAge=18):
         else:
             label = f"{genderLabel} / {weightClass}"
 
-        result.append({
-            "label":       label,
-            "gender":      gender,
-            "ageGroup":    ageGroup,
-            "weightClass": weightClass,
-            "fighters":    fightersSorted,
-        })
+        result.append(
+            {
+                "label": label,
+                "gender": gender,
+                "ageGroup": ageGroup,
+                "weightClass": weightClass,
+                "fighters": fightersSorted,
+            }
+        )
 
     return result
 

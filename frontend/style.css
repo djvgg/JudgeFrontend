@@ -2102,3 +2102,57 @@ input:checked+.slider:before {
 .editable-time {
     cursor: text;
 }
+
+/* Global Notifications */
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.error-notification {
+    background: rgba(220, 53, 69, 0.95);
+    color: white;
+    padding: 15px 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    min-width: 300px;
+    max-width: 500px;
+    pointer-events: auto;
+    animation: slideIn 0.3s ease-out;
+    transition: all 0.4s ease;
+    border-left: 5px solid #fff;
+    backdrop-filter: blur(5px);
+}
+
+.error-notification.hide {
+    opacity: 0;
+    transform: translateX(100%);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.error-notification-content {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.4;
+    flex-grow: 1;
+    text-align: left;
+}

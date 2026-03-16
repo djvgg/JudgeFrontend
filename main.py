@@ -25,11 +25,11 @@ from backend.database import (
 # --- LOGGING SETUP ---
 _logging.basicConfig(
     level=_logging.INFO,
-    format='%(asctime)s [%(levelname)s] %(name)s: %(message)s',
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     handlers=[
-        _logging.FileHandler("tournament.log", encoding='utf-8'),
-        _logging.StreamHandler(_sys.stdout)
-    ]
+        _logging.FileHandler("tournament.log", encoding="utf-8"),
+        _logging.StreamHandler(_sys.stdout),
+    ],
 )
 logger = _logging.getLogger("JudoApp")
 
@@ -44,12 +44,17 @@ async def lifespan(app: FastAPI):
         # Exclude pool brackets (bracket_type='double' there means double-pool,
         # not double-elimination — they use single-elimination KO after pools).
         pool_bracket_ids_startup = {
-            f.bracket_id for f in session.query(FightModel.bracket_id)
-                .filter(FightModel.bracket_phase == "pool").distinct().all()
+            f.bracket_id
+            for f in session.query(FightModel.bracket_id)
+            .filter(FightModel.bracket_phase == "pool")
+            .distinct()
+            .all()
         }
-        double_brackets = session.query(BracketModel).filter(
-            BracketModel.bracket_type.in_(["ko", "double", "DOUBLE_ELIMINATION"])
-        ).all()
+        double_brackets = (
+            session.query(BracketModel)
+            .filter(BracketModel.bracket_type.in_(["ko", "double", "DOUBLE_ELIMINATION"]))
+            .all()
+        )
         for b in double_brackets:
             if b.id in pool_bracket_ids_startup:
                 continue  # pool→KO bracket: no LB
@@ -61,6 +66,7 @@ async def lifespan(app: FastAPI):
         heal_bracket_progressions(session)
     yield
 
+
 app = FastAPI(title="Judo Real-Time API", lifespan=lifespan)
 
 # Enable CORS
@@ -71,24 +77,28 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.middleware("http")
 async def log_requests(request, call_next):
     start_time = datetime.now()
     response = await call_next(request)
     duration = (datetime.now() - start_time).total_seconds()
-    logger.info(f"API {request.method} {request.url.path} - Status: {response.status_code} - {duration:.3f}s")
+    logger.info(
+        f"API {request.method} {request.url.path} - Status: {response.status_code} - {duration:.3f}s"
+    )
     return response
+
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc):
     logger.error(f"Global Error: {request.method} {request.url.path} - {str(exc)}", exc_info=True)
     from fastapi.responses import JSONResponse
-    return JSONResponse(
-        status_code=500,
-        content={"detail": f"Serverfehler: {str(exc)}"}
-    )
+
+    return JSONResponse(status_code=500, content={"detail": f"Serverfehler: {str(exc)}"})
+
 
 # --- WebSocket Manager ---
+
 
 class ConnectionManager:
     def __init__(self):
@@ -110,8 +120,8 @@ class ConnectionManager:
             with suppress(Exception):
                 await connection.send_json(message)
 
-manager = ConnectionManager()
 
+manager = ConnectionManager()
 
 
 def get_match_dict(fight_id: int, session):
@@ -122,15 +132,27 @@ def get_match_dict(fight_id: int, session):
     # fight.participant1_id / participant2_id are group_participant IDs, not
     # participant IDs.  Resolve the correct name+club via GroupParticipantModel.
     gp_ids = [pid for pid in [fight.participant1_id, fight.participant2_id] if pid]
-    gp_rows = {
-        gp.id: gp
-        for gp in session.query(GroupParticipantModel).filter(GroupParticipantModel.id.in_(gp_ids)).all()
-    } if gp_ids else {}
+    gp_rows = (
+        {
+            gp.id: gp
+            for gp in session.query(GroupParticipantModel)
+            .filter(GroupParticipantModel.id.in_(gp_ids))
+            .all()
+        }
+        if gp_ids
+        else {}
+    )
     actual_p_ids = list({gp.participant_id for gp in gp_rows.values() if gp.participant_id})
-    p_objs = {
-        p.id: p
-        for p in session.query(ParticipantModel).filter(ParticipantModel.id.in_(actual_p_ids)).all()
-    } if actual_p_ids else {}
+    p_objs = (
+        {
+            p.id: p
+            for p in session.query(ParticipantModel)
+            .filter(ParticipantModel.id.in_(actual_p_ids))
+            .all()
+        }
+        if actual_p_ids
+        else {}
+    )
 
     def _resolve_p(gp_id):
         gp = gp_rows.get(gp_id)
@@ -146,25 +168,36 @@ def get_match_dict(fight_id: int, session):
         if lr % 2 == 1:  # injection → next is reduction
             next_round, next_pos = lr + 1, pos // 2
             next_match_pos = "p1" if pos % 2 == 0 else "p2"
-        else:            # reduction/initial → next is injection
+        else:  # reduction/initial → next is injection
             next_round, next_pos = lr + 1, pos
             next_match_pos = "p1"
     else:
         next_round, next_pos = lr + 1, pos // 2
         next_match_pos = "p1" if pos % 2 == 0 else "p2"
-    next_fight = session.query(FightModel).filter(
-        FightModel.bracket_id    == fight.bracket_id,
-        FightModel.bracket_phase == fight.bracket_phase,
-        FightModel.round         == next_round,
-        FightModel.pos_in_round  == next_pos,
-    ).first()
+    next_fight = (
+        session.query(FightModel)
+        .filter(
+            FightModel.bracket_id == fight.bracket_id,
+            FightModel.bracket_phase == fight.bracket_phase,
+            FightModel.round == next_round,
+            FightModel.pos_in_round == next_pos,
+        )
+        .first()
+    )
     next_match_id = next_fight.id if next_fight else None
 
     # Category name + mat_id from bracket
-    b_info = session.query(BracketModel, GroupModel).join(
-        GroupModel, BracketModel.group_id == GroupModel.id
-    ).filter(BracketModel.id == fight.bracket_id).first()
-    category = f"{b_info[1].age_group} {b_info[1].weight_class}" if b_info else f"Bracket {fight.bracket_id}"
+    b_info = (
+        session.query(BracketModel, GroupModel)
+        .join(GroupModel, BracketModel.group_id == GroupModel.id)
+        .filter(BracketModel.id == fight.bracket_id)
+        .first()
+    )
+    category = (
+        f"{b_info[1].age_group} {b_info[1].weight_class}"
+        if b_info
+        else f"Bracket {fight.bracket_id}"
+    )
 
     # table_id: fight-level override → bracket mat_id → computed fallback
     if fight.table_id:
@@ -187,14 +220,14 @@ def get_match_dict(fight_id: int, session):
             "firstName": p1_obj.first_name if p1_obj else "",
             "lastName": p1_obj.last_name if p1_obj else "TBD",
             "club": p1_obj.club if p1_obj else "",
-            "score": {"points": fight.score1 if fight.score1 is not None else 0}
+            "score": {"points": fight.score1 if fight.score1 is not None else 0},
         },
         "p2": {
             "id": str(fight.participant2_id) if fight.participant2_id else "WAIT",
             "firstName": p2_obj.first_name if p2_obj else "",
             "lastName": p2_obj.last_name if p2_obj else "TBD",
             "club": p2_obj.club if p2_obj else "",
-            "score": {"points": fight.score2 if fight.score2 is not None else 0}
+            "score": {"points": fight.score2 if fight.score2 is not None else 0},
         },
         "status": "finished" if fight.status == "completed" else (fight.status or "upcoming"),
         "order": fight.fight_number or fight.id,
@@ -203,15 +236,19 @@ def get_match_dict(fight_id: int, session):
         "phase": fight.bracket_phase,
         "poolIndex": fight.pool_index,
         "bracketType": b_info[0].bracket_type if b_info else None,
-        "gender":      {"m": "M", "w": "F"}.get((b_info[1].gender or "").lower(), b_info[1].gender) if b_info else None,
-        "ageGroup":    b_info[1].age_group if b_info else None,
+        "gender": {"m": "M", "w": "F"}.get((b_info[1].gender or "").lower(), b_info[1].gender)
+        if b_info
+        else None,
+        "ageGroup": b_info[1].age_group if b_info else None,
         "weightClass": b_info[1].weight_class if b_info else None,
         "winnerId": str(fight.winner_id) if fight.winner_id else None,
         "nextMatchId": next_match_id,
-        "nextMatchPos": next_match_pos if next_match_id else None
+        "nextMatchPos": next_match_pos if next_match_id else None,
     }
 
+
 # --- Bracket Progression Helpers ---
+
 
 def _effective_winner(fight: FightModel) -> int | None:
     """Return the effective winner_id, including auto-win for bye (p1==p2)."""
@@ -224,17 +261,24 @@ def _effective_winner(fight: FightModel) -> int | None:
 
 def _make_fight(bracket_id, phase, round_num, pos, table_id, session) -> FightModel:
     """Find or lazily create a fight at the given coordinates."""
-    f = session.query(FightModel).filter(
-        FightModel.bracket_id    == bracket_id,
-        FightModel.bracket_phase == phase,
-        FightModel.round         == round_num,
-        FightModel.pos_in_round  == pos,
-    ).first()
+    f = (
+        session.query(FightModel)
+        .filter(
+            FightModel.bracket_id == bracket_id,
+            FightModel.bracket_phase == phase,
+            FightModel.round == round_num,
+            FightModel.pos_in_round == pos,
+        )
+        .first()
+    )
     if not f:
         f = FightModel(
-            bracket_id=bracket_id, bracket_phase=phase,
-            round=round_num, pos_in_round=pos,
-            status="upcoming", table_id=table_id,
+            bracket_id=bracket_id,
+            bracket_phase=phase,
+            round=round_num,
+            pos_in_round=pos,
+            status="upcoming",
+            table_id=table_id,
         )
         session.add(f)
         session.flush()
@@ -248,7 +292,11 @@ def _fill_slot(fight: FightModel, slot: str, participant_id: int, session) -> No
     elif slot == "p2" and not fight.participant2_id:
         fight.participant2_id = participant_id
 
-    if fight.participant1_id and fight.participant2_id and fight.participant1_id == fight.participant2_id:
+    if (
+        fight.participant1_id
+        and fight.participant2_id
+        and fight.participant1_id == fight.participant2_id
+    ):
         fight.status = "bye"
         fight.winner_id = fight.participant1_id
         session.flush()
@@ -279,42 +327,56 @@ def _advance_winner(fight: FightModel, session) -> FightModel | None:
         # End-of-bracket: an odd injection round whose sibling doesn't exist
         # is the 3rd-place match — nothing to create beyond it.
         if lr % 2 == 1:  # injection round
-            sibling = session.query(FightModel).filter(
-                FightModel.bracket_id    == fight.bracket_id,
-                FightModel.bracket_phase == "lb",
-                FightModel.round         == lr,
-                FightModel.pos_in_round  == (pos ^ 1),
-            ).first()
+            sibling = (
+                session.query(FightModel)
+                .filter(
+                    FightModel.bracket_id == fight.bracket_id,
+                    FightModel.bracket_phase == "lb",
+                    FightModel.round == lr,
+                    FightModel.pos_in_round == (pos ^ 1),
+                )
+                .first()
+            )
             if not sibling:
                 return None  # 3rd-place match — no further advancement
-            next_pos  = pos // 2
+            next_pos = pos // 2
             next_slot = "p1" if pos % 2 == 0 else "p2"
         else:  # reduction round (even)
             wb_r_upcoming = (lr + 2) // 2
-            wb_count = session.query(FightModel).filter(
-                FightModel.bracket_id == fight.bracket_id,
-                FightModel.bracket_phase == "wb",
-                FightModel.round == wb_r_upcoming
-            ).count()
+            wb_count = (
+                session.query(FightModel)
+                .filter(
+                    FightModel.bracket_id == fight.bracket_id,
+                    FightModel.bracket_phase == "wb",
+                    FightModel.round == wb_r_upcoming,
+                )
+                .count()
+            )
             if wb_count <= 1:
                 return None  # No WB losers dropping down from the final
-            next_pos  = pos
+            next_pos = pos
             next_slot = "p1"
 
         next_fight = _make_fight(fight.bracket_id, "lb", lr + 1, next_pos, fight.table_id, session)
         _fill_slot(next_fight, next_slot, winner_id, session)
-        logger.info(f"Advancing Winner {winner_id} from Fight {fight.id} to LB Fight {next_fight.id} ({next_slot})")
+        logger.info(
+            f"Advancing Winner {winner_id} from Fight {fight.id} to LB Fight {next_fight.id} ({next_slot})"
+        )
         return next_fight
 
     # ── Winners Bracket ───────────────────────────────────────────────────────
     # Sibling check: the WB final has no sibling → stop.
     sibling_pos = pos ^ 1
-    sibling = session.query(FightModel).filter(
-        FightModel.bracket_id    == fight.bracket_id,
-        FightModel.bracket_phase == "wb",
-        FightModel.round         == lr,
-        FightModel.pos_in_round  == sibling_pos,
-    ).first()
+    sibling = (
+        session.query(FightModel)
+        .filter(
+            FightModel.bracket_id == fight.bracket_id,
+            FightModel.bracket_phase == "wb",
+            FightModel.round == lr,
+            FightModel.pos_in_round == sibling_pos,
+        )
+        .first()
+    )
     if not sibling:
         return None
 
@@ -322,11 +384,17 @@ def _advance_winner(fight: FightModel, session) -> FightModel | None:
         fight.bracket_id, lr, pos, fight.bracket_phase
     )
     next_fight = _make_fight(
-        fight.bracket_id, next_coord["phase"], next_coord["round"], next_coord["pos"],
-        fight.table_id, session,
+        fight.bracket_id,
+        next_coord["phase"],
+        next_coord["round"],
+        next_coord["pos"],
+        fight.table_id,
+        session,
     )
     _fill_slot(next_fight, next_coord["slot"], winner_id, session)
-    logger.info(f"Advancing Winner {winner_id} from Fight {fight.id} to {next_coord['phase'].upper()} Fight {next_fight.id} ({next_coord['slot']})")
+    logger.info(
+        f"Advancing Winner {winner_id} from Fight {fight.id} to {next_coord['phase'].upper()} Fight {next_fight.id} ({next_coord['slot']})"
+    )
     return next_fight
 
 
@@ -340,13 +408,17 @@ def _resolve_lb_injection_bye(wb_fight: FightModel, session) -> None:
     if wb_fight.round == 0:
         return  # WB R0 byes are handled inside _advance_loser itself
     lb_round = 2 * wb_fight.round - 1
-    lb_pos   = wb_fight.pos_in_round
-    lb_fight = session.query(FightModel).filter(
-        FightModel.bracket_id    == wb_fight.bracket_id,
-        FightModel.bracket_phase == "lb",
-        FightModel.round         == lb_round,
-        FightModel.pos_in_round  == lb_pos,
-    ).first()
+    lb_pos = wb_fight.pos_in_round
+    lb_fight = (
+        session.query(FightModel)
+        .filter(
+            FightModel.bracket_id == wb_fight.bracket_id,
+            FightModel.bracket_phase == "lb",
+            FightModel.round == lb_round,
+            FightModel.pos_in_round == lb_pos,
+        )
+        .first()
+    )
     if not lb_fight:
         return
     # Only act when the LB reduction winner (p1) is already waiting for an
@@ -377,48 +449,58 @@ def _advance_loser(fight: FightModel, session) -> FightModel | None:
     if not winner_id:
         return None
     loser_id = (
-        fight.participant2_id if fight.participant1_id == winner_id
-        else fight.participant1_id
+        fight.participant2_id if fight.participant1_id == winner_id else fight.participant1_id
     )
     if not loser_id:
         return None
 
     # Skip WB final (no sibling = final)
     sibling_pos = fight.pos_in_round ^ 1
-    sibling = session.query(FightModel).filter(
-        FightModel.bracket_id    == fight.bracket_id,
-        FightModel.bracket_phase == "wb",
-        FightModel.round         == fight.round,
-        FightModel.pos_in_round  == sibling_pos,
-    ).first()
+    sibling = (
+        session.query(FightModel)
+        .filter(
+            FightModel.bracket_id == fight.bracket_id,
+            FightModel.bracket_phase == "wb",
+            FightModel.round == fight.round,
+            FightModel.pos_in_round == sibling_pos,
+        )
+        .first()
+    )
     if not sibling:
         return None
 
     wb_r = fight.round
-    pos  = fight.pos_in_round
+    pos = fight.pos_in_round
 
     if wb_r == 0:
         # WB R0 losers pair: pos 0,1 → LB R0 pos 0; pos 2,3 → LB R0 pos 1 …
-        lb_round    = 0
-        lb_pos      = pos // 2
-        lb_slot     = "p1" if pos % 2 == 0 else "p2"
-        lb_other    = "p2" if lb_slot == "p1" else "p1"
+        lb_round = 0
+        lb_pos = pos // 2
+        lb_slot = "p1" if pos % 2 == 0 else "p2"
+        lb_other = "p2" if lb_slot == "p1" else "p1"
         sibling_bye = sibling.status == "bye"
     else:
         # WB Rr (r≥1) inject into LB round 2r-1 as p2 (same lane)
-        lb_round    = 2 * wb_r - 1
-        lb_pos      = pos
-        lb_slot     = "p2"
-        lb_other    = None
+        lb_round = 2 * wb_r - 1
+        lb_pos = pos
+        lb_slot = "p2"
+        lb_other = None
         sibling_bye = False
 
     lb_fight = _make_fight(fight.bracket_id, "lb", lb_round, lb_pos, fight.table_id, session)
     _fill_slot(lb_fight, lb_slot, loser_id, session)
+    logger.info(
+        f"Advancing Loser {loser_id} from WB Fight {fight.id} to LB Fight {lb_fight.id} ({lb_slot})"
+    )
 
     # If the adjacent WB R0 fight was a bye (Freilos), no real opponent will
     # ever fill the other LB R0 slot.  Fill it with the same participant so
     # _fill_slot auto-resolves the LB fight as a bye → winner cascades to LB R1.
-    if sibling_bye and lb_other and not getattr(lb_fight, f"participant{'2' if lb_other == 'p2' else '1'}_id"):
+    if (
+        sibling_bye
+        and lb_other
+        and not getattr(lb_fight, f"participant{'2' if lb_other == 'p2' else '1'}_id")
+    ):
         _fill_slot(lb_fight, lb_other, loser_id, session)
 
     return lb_fight
@@ -434,23 +516,31 @@ def heal_bracket_progressions(session) -> bool:
     # Exclude brackets that have pool fights — those use a pool→KO format
     # (single elimination after pools) and must NOT get a loser bracket.
     pool_bracket_ids = {
-        f.bracket_id for f in session.query(FightModel.bracket_id)
-            .filter(FightModel.bracket_phase == "pool")
-            .distinct().all()
+        f.bracket_id
+        for f in session.query(FightModel.bracket_id)
+        .filter(FightModel.bracket_phase == "pool")
+        .distinct()
+        .all()
     }
     double_bracket_ids = {
-        b.id for b in session.query(BracketModel).filter(
-            BracketModel.bracket_type.in_(["ko", "double", "DOUBLE_ELIMINATION"])
-        ).all()
+        b.id
+        for b in session.query(BracketModel)
+        .filter(BracketModel.bracket_type.in_(["ko", "double", "DOUBLE_ELIMINATION"]))
+        .all()
     } - pool_bracket_ids
 
     total_created = False
     while True:
-        finished = session.query(FightModel).filter(
-            FightModel.winner_id.isnot(None),
-            FightModel.round.isnot(None),
-            FightModel.pos_in_round.isnot(None),
-        ).order_by(FightModel.round, FightModel.pos_in_round).all()
+        finished = (
+            session.query(FightModel)
+            .filter(
+                FightModel.winner_id.isnot(None),
+                FightModel.round.isnot(None),
+                FightModel.pos_in_round.isnot(None),
+            )
+            .order_by(FightModel.round, FightModel.pos_in_round)
+            .all()
+        )
 
         count_before = session.query(FightModel).count()
         for fight in finished:
@@ -460,23 +550,31 @@ def heal_bracket_progressions(session) -> bool:
 
         # Safety net: any LB injection fight where p1 is waiting and the WB
         # source fight is already finished (bye or otherwise) gets resolved.
-        lb_injection_waiting = session.query(FightModel).filter(
-            FightModel.bracket_phase == "lb",
-            FightModel.winner_id.is_(None),
-            FightModel.participant1_id.isnot(None),
-            FightModel.participant2_id.is_(None),
-        ).all()
+        lb_injection_waiting = (
+            session.query(FightModel)
+            .filter(
+                FightModel.bracket_phase == "lb",
+                FightModel.winner_id.is_(None),
+                FightModel.participant1_id.isnot(None),
+                FightModel.participant2_id.is_(None),
+            )
+            .all()
+        )
         for lbf in lb_injection_waiting:
             if lbf.round is None or lbf.round % 2 == 0:
                 continue  # only injection rounds (odd DB round) need this check
-            wb_r   = (lbf.round + 1) // 2
+            wb_r = (lbf.round + 1) // 2
             wb_pos = lbf.pos_in_round
-            wb_src = session.query(FightModel).filter(
-                FightModel.bracket_id    == lbf.bracket_id,
-                FightModel.bracket_phase == "wb",
-                FightModel.round         == wb_r,
-                FightModel.pos_in_round  == wb_pos,
-            ).first()
+            wb_src = (
+                session.query(FightModel)
+                .filter(
+                    FightModel.bracket_id == lbf.bracket_id,
+                    FightModel.bracket_phase == "wb",
+                    FightModel.round == wb_r,
+                    FightModel.pos_in_round == wb_pos,
+                )
+                .first()
+            )
             if wb_src and wb_src.winner_id:
                 # WB source is done but no loser was placed → create LB bye
                 _fill_slot(lbf, "p2", lbf.participant1_id, session)
@@ -490,9 +588,11 @@ def heal_bracket_progressions(session) -> bool:
 
     # Generate double-pool KO phases for any fully-completed pool bracket
     double_pool_bracket_ids = {
-        f.bracket_id for f in session.query(FightModel)
-            .filter(FightModel.bracket_phase == "pool")
-            .distinct(FightModel.bracket_id).all()
+        f.bracket_id
+        for f in session.query(FightModel)
+        .filter(FightModel.bracket_phase == "pool")
+        .distinct(FightModel.bracket_id)
+        .all()
     }
     for bid in double_pool_bracket_ids:
         new_ko = _generate_double_pool_ko(bid, session)
@@ -502,7 +602,6 @@ def heal_bracket_progressions(session) -> bool:
 
     session.commit()
     return total_created
-
 
 
 def _pool_standings_for_index(pool_fights: list, pool_index: int) -> list:
@@ -542,10 +641,15 @@ def _generate_double_pool_ko(bracket_id: int, session) -> list:
       Final (wb R1 pos0): winner SF1 vs winner SF2  (shell only)
     Returns list of newly created FightModel objects.
     """
-    pool_fights = session.query(FightModel).filter(
-        FightModel.bracket_id    == bracket_id,
-        FightModel.bracket_phase == "pool",
-    ).all()
+    logger.info(f"Generating Double-Pool KO phase for Bracket {bracket_id}")
+    pool_fights = (
+        session.query(FightModel)
+        .filter(
+            FightModel.bracket_id == bracket_id,
+            FightModel.bracket_phase == "pool",
+        )
+        .all()
+    )
 
     if not pool_fights:
         return []
@@ -558,10 +662,14 @@ def _generate_double_pool_ko(bracket_id: int, session) -> list:
         return []  # pools not done yet
 
     # KO fights already exist?
-    if session.query(FightModel).filter(
-        FightModel.bracket_id    == bracket_id,
-        FightModel.bracket_phase == "wb",
-    ).first():
+    if (
+        session.query(FightModel)
+        .filter(
+            FightModel.bracket_id == bracket_id,
+            FightModel.bracket_phase == "wb",
+        )
+        .first()
+    ):
         return []  # already generated
 
     a = _pool_standings_for_index(pool_fights, 0)
@@ -596,33 +704,45 @@ def generate_wb_shells(bracket_id: int, session) -> int:
     the DB before WB R0 fights complete.  Participants are filled lazily by
     _advance_winner as each round finishes.  Returns number of new fights created.
     """
-    wb_r0 = session.query(FightModel).filter(
-        FightModel.bracket_id    == bracket_id,
-        FightModel.bracket_phase == "wb",
-        FightModel.round         == 0,
-    ).all()
+    logger.info(f"Generating WB shells for Bracket {bracket_id}")
+    wb_r0 = (
+        session.query(FightModel)
+        .filter(
+            FightModel.bracket_id == bracket_id,
+            FightModel.bracket_phase == "wb",
+            FightModel.round == 0,
+        )
+        .all()
+    )
     if not wb_r0:
         return 0
     n = len(wb_r0)
     if n < 2:
         return 0
     table_id = wb_r0[0].table_id
-    total_rounds = int(_math.log2(n)) + 1   # e.g. n=8 → 4 rounds (R0–R3)
+    total_rounds = int(_math.log2(n)) + 1  # e.g. n=8 → 4 rounds (R0–R3)
     created = 0
     for wb_round in range(1, total_rounds):  # skip R0 (already exists)
-        fight_count = n // (2 ** wb_round)
+        fight_count = n // (2**wb_round)
         for pos in range(fight_count):
-            existing = session.query(FightModel).filter(
-                FightModel.bracket_id    == bracket_id,
-                FightModel.bracket_phase == "wb",
-                FightModel.round         == wb_round,
-                FightModel.pos_in_round  == pos,
-            ).first()
+            existing = (
+                session.query(FightModel)
+                .filter(
+                    FightModel.bracket_id == bracket_id,
+                    FightModel.bracket_phase == "wb",
+                    FightModel.round == wb_round,
+                    FightModel.pos_in_round == pos,
+                )
+                .first()
+            )
             if not existing:
                 f = FightModel(
-                    bracket_id=bracket_id, bracket_phase="wb",
-                    round=wb_round, pos_in_round=pos,
-                    status="upcoming", table_id=table_id,
+                    bracket_id=bracket_id,
+                    bracket_phase="wb",
+                    round=wb_round,
+                    pos_in_round=pos,
+                    status="upcoming",
+                    table_id=table_id,
                 )
                 session.add(f)
                 created += 1
@@ -639,11 +759,16 @@ def generate_lb_fights(bracket_id: int, session) -> int:
     so that _advance_loser / _advance_winner can fill participants lazily.
     Returns the number of new fights created.
     """
-    wb_r0 = session.query(FightModel).filter(
-        FightModel.bracket_id    == bracket_id,
-        FightModel.bracket_phase == "wb",
-        FightModel.round         == 0,
-    ).all()
+    logger.info(f"Generating LB fights for Bracket {bracket_id}")
+    wb_r0 = (
+        session.query(FightModel)
+        .filter(
+            FightModel.bracket_id == bracket_id,
+            FightModel.bracket_phase == "wb",
+            FightModel.round == 0,
+        )
+        .all()
+    )
     if not wb_r0:
         return 0
 
@@ -663,17 +788,24 @@ def generate_lb_fights(bracket_id: int, session) -> int:
 
     for lb_round in range(lb_rounds_total):
         for pos in range(fight_count):
-            existing = session.query(FightModel).filter(
-                FightModel.bracket_id    == bracket_id,
-                FightModel.bracket_phase == "lb",
-                FightModel.round         == lb_round,
-                FightModel.pos_in_round  == pos,
-            ).first()
+            existing = (
+                session.query(FightModel)
+                .filter(
+                    FightModel.bracket_id == bracket_id,
+                    FightModel.bracket_phase == "lb",
+                    FightModel.round == lb_round,
+                    FightModel.pos_in_round == pos,
+                )
+                .first()
+            )
             if not existing:
                 f = FightModel(
-                    bracket_id=bracket_id, bracket_phase="lb",
-                    round=lb_round, pos_in_round=pos,
-                    status="upcoming", table_id=table_id,
+                    bracket_id=bracket_id,
+                    bracket_phase="lb",
+                    round=lb_round,
+                    pos_in_round=pos,
+                    status="upcoming",
+                    table_id=table_id,
                 )
                 session.add(f)
                 created += 1
@@ -681,7 +813,7 @@ def generate_lb_fights(bracket_id: int, session) -> int:
         # Advance to next round:
         # Even DB round = reduction → next is injection (same count)
         # Odd DB round  = injection → next is reduction (half count)
-        if lb_round % 2 == 1:          # injection round just done → halve
+        if lb_round % 2 == 1:  # injection round just done → halve
             fight_count //= 2
 
     session.flush()
@@ -690,13 +822,16 @@ def generate_lb_fights(bracket_id: int, session) -> int:
 
 # --- API & WebSockets ---
 
+
 @app.post("/api/generate-lb")
 def api_generate_lb():
     """Pre-create all LB fight shells for every double-elimination bracket."""
     with SessionLocal() as session:
-        brackets = session.query(BracketModel).filter(
-            BracketModel.bracket_type.in_(["ko", "double", "DOUBLE_ELIMINATION"])
-        ).all()
+        brackets = (
+            session.query(BracketModel)
+            .filter(BracketModel.bracket_type.in_(["ko", "double", "DOUBLE_ELIMINATION"]))
+            .all()
+        )
         total = 0
         for b in brackets:
             total += generate_lb_fights(b.id, session)
@@ -718,36 +853,44 @@ def get_matches():
         fights = session.query(FightModel).order_by(FightModel.fight_number).all()
 
         # Build lookup: (bracket_id, phase, round, pos_in_round) → fight.id
-        fight_lookup = {(f.bracket_id, f.bracket_phase, f.round, f.pos_in_round): f.id for f in fights}
+        fight_lookup = {
+            (f.bracket_id, f.bracket_phase, f.round, f.pos_in_round): f.id for f in fights
+        }
 
         # Single query for all bracket+group data (replaces N per-bracket queries)
         bracket_ids = {f.bracket_id for f in fights if f.bracket_id}
         bracket_info = {
             bracket.id: (bracket, group)
             for bracket, group in session.query(BracketModel, GroupModel)
-                .join(GroupModel, BracketModel.group_id == GroupModel.id)
-                .filter(BracketModel.id.in_(list(bracket_ids)))
-                .all()
+            .join(GroupModel, BracketModel.group_id == GroupModel.id)
+            .filter(BracketModel.id.in_(list(bracket_ids)))
+            .all()
         }
 
         # Batch-fetch all participant names by routing gp_id → participant_id.
         # fight.participant1/2_id are group_participant IDs, not participant IDs.
-        gp_ids = {
-            pid
-            for f in fights
-            for pid in [f.participant1_id, f.participant2_id]
-            if pid
-        }
-        gp_rows = {
-            gp.id: gp
-            for gp in session.query(GroupParticipantModel)
-                .filter(GroupParticipantModel.id.in_(list(gp_ids))).all()
-        } if gp_ids else {}
+        gp_ids = {pid for f in fights for pid in [f.participant1_id, f.participant2_id] if pid}
+        gp_rows = (
+            {
+                gp.id: gp
+                for gp in session.query(GroupParticipantModel)
+                .filter(GroupParticipantModel.id.in_(list(gp_ids)))
+                .all()
+            }
+            if gp_ids
+            else {}
+        )
         actual_p_ids = list({gp.participant_id for gp in gp_rows.values() if gp.participant_id})
-        participants = {
-            p.id: p for p in session.query(ParticipantModel)
-                .filter(ParticipantModel.id.in_(actual_p_ids)).all()
-        } if actual_p_ids else {}
+        participants = (
+            {
+                p.id: p
+                for p in session.query(ParticipantModel)
+                .filter(ParticipantModel.id.in_(actual_p_ids))
+                .all()
+            }
+            if actual_p_ids
+            else {}
+        )
 
         def _p(gp_id):
             gp = gp_rows.get(gp_id)
@@ -758,13 +901,13 @@ def get_matches():
             p1_obj = _p(f.participant1_id)
             p2_obj = _p(f.participant2_id)
 
-            _lr  = f.round or 0
+            _lr = f.round or 0
             _pos = f.pos_in_round or 0
             if f.bracket_phase == "lb":
                 if _lr % 2 == 1:  # injection → reduction
                     _nr, _np = _lr + 1, _pos // 2
                     next_match_pos = "p1" if _pos % 2 == 0 else "p2"
-                else:             # reduction/initial → injection
+                else:  # reduction/initial → injection
                     _nr, _np = _lr + 1, _pos
                     next_match_pos = "p1"
             else:
@@ -774,7 +917,11 @@ def get_matches():
             next_match_id = fight_lookup.get(next_key)
 
             b_info = bracket_info.get(f.bracket_id)
-            category = f"{b_info[1].age_group} {b_info[1].weight_class}" if b_info else f"Bracket {f.bracket_id}"
+            category = (
+                f"{b_info[1].age_group} {b_info[1].weight_class}"
+                if b_info
+                else f"Bracket {f.bracket_id}"
+            )
 
             # table_id: fight-level override → bracket mat_id → computed fallback
             if f.table_id:
@@ -784,44 +931,51 @@ def get_matches():
             else:
                 table_id = "0"  # no mat assigned — hidden from all table filters
 
-            match_list.append({
-                "matchId": f.id,
-                "tableId": table_id,
-                "fightNr": f.fight_number or f.id,
-                "category": category,
-                "bracketId": str(f.bracket_id) if f.bracket_id else "",
-                "round": (f.round or 0) + 1,
-                "posInRound": f.pos_in_round or 0,
-                "p1": {
-                    "id": str(f.participant1_id) if f.participant1_id else "WAIT",
-                    "firstName": p1_obj.first_name if p1_obj else "",
-                    "lastName": p1_obj.last_name if p1_obj else "TBD",
-                    "club": p1_obj.club if p1_obj else "",
-                    "score": {"points": f.score1 if f.score1 is not None else 0}
-                },
-                "p2": {
-                    "id": str(f.participant2_id) if f.participant2_id else "WAIT",
-                    "firstName": p2_obj.first_name if p2_obj else "",
-                    "lastName": p2_obj.last_name if p2_obj else "TBD",
-                    "club": p2_obj.club if p2_obj else "",
-                    "score": {"points": f.score2 if f.score2 is not None else 0}
-                },
-                "status": "finished" if f.status == "completed" else (f.status or "upcoming"),
-                "order": f.fight_number or f.id,
-                "restTimeMin": 0,
-                "duration": f.duration,
-                "phase": f.bracket_phase,
-                "poolIndex": f.pool_index,
-                "bracketType": b_info[0].bracket_type if b_info else None,
-                "gender":      {"m": "M", "w": "F"}.get((b_info[1].gender or "").lower(), b_info[1].gender) if b_info else None,
-                "ageGroup":    b_info[1].age_group if b_info else None,
-                "weightClass": b_info[1].weight_class if b_info else None,
-                "winnerId": str(f.winner_id) if f.winner_id else None,
-                "nextMatchId": next_match_id,
-                "nextMatchPos": next_match_pos if next_match_id else None
-            })
+            match_list.append(
+                {
+                    "matchId": f.id,
+                    "tableId": table_id,
+                    "fightNr": f.fight_number or f.id,
+                    "category": category,
+                    "bracketId": str(f.bracket_id) if f.bracket_id else "",
+                    "round": (f.round or 0) + 1,
+                    "posInRound": f.pos_in_round or 0,
+                    "p1": {
+                        "id": str(f.participant1_id) if f.participant1_id else "WAIT",
+                        "firstName": p1_obj.first_name if p1_obj else "",
+                        "lastName": p1_obj.last_name if p1_obj else "TBD",
+                        "club": p1_obj.club if p1_obj else "",
+                        "score": {"points": f.score1 if f.score1 is not None else 0},
+                    },
+                    "p2": {
+                        "id": str(f.participant2_id) if f.participant2_id else "WAIT",
+                        "firstName": p2_obj.first_name if p2_obj else "",
+                        "lastName": p2_obj.last_name if p2_obj else "TBD",
+                        "club": p2_obj.club if p2_obj else "",
+                        "score": {"points": f.score2 if f.score2 is not None else 0},
+                    },
+                    "status": "finished" if f.status == "completed" else (f.status or "upcoming"),
+                    "order": f.fight_number or f.id,
+                    "restTimeMin": 0,
+                    "duration": f.duration,
+                    "phase": f.bracket_phase,
+                    "poolIndex": f.pool_index,
+                    "bracketType": b_info[0].bracket_type if b_info else None,
+                    "gender": {"m": "M", "w": "F"}.get(
+                        (b_info[1].gender or "").lower(), b_info[1].gender
+                    )
+                    if b_info
+                    else None,
+                    "ageGroup": b_info[1].age_group if b_info else None,
+                    "weightClass": b_info[1].weight_class if b_info else None,
+                    "winnerId": str(f.winner_id) if f.winner_id else None,
+                    "nextMatchId": next_match_id,
+                    "nextMatchPos": next_match_pos if next_match_id else None,
+                }
+            )
 
         return {"tournamentName": "Automated Tournament", "matches": match_list}
+
 
 async def _handle_score_update(data: dict, session) -> None:
     fight = session.query(FightModel).filter(FightModel.id == data["matchId"]).first()
@@ -837,7 +991,9 @@ async def _handle_score_update(data: dict, session) -> None:
     session.commit()
     match_dict = get_match_dict(fight.id, session)
     if match_dict:
-        await manager.broadcast({"type": "SCORE_SYNC", "matchId": data["matchId"], "match": match_dict})
+        await manager.broadcast(
+            {"type": "SCORE_SYNC", "matchId": data["matchId"], "match": match_dict}
+        )
 
 
 async def _handle_reassign_bracket(data: dict, session) -> None:
@@ -846,7 +1002,9 @@ async def _handle_reassign_bracket(data: dict, session) -> None:
     if not b_id_str or new_table is None:
         return
     try:
-        bracket_id_int = int(b_id_str.replace("Bracket ", "")) if "Bracket" in b_id_str else int(b_id_str)
+        bracket_id_int = (
+            int(b_id_str.replace("Bracket ", "")) if "Bracket" in b_id_str else int(b_id_str)
+        )
         logger.info(f"Reassigning Bracket {bracket_id_int} to Table {new_table}")
         fights = session.query(FightModel).filter(FightModel.bracket_id == bracket_id_int).all()
         for f in fights:
@@ -899,10 +1057,14 @@ async def _handle_status_update(data: dict, session) -> None:
 
         if winner_id:
             fight.winner_id = winner_id
-            logger.info(f"MATCH_FINISHED: Fight {fight.id}, Winner: {winner_id}, Duration: {fight.duration}s")
+            logger.info(
+                f"MATCH_FINISHED: Fight {fight.id}, Winner: {winner_id}, Duration: {fight.duration}s"
+            )
             session.commit()
             try:
-                bracket = session.query(BracketModel).filter(BracketModel.id == fight.bracket_id).first()
+                bracket = (
+                    session.query(BracketModel).filter(BracketModel.id == fight.bracket_id).first()
+                )
                 if bracket:
                     # WB/KO winner advancement (lazy creation + sibling guard)
                     next_fight = _advance_winner(fight, session)
@@ -910,39 +1072,79 @@ async def _handle_status_update(data: dict, session) -> None:
                         session.commit()
                         updated_next = get_match_dict(next_fight.id, session)
                         if updated_next:
-                            await manager.broadcast({"type": "SCORE_SYNC", "matchId": next_fight.id, "match": updated_next})
+                            await manager.broadcast(
+                                {
+                                    "type": "SCORE_SYNC",
+                                    "matchId": next_fight.id,
+                                    "match": updated_next,
+                                }
+                            )
 
                     # Double-elimination: send WB loser to LB.
                     # Skip brackets that have pool fights — those use pool→KO (single elim).
-                    is_pool_ko = session.query(FightModel).filter(
-                        FightModel.bracket_id    == fight.bracket_id,
-                        FightModel.bracket_phase == "pool",
-                    ).first() is not None
-                    if bracket.bracket_type in ("ko", "double", "DOUBLE_ELIMINATION") and fight.bracket_phase == "wb" and not is_pool_ko:
+                    is_pool_ko = (
+                        session.query(FightModel)
+                        .filter(
+                            FightModel.bracket_id == fight.bracket_id,
+                            FightModel.bracket_phase == "pool",
+                        )
+                        .first()
+                        is not None
+                    )
+                    if (
+                        bracket.bracket_type in ("ko", "double", "DOUBLE_ELIMINATION")
+                        and fight.bracket_phase == "wb"
+                        and not is_pool_ko
+                    ):
                         lb_fight = _advance_loser(fight, session)
                         if lb_fight:
                             session.commit()
                             updated_lb = get_match_dict(lb_fight.id, session)
                             if updated_lb:
-                                await manager.broadcast({"type": "SCORE_SYNC", "matchId": lb_fight.id, "match": updated_lb})
+                                await manager.broadcast(
+                                    {
+                                        "type": "SCORE_SYNC",
+                                        "matchId": lb_fight.id,
+                                        "match": updated_lb,
+                                    }
+                                )
                         # After placing (or skipping) the loser, resolve any LB
                         # injection fights whose WB source is now done but has no
                         # real loser (bye) — the waiting p1 gets a bye to advance.
-                        if fight.bracket_phase == "wb" and fight.round is not None and fight.round >= 1:
+                        if (
+                            fight.bracket_phase == "wb"
+                            and fight.round is not None
+                            and fight.round >= 1
+                        ):
                             lb_round = 2 * fight.round - 1
-                            lb_pos   = fight.pos_in_round
-                            lbf = session.query(FightModel).filter(
-                                FightModel.bracket_id    == fight.bracket_id,
-                                FightModel.bracket_phase == "lb",
-                                FightModel.round         == lb_round,
-                                FightModel.pos_in_round  == lb_pos,
-                            ).first()
-                            if lbf and lbf.participant1_id and not lbf.participant2_id and not lbf.winner_id:
+                            lb_pos = fight.pos_in_round
+                            lbf = (
+                                session.query(FightModel)
+                                .filter(
+                                    FightModel.bracket_id == fight.bracket_id,
+                                    FightModel.bracket_phase == "lb",
+                                    FightModel.round == lb_round,
+                                    FightModel.pos_in_round == lb_pos,
+                                )
+                                .first()
+                            )
+                            if (
+                                lbf
+                                and lbf.participant1_id
+                                and not lbf.participant2_id
+                                and not lbf.winner_id
+                            ):
                                 _fill_slot(lbf, "p2", lbf.participant1_id, session)
                                 session.commit()
                                 updated_lbf = get_match_dict(lbf.id, session)
                                 if updated_lbf:
-                                    await manager.broadcast({"type": "SCORE_SYNC", "matchId": lbf.id, "match": updated_lbf})
+                                    await manager.broadcast(
+                                        {
+                                            "type": "SCORE_SYNC",
+                                            "matchId": lbf.id,
+                                            "match": updated_lbf,
+                                        }
+                                    )
 
                     if fight.bracket_phase == "pool":
                         # When all pool fights are done, create the double-pool KO phase
@@ -952,30 +1154,46 @@ async def _handle_status_update(data: dict, session) -> None:
                             for kof in new_ko:
                                 kd = get_match_dict(kof.id, session)
                                 if kd:
-                                    await manager.broadcast({"type": "SCORE_SYNC", "matchId": kof.id, "match": kd})
+                                    await manager.broadcast(
+                                        {"type": "SCORE_SYNC", "matchId": kof.id, "match": kd}
+                                    )
                             await manager.broadcast({"type": "REFRESH_LIST"})
 
                     if bracket.bracket_type == "POOL":
-                        all_fights = session.query(FightModel).filter(FightModel.bracket_id == fight.bracket_id).all()
+                        all_fights = (
+                            session.query(FightModel)
+                            .filter(FightModel.bracket_id == fight.bracket_id)
+                            .all()
+                        )
                         p_ids = set()
                         for f in all_fights:
                             if f.participant1_id:
                                 p_ids.add(f.participant1_id)
                             if f.participant2_id:
                                 p_ids.add(f.participant2_id)
-                        gps_with_p = session.query(GroupParticipantModel, ParticipantModel).join(
-                            ParticipantModel, GroupParticipantModel.participant_id == ParticipantModel.id
-                        ).filter(GroupParticipantModel.participant_id.in_(list(p_ids))).all()
+                        gps_with_p = (
+                            session.query(GroupParticipantModel, ParticipantModel)
+                            .join(
+                                ParticipantModel,
+                                GroupParticipantModel.participant_id == ParticipantModel.id,
+                            )
+                            .filter(GroupParticipantModel.participant_id.in_(list(p_ids)))
+                            .all()
+                        )
                         participant_data = [
                             {"id": gp.id, "name": f"{p.first_name} {p.last_name}", "club": p.club}
                             for gp, p in gps_with_p
                         ]
-                        standings = BracketManager.calculate_pool_standings(all_fights, participant_data)
-                        await manager.broadcast({
-                            "type": "POOL_STANDINGS",
-                            "bracketId": fight.bracket_id,
-                            "standings": standings,
-                        })
+                        standings = BracketManager.calculate_pool_standings(
+                            all_fights, participant_data
+                        )
+                        await manager.broadcast(
+                            {
+                                "type": "POOL_STANDINGS",
+                                "bracketId": fight.bracket_id,
+                                "standings": standings,
+                            }
+                        )
             except Exception as e:
                 print(f"Advancement error: {e}")
 
@@ -983,7 +1201,9 @@ async def _handle_status_update(data: dict, session) -> None:
     session.refresh(fight)
     match_dict = get_match_dict(fight.id, session)
     if match_dict:
-        await manager.broadcast({"type": "SCORE_SYNC", "matchId": data["matchId"], "match": match_dict})
+        await manager.broadcast(
+            {"type": "SCORE_SYNC", "matchId": data["matchId"], "match": match_dict}
+        )
 
     # Broadcast list refresh to show newly created fights
     await manager.broadcast({"type": "REFRESH_LIST"})
@@ -1025,11 +1245,13 @@ async def _ippon_reader(match_id: int, reader: _asyncio.StreamReader) -> None:
                 break
             try:
                 payload = _json.loads(line.decode().strip())
-                await manager.broadcast({
-                    "type": "IPPON_UPDATE",
-                    "matchId": match_id,
-                    "data": payload,
-                })
+                await manager.broadcast(
+                    {
+                        "type": "IPPON_UPDATE",
+                        "matchId": match_id,
+                        "data": payload,
+                    }
+                )
             except _json.JSONDecodeError:
                 pass
     except Exception:
@@ -1041,6 +1263,7 @@ async def _ippon_reader(match_id: int, reader: _asyncio.StreamReader) -> None:
 def _post_fighter_sync(url: str, body: dict) -> None:
     """Blocking HTTP POST — run in a thread via asyncio.to_thread."""
     import requests as _requests
+
     try:
         _requests.post(url, json=body, timeout=3)
     except Exception as e:
@@ -1055,27 +1278,31 @@ async def _ippon_start(match_id: int, match_dict: dict) -> None:
     if match_id in _ippon_connections:
         return  # already connected
 
-    gender       = match_dict.get("gender")
-    age_group    = match_dict.get("ageGroup")
+    gender = match_dict.get("gender")
+    age_group = match_dict.get("ageGroup")
     weight_class = match_dict.get("weightClass")
 
     def _fighter(p: dict) -> dict:
         return {
-            "firstname":   p.get("firstName", ""),
-            "lastname":    p.get("lastName", ""),
+            "firstname": p.get("firstName", ""),
+            "lastname": p.get("lastName", ""),
             "weightclass": weight_class,
-            "gender":      gender,
-            "agegroup":    age_group,
+            "gender": gender,
+            "agegroup": age_group,
         }
 
     fighters_url = f"http://{IPPON_HOST}:{IPPON_PORT}/fighters"
     p1 = match_dict.get("p1", {})
     p2 = match_dict.get("p2", {})
     if p1.get("id") and p1.get("id") != "WAIT" and p2.get("id") and p2.get("id") != "WAIT":
-        await _asyncio.to_thread(_post_fighter_sync, fighters_url, {
-            "fighter1": _fighter(p1),
-            "fighter2": _fighter(p2),
-        })
+        await _asyncio.to_thread(
+            _post_fighter_sync,
+            fighters_url,
+            {
+                "fighter1": _fighter(p1),
+                "fighter2": _fighter(p2),
+            },
+        )
 
     # TCP fight_start for live scoring stream
     try:
@@ -1083,18 +1310,23 @@ async def _ippon_start(match_id: int, match_dict: dict) -> None:
             _asyncio.open_connection(IPPON_HOST, IPPON_PORT),
             timeout=3.0,
         )
-        tcp_payload = _json.dumps({
-            "action":      "fight_start",
-            "matchId":     match_dict.get("matchId"),
-            "fightNr":     match_dict.get("fightNr"),
-            "category":    match_dict.get("category"),
-            "tableId":     match_dict.get("tableId"),
-            "gender":      gender,
-            "ageGroup":    age_group,
-            "weightClass": weight_class,
-            "p1":          _fighter(match_dict.get("p1", {})),
-            "p2":          _fighter(match_dict.get("p2", {})),
-        }) + "\n"
+        tcp_payload = (
+            _json.dumps(
+                {
+                    "action": "fight_start",
+                    "matchId": match_dict.get("matchId"),
+                    "fightNr": match_dict.get("fightNr"),
+                    "category": match_dict.get("category"),
+                    "tableId": match_dict.get("tableId"),
+                    "gender": gender,
+                    "ageGroup": age_group,
+                    "weightClass": weight_class,
+                    "p1": _fighter(match_dict.get("p1", {})),
+                    "p2": _fighter(match_dict.get("p2", {})),
+                }
+            )
+            + "\n"
+        )
         writer.write(tcp_payload.encode())
         await writer.drain()
         task = _asyncio.create_task(_ippon_reader(match_id, reader))
@@ -1136,7 +1368,9 @@ async def _handle_manual_override(data: dict, session) -> None:
 
     match_dict = get_match_dict(fight.id, session)
     if match_dict:
-        await manager.broadcast({"type": "SCORE_SYNC", "matchId": data["matchId"], "match": match_dict})
+        await manager.broadcast(
+            {"type": "SCORE_SYNC", "matchId": data["matchId"], "match": match_dict}
+        )
 
 
 async def _ippon_stop(match_id: int) -> None:
@@ -1174,7 +1408,9 @@ async def websocket_endpoint(websocket: WebSocket):
                         if md:
                             _asyncio.create_task(_ippon_start(match_id, md))
                         else:
-                            logger.error(f"IPPON START failed: match_dict not found for Match {match_id}")
+                            logger.error(
+                                f"IPPON START failed: match_dict not found for Match {match_id}"
+                            )
                 continue
             if msg_type == "IPPON_STOP":
                 match_id = data.get("matchId")
@@ -1198,12 +1434,12 @@ async def websocket_endpoint(websocket: WebSocket):
                         await manager.broadcast(data)
                 except Exception as e:
                     logger.error(f"WebSocket Task Error ({msg_type}): {e}", exc_info=True)
-                    await websocket.send_json({
-                        "type": "ERROR",
-                        "message": f"Operation fehlgeschlagen: {str(e)}"
-                    })
+                    await websocket.send_json(
+                        {"type": "ERROR", "message": f"Operation fehlgeschlagen: {str(e)}"}
+                    )
     except WebSocketDisconnect:
         manager.disconnect(websocket)
+
 
 # Serve frontend static files — must be last so API routes take priority
 app.mount("/", StaticFiles(directory="frontend", html=True), name="static")

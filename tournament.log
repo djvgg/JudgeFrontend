@@ -1202,3 +1202,1489 @@ FROM fights ORDER BY fights.fight_number]
 2026-03-13 09:06:34,034 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.078s
 2026-03-13 09:06:34,260 [INFO] JudoApp: New client connected. Total connections: 1
 2026-03-13 09:06:34,266 [INFO] JudoApp: API GET /manifest.json - Status: 200 - 0.009s
+2026-03-13 09:18:02,073 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-13 09:33:14,409 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-13 09:33:16,967 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-13 09:37:02,265 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-13 10:03:21,743 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-13 10:38:46,547 [INFO] JudoApp: Starting up Judo Real-Time API...
+2026-03-13 10:38:46,549 [INFO] JudoApp: Starting up Judo Real-Time API...
+2026-03-13 11:06:26,692 [INFO] JudoApp: Starting up Judo Real-Time API...
+2026-03-13 11:06:26,863 [INFO] JudoApp: Generating WB shells for Bracket 48
+2026-03-13 11:06:26,867 [INFO] JudoApp: Generating LB fights for Bracket 48
+2026-03-13 11:06:26,870 [INFO] JudoApp: Generating WB shells for Bracket 49
+2026-03-13 11:06:26,875 [INFO] JudoApp: Generating LB fights for Bracket 49
+2026-03-13 11:06:26,880 [INFO] JudoApp: Generating WB shells for Bracket 50
+2026-03-13 11:06:26,884 [INFO] JudoApp: Generating LB fights for Bracket 50
+2026-03-13 11:06:26,887 [INFO] JudoApp: Generating WB shells for Bracket 53
+2026-03-13 11:06:26,897 [INFO] JudoApp: Generating LB fights for Bracket 53
+2026-03-13 11:06:26,900 [INFO] JudoApp: Generating WB shells for Bracket 56
+2026-03-13 11:06:26,903 [INFO] JudoApp: Generating LB fights for Bracket 56
+2026-03-13 11:06:26,909 [INFO] JudoApp: Generating WB shells for Bracket 58
+2026-03-13 11:06:26,913 [INFO] JudoApp: Generating LB fights for Bracket 58
+2026-03-13 11:06:26,916 [INFO] JudoApp: Generating WB shells for Bracket 59
+2026-03-13 11:06:26,920 [INFO] JudoApp: Generating LB fights for Bracket 59
+2026-03-13 11:06:26,925 [INFO] JudoApp: Generating WB shells for Bracket 61
+2026-03-13 11:06:26,929 [INFO] JudoApp: Generating LB fights for Bracket 61
+2026-03-13 11:06:26,932 [INFO] JudoApp: Generating WB shells for Bracket 62
+2026-03-13 11:06:26,935 [INFO] JudoApp: Generating LB fights for Bracket 62
+2026-03-13 11:06:26,937 [INFO] JudoApp: Generating WB shells for Bracket 64
+2026-03-13 11:06:26,941 [INFO] JudoApp: Generating LB fights for Bracket 64
+2026-03-13 11:06:26,944 [INFO] JudoApp: Generating WB shells for Bracket 65
+2026-03-13 11:06:26,947 [INFO] JudoApp: Generating LB fights for Bracket 65
+2026-03-13 11:06:26,950 [INFO] JudoApp: Generating WB shells for Bracket 66
+2026-03-13 11:06:26,960 [INFO] JudoApp: Generating LB fights for Bracket 66
+2026-03-13 11:06:26,963 [INFO] JudoApp: Generating WB shells for Bracket 68
+2026-03-13 11:06:26,966 [INFO] JudoApp: Generating LB fights for Bracket 68
+2026-03-13 11:06:26,970 [INFO] JudoApp: Generating WB shells for Bracket 69
+2026-03-13 11:06:26,973 [INFO] JudoApp: Generating LB fights for Bracket 69
+2026-03-13 11:06:26,976 [INFO] JudoApp: Generating WB shells for Bracket 75
+2026-03-13 11:06:26,979 [INFO] JudoApp: Generating LB fights for Bracket 75
+2026-03-13 11:06:26,982 [INFO] JudoApp: Generating WB shells for Bracket 76
+2026-03-13 11:06:26,985 [INFO] JudoApp: Generating LB fights for Bracket 76
+2026-03-13 11:06:26,987 [INFO] JudoApp: Generating WB shells for Bracket 77
+2026-03-13 11:06:26,991 [INFO] JudoApp: Generating LB fights for Bracket 77
+2026-03-13 11:06:26,999 [INFO] JudoApp: Generating WB shells for Bracket 80
+2026-03-13 11:06:27,003 [INFO] JudoApp: Generating LB fights for Bracket 80
+2026-03-13 11:06:27,006 [INFO] JudoApp: Generating WB shells for Bracket 81
+2026-03-13 11:06:27,010 [INFO] JudoApp: Generating LB fights for Bracket 81
+2026-03-13 11:06:27,013 [INFO] JudoApp: Generating WB shells for Bracket 82
+2026-03-13 11:06:27,017 [INFO] JudoApp: Generating LB fights for Bracket 82
+2026-03-13 11:06:27,020 [INFO] JudoApp: Generating WB shells for Bracket 83
+2026-03-13 11:06:27,024 [INFO] JudoApp: Generating LB fights for Bracket 83
+2026-03-13 11:06:27,036 [INFO] JudoApp: Generating WB shells for Bracket 85
+2026-03-13 11:06:27,040 [INFO] JudoApp: Generating LB fights for Bracket 85
+2026-03-13 11:06:27,044 [INFO] JudoApp: Generating WB shells for Bracket 86
+2026-03-13 11:06:27,049 [INFO] JudoApp: Generating LB fights for Bracket 86
+2026-03-13 11:06:27,052 [INFO] JudoApp: Generating WB shells for Bracket 88
+2026-03-13 11:06:27,055 [INFO] JudoApp: Generating LB fights for Bracket 88
+2026-03-13 11:06:27,059 [INFO] JudoApp: Generating WB shells for Bracket 89
+2026-03-13 11:06:27,061 [INFO] JudoApp: Generating LB fights for Bracket 89
+2026-03-13 11:06:27,064 [INFO] JudoApp: Generating WB shells for Bracket 91
+2026-03-13 11:06:27,068 [INFO] JudoApp: Generating LB fights for Bracket 91
+2026-03-13 11:06:27,071 [INFO] JudoApp: Generating WB shells for Bracket 92
+2026-03-13 11:06:27,074 [INFO] JudoApp: Generating LB fights for Bracket 92
+2026-03-13 11:06:27,078 [INFO] JudoApp: Generating WB shells for Bracket 93
+2026-03-13 11:06:27,080 [INFO] JudoApp: Generating LB fights for Bracket 93
+2026-03-13 11:06:27,083 [INFO] JudoApp: Generating WB shells for Bracket 94
+2026-03-13 11:06:27,092 [INFO] JudoApp: Generating LB fights for Bracket 94
+2026-03-13 11:06:27,112 [INFO] JudoApp: Generating WB shells for Bracket 96
+2026-03-13 11:06:27,118 [INFO] JudoApp: Generating LB fights for Bracket 96
+2026-03-13 11:06:27,123 [INFO] JudoApp: Generating WB shells for Bracket 98
+2026-03-13 11:06:27,128 [INFO] JudoApp: Generating LB fights for Bracket 98
+2026-03-13 11:06:27,133 [INFO] JudoApp: Generating WB shells for Bracket 100
+2026-03-13 11:06:27,136 [INFO] JudoApp: Generating LB fights for Bracket 100
+2026-03-13 11:06:27,140 [INFO] JudoApp: Generating WB shells for Bracket 102
+2026-03-13 11:06:27,143 [INFO] JudoApp: Generating LB fights for Bracket 102
+2026-03-13 11:06:27,146 [INFO] JudoApp: Generating WB shells for Bracket 52
+2026-03-13 11:06:27,180 [INFO] JudoApp: Generating LB fights for Bracket 52
+2026-03-13 11:06:27,233 [INFO] JudoApp: Generating WB shells for Bracket 47
+2026-03-13 11:06:27,250 [INFO] JudoApp: Generating LB fights for Bracket 47
+2026-03-13 11:06:27,276 [INFO] JudoApp: Generating WB shells for Bracket 54
+2026-03-13 11:06:27,340 [INFO] JudoApp: Generating LB fights for Bracket 54
+2026-03-13 11:06:27,389 [INFO] JudoApp: Healing bracket progressions...
+2026-03-13 11:06:27,417 [INFO] JudoApp: Advancing Winner 235 from Fight 95 to WB Fight 103 (p1)
+2026-03-13 11:06:27,423 [INFO] JudoApp: Advancing Loser 222 from WB Fight 95 to LB Fight 104 (p1)
+2026-03-13 11:06:27,430 [INFO] JudoApp: Advancing Winner 466 from Fight 62 to WB Fight 64 (p1)
+2026-03-13 11:06:27,440 [INFO] JudoApp: Advancing Winner 220 from Fight 59 to WB Fight 61 (p1)
+2026-03-13 11:06:27,448 [INFO] JudoApp: Advancing Winner 249 from Fight 80 to LB Fight 84 (p1)
+2026-03-13 11:06:27,455 [INFO] JudoApp: Advancing Winner 222 from Fight 104 to LB Fight 113 (p1)
+2026-03-13 11:06:27,462 [INFO] JudoApp: Advancing Winner 331 from Fight 33 to WB Fight 35 (p1)
+2026-03-13 11:06:27,675 [INFO] JudoApp: Advancing Winner 247 from Fight 65 to WB Fight 73 (p1)
+2026-03-13 11:06:27,684 [INFO] JudoApp: Advancing Loser 249 from WB Fight 65 to LB Fight 80 (p1)
+2026-03-13 11:06:27,691 [INFO] JudoApp: Advancing Winner 471 from Fight 63 to WB Fight 64 (p2)
+2026-03-13 11:06:27,708 [INFO] JudoApp: Advancing Winner 214 from Fight 60 to WB Fight 61 (p2)
+2026-03-13 11:06:27,724 [INFO] JudoApp: Advancing Winner 262 from Fight 66 to WB Fight 73 (p2)
+2026-03-13 11:06:27,732 [INFO] JudoApp: Advancing Loser 255 from WB Fight 66 to LB Fight 80 (p2)
+2026-03-13 11:06:27,740 [INFO] JudoApp: Advancing Winner 250 from Fight 81 to LB Fight 85 (p1)
+2026-03-13 11:06:27,749 [INFO] JudoApp: Advancing Winner 234 from Fight 96 to WB Fight 103 (p2)
+2026-03-13 11:06:27,756 [INFO] JudoApp: Advancing Loser 226 from WB Fight 96 to LB Fight 104 (p2)
+2026-03-13 11:06:27,762 [INFO] JudoApp: Advancing Winner 332 from Fight 34 to WB Fight 35 (p2)
+2026-03-13 11:06:27,771 [INFO] JudoApp: Advancing Winner 228 from Fight 110 to LB Fight 114 (p1)
+2026-03-13 11:06:27,779 [INFO] JudoApp: Advancing Winner 229 from Fight 97 to WB Fight 105 (p1)
+2026-03-13 11:06:27,785 [INFO] JudoApp: Advancing Winner 260 from Fight 67 to WB Fight 74 (p1)
+2026-03-13 11:06:27,818 [INFO] JudoApp: Advancing Loser 259 from WB Fight 67 to LB Fight 81 (p1)
+2026-03-13 11:06:27,827 [INFO] JudoApp: Advancing Winner 232 from Fight 111 to LB Fight 115 (p1)
+2026-03-13 11:06:27,832 [INFO] JudoApp: Advancing Winner 253 from Fight 82 to LB Fight 86 (p1)
+2026-03-13 11:06:27,840 [INFO] JudoApp: Advancing Winner 224 from Fight 98 to WB Fight 105 (p2)
+2026-03-13 11:06:27,857 [INFO] JudoApp: Advancing Winner 228 from Fight 110 to LB Fight 114 (p1)
+2026-03-13 11:06:27,858 [INFO] JudoApp: Advancing Loser 228 from WB Fight 98 to LB Fight 110 (p2)
+2026-03-13 11:06:27,865 [INFO] JudoApp: Advancing Winner 248 from Fight 83 to LB Fight 87 (p1)
+2026-03-13 11:06:27,872 [INFO] JudoApp: Advancing Winner 256 from Fight 68 to WB Fight 74 (p2)
+2026-03-13 11:06:27,880 [INFO] JudoApp: Advancing Loser 250 from WB Fight 68 to LB Fight 81 (p2)
+2026-03-13 11:06:27,886 [INFO] JudoApp: Advancing Winner 225 from Fight 99 to WB Fight 106 (p1)
+2026-03-13 11:06:27,913 [INFO] JudoApp: Advancing Winner 232 from Fight 111 to LB Fight 115 (p1)
+2026-03-13 11:06:27,914 [INFO] JudoApp: Advancing Loser 232 from WB Fight 99 to LB Fight 111 (p1)
+2026-03-13 11:06:27,929 [INFO] JudoApp: Advancing Winner 252 from Fight 69 to WB Fight 75 (p1)
+2026-03-13 11:06:27,934 [INFO] JudoApp: Advancing Loser 257 from WB Fight 69 to LB Fight 82 (p1)
+2026-03-13 11:06:27,941 [INFO] JudoApp: Advancing Winner 261 from Fight 70 to WB Fight 75 (p2)
+2026-03-13 11:06:27,946 [INFO] JudoApp: Advancing Loser 253 from WB Fight 70 to LB Fight 82 (p2)
+2026-03-13 11:06:27,958 [INFO] JudoApp: Advancing Winner 230 from Fight 100 to WB Fight 106 (p2)
+2026-03-13 11:06:27,965 [INFO] JudoApp: Advancing Winner 258 from Fight 71 to WB Fight 76 (p1)
+2026-03-13 11:06:27,972 [INFO] JudoApp: Advancing Loser 254 from WB Fight 71 to LB Fight 83 (p1)
+2026-03-13 11:06:27,988 [INFO] JudoApp: Advancing Winner 227 from Fight 101 to WB Fight 107 (p1)
+2026-03-13 11:06:28,003 [INFO] JudoApp: Advancing Loser 233 from WB Fight 101 to LB Fight 112 (p1)
+2026-03-13 11:06:28,026 [INFO] JudoApp: Advancing Winner 223 from Fight 102 to WB Fight 107 (p2)
+2026-03-13 11:06:28,032 [INFO] JudoApp: Advancing Loser 231 from WB Fight 102 to LB Fight 112 (p2)
+2026-03-13 11:06:28,041 [INFO] JudoApp: Advancing Winner 251 from Fight 72 to WB Fight 76 (p2)
+2026-03-13 11:06:28,051 [INFO] JudoApp: Advancing Loser 248 from WB Fight 72 to LB Fight 83 (p2)
+2026-03-13 11:06:28,062 [INFO] JudoApp: Advancing Winner 234 from Fight 103 to WB Fight 108 (p1)
+2026-03-13 11:06:28,068 [INFO] JudoApp: Advancing Loser 235 from WB Fight 103 to LB Fight 113 (p2)
+2026-03-13 11:06:28,083 [INFO] JudoApp: Advancing Winner 262 from Fight 73 to WB Fight 77 (p1)
+2026-03-13 11:06:28,093 [INFO] JudoApp: Advancing Loser 247 from WB Fight 73 to LB Fight 84 (p2)
+2026-03-13 11:06:28,100 [INFO] JudoApp: Advancing Winner 247 from Fight 84 to LB Fight 88 (p1)
+2026-03-13 11:06:28,108 [INFO] JudoApp: Advancing Winner 229 from Fight 105 to WB Fight 108 (p2)
+2026-03-13 11:06:28,115 [INFO] JudoApp: Advancing Loser 224 from WB Fight 105 to LB Fight 114 (p2)
+2026-03-13 11:06:28,131 [INFO] JudoApp: Advancing Winner 256 from Fight 74 to WB Fight 77 (p2)
+2026-03-13 11:06:28,141 [INFO] JudoApp: Advancing Loser 260 from WB Fight 74 to LB Fight 85 (p2)
+2026-03-13 11:06:28,149 [INFO] JudoApp: Advancing Winner 260 from Fight 85 to LB Fight 88 (p2)
+2026-03-13 11:06:28,159 [INFO] JudoApp: Advancing Winner 253 from Fight 86 to LB Fight 89 (p1)
+2026-03-13 11:06:28,174 [INFO] JudoApp: Advancing Winner 261 from Fight 75 to WB Fight 78 (p1)
+2026-03-13 11:06:28,189 [INFO] JudoApp: Advancing Loser 252 from WB Fight 75 to LB Fight 86 (p2)
+2026-03-13 11:06:28,199 [INFO] JudoApp: Advancing Winner 225 from Fight 106 to WB Fight 109 (p1)
+2026-03-13 11:06:28,204 [INFO] JudoApp: Advancing Loser 230 from WB Fight 106 to LB Fight 115 (p2)
+2026-03-13 11:06:28,213 [INFO] JudoApp: Advancing Winner 227 from Fight 107 to WB Fight 109 (p2)
+2026-03-13 11:06:28,220 [INFO] JudoApp: Advancing Loser 223 from WB Fight 107 to LB Fight 116 (p2)
+2026-03-13 11:06:28,233 [INFO] JudoApp: Advancing Winner 251 from Fight 76 to WB Fight 78 (p2)
+2026-03-13 11:06:28,240 [INFO] JudoApp: Advancing Loser 258 from WB Fight 76 to LB Fight 87 (p2)
+2026-03-13 11:06:28,250 [INFO] JudoApp: Advancing Winner 258 from Fight 87 to LB Fight 89 (p2)
+2026-03-13 11:06:28,258 [INFO] JudoApp: Advancing Winner 247 from Fight 88 to LB Fight 90 (p1)
+2026-03-13 11:06:28,264 [INFO] JudoApp: Advancing Winner 229 from Fight 108 to WB Fight 122 (p1)
+2026-03-13 11:06:28,274 [INFO] JudoApp: Advancing Loser 234 from WB Fight 108 to LB Fight 119 (p2)
+2026-03-13 11:06:28,284 [INFO] JudoApp: Advancing Winner 256 from Fight 77 to WB Fight 79 (p1)
+2026-03-13 11:06:28,291 [INFO] JudoApp: Advancing Loser 262 from WB Fight 77 to LB Fight 90 (p2)
+2026-03-13 11:06:28,297 [INFO] JudoApp: Advancing Winner 225 from Fight 109 to WB Fight 122 (p2)
+2026-03-13 11:06:28,304 [INFO] JudoApp: Advancing Loser 227 from WB Fight 109 to LB Fight 120 (p2)
+2026-03-13 11:06:28,311 [INFO] JudoApp: Advancing Winner 258 from Fight 89 to LB Fight 91 (p1)
+2026-03-13 11:06:28,321 [INFO] JudoApp: Advancing Winner 251 from Fight 78 to WB Fight 79 (p2)
+2026-03-13 11:06:28,337 [INFO] JudoApp: Advancing Loser 261 from WB Fight 78 to LB Fight 91 (p2)
+2026-03-13 11:06:28,344 [INFO] JudoApp: Advancing Winner 262 from Fight 90 to LB Fight 92 (p1)
+2026-03-13 11:06:28,359 [INFO] JudoApp: Advancing Winner 261 from Fight 91 to LB Fight 92 (p2)
+2026-03-13 11:06:28,374 [INFO] JudoApp: Generating Double-Pool KO phase for Bracket 51
+2026-03-13 11:06:28,381 [INFO] JudoApp: Generating Double-Pool KO phase for Bracket 60
+2026-03-13 11:06:28,389 [INFO] JudoApp: Generating Double-Pool KO phase for Bracket 78
+2026-03-13 11:10:32,387 [INFO] JudoApp: API GET / - Status: 200 - 0.173s
+2026-03-13 11:10:32,403 [INFO] JudoApp: API GET /style.css - Status: 200 - 0.003s
+2026-03-13 11:10:32,411 [INFO] JudoApp: API GET /app.js - Status: 200 - 0.003s
+2026-03-13 11:10:32,550 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.089s
+2026-03-13 11:10:32,775 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-13 11:10:39,184 [INFO] JudoApp: API GET / - Status: 200 - 0.003s
+2026-03-13 11:10:39,197 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-13 11:10:39,204 [INFO] JudoApp: API GET /style.css - Status: 200 - 0.002s
+2026-03-13 11:10:39,211 [INFO] JudoApp: API GET /app.js - Status: 200 - 0.003s
+2026-03-13 11:10:39,299 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.069s
+2026-03-13 11:10:39,518 [INFO] JudoApp: API GET /manifest.json - Status: 200 - 0.003s
+2026-03-13 11:10:39,537 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-13 11:10:40,753 [INFO] JudoApp: API GET / - Status: 200 - 0.005s
+2026-03-13 11:10:40,762 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-13 11:10:40,772 [INFO] JudoApp: API GET /style.css - Status: 200 - 0.004s
+2026-03-13 11:10:40,774 [INFO] JudoApp: API GET /app.js - Status: 200 - 0.005s
+2026-03-13 11:10:40,781 [INFO] JudoApp: API GET /manifest.json - Status: 200 - 0.005s
+2026-03-13 11:10:40,853 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.058s
+2026-03-13 11:10:41,101 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-13 11:10:41,545 [INFO] JudoApp: API GET / - Status: 200 - 0.004s
+2026-03-13 11:10:41,555 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-13 11:10:41,564 [INFO] JudoApp: API GET /style.css - Status: 200 - 0.004s
+2026-03-13 11:10:41,565 [INFO] JudoApp: API GET /app.js - Status: 200 - 0.004s
+2026-03-13 11:10:41,575 [INFO] JudoApp: API GET /manifest.json - Status: 200 - 0.007s
+2026-03-13 11:10:41,692 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.101s
+2026-03-13 11:10:41,901 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-13 11:10:53,119 [INFO] JudoApp: MANUAL_OVERRIDE: Match 107, Data: {'type': 'MANUAL_OVERRIDE', 'matchId': 107, 'p1Score': 10}
+2026-03-13 11:16:31,399 [INFO] JudoApp: API GET / - Status: 200 - 0.004s
+2026-03-13 11:16:31,412 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-13 11:16:31,429 [INFO] JudoApp: API GET /style.css - Status: 200 - 0.008s
+2026-03-13 11:16:31,435 [INFO] JudoApp: API GET /app.js - Status: 200 - 0.013s
+2026-03-13 11:16:31,549 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.084s
+2026-03-13 11:16:31,749 [INFO] JudoApp: API GET /manifest.json - Status: 200 - 0.002s
+2026-03-13 11:16:31,780 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-13 11:16:32,106 [INFO] JudoApp: API GET / - Status: 200 - 0.003s
+2026-03-13 11:16:32,117 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-13 11:16:32,132 [INFO] JudoApp: API GET /app.js - Status: 200 - 0.005s
+2026-03-13 11:16:32,134 [INFO] JudoApp: API GET /style.css - Status: 200 - 0.007s
+2026-03-13 11:16:32,137 [INFO] JudoApp: API GET /manifest.json - Status: 200 - 0.008s
+2026-03-13 11:16:32,217 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.064s
+2026-03-13 11:16:32,456 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-13 11:20:23,612 [INFO] JudoApp: API GET / - Status: 200 - 0.005s
+2026-03-13 11:20:23,621 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-13 11:20:23,632 [INFO] JudoApp: API GET /style.css - Status: 200 - 0.004s
+2026-03-13 11:20:23,634 [INFO] JudoApp: API GET /app.js - Status: 200 - 0.005s
+2026-03-13 11:20:23,943 [INFO] JudoApp: API GET /manifest.json - Status: 200 - 0.002s
+2026-03-13 11:20:55,058 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-13 11:20:56,342 [INFO] JudoApp: API GET /api/matches - Status: 200 - 1.596s
+2026-03-13 11:21:17,328 [INFO] JudoApp: IPPON START requested for Match 112
+2026-03-13 11:23:43,675 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-13 11:24:09,605 [INFO] JudoApp: API GET / - Status: 304 - 0.004s
+2026-03-13 11:24:09,622 [INFO] JudoApp: API GET /style.css - Status: 304 - 0.003s
+2026-03-13 11:24:09,628 [INFO] JudoApp: API GET /app.js - Status: 304 - 0.003s
+2026-03-13 11:24:22,225 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-13 11:24:37,499 [ERROR] JudoApp: Global Error: GET /api/matches - (psycopg2.OperationalError) server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+[SQL: SELECT fights.id AS fights_id, fights.bracket_id AS fights_bracket_id, fights.participant1_id AS fights_participant1_id, fights.participant2_id AS fights_participant2_id, fights.fight_number AS fights_fight_number, fights.score1 AS fights_score1, fights.score2 AS fights_score2, fights.duration AS fights_duration, fights.status AS fights_status, fights.bracket_phase AS fights_bracket_phase, fights.round AS fights_round, fights.pos_in_round AS fights_pos_in_round, fights.pool_index AS fights_pool_index, fights.winner_id AS fights_winner_id, fights.table_id AS fights_table_id 
+FROM fights ORDER BY fights.fight_number]
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+Traceback (most recent call last):
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\base.py", line 1910, in _execute_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, statement, parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.OperationalError: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\middleware\base.py", line 191, in __call__
+    with recv_stream, send_stream, collapse_excgroups():
+                                   ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\_utils.py", line 87, in collapse_excgroups
+    raise exc
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\middleware\base.py", line 193, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\Downloads\judgefrontend\main.py", line 77, in log_requests
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\middleware\base.py", line 168, in call_next
+    raise app_exc from app_exc.__cause__ or app_exc.__context__
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\middleware\base.py", line 144, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\middleware\cors.py", line 87, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\fastapi\routing.py", line 119, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\fastapi\routing.py", line 105, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\fastapi\routing.py", line 431, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\fastapi\routing.py", line 315, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\concurrency.py", line 32, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\anyio\to_thread.py", line 63, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\anyio\_backends\_asyncio.py", line 2502, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\anyio\_backends\_asyncio.py", line 986, in run
+    result = context.run(func, *args)
+  File "C:\Users\joell\Downloads\judgefrontend\main.py", line 722, in get_matches
+    fights = session.query(FightModel).order_by(FightModel.fight_number).all()
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\orm\query.py", line 2773, in all
+    return self._iter().all()
+           ~~~~~~~~~~^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\orm\query.py", line 2916, in _iter
+    result = self.session.execute(
+        statement,
+        params,
+        execution_options={"_sa_orm_load_options": self.load_options},
+    )
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\orm\session.py", line 1717, in execute
+    result = conn._execute_20(statement, params or {}, execution_options)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\base.py", line 1710, in _execute_20
+    return meth(self, args_10style, kwargs_10style, execution_options)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\sql\elements.py", line 334, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, multiparams, params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\base.py", line 1577, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\base.py", line 1953, in _execute_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, statement, parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\base.py", line 2134, in _handle_dbapi_exception
+    util.raise_(
+    ~~~~~~~~~~~^
+        sqlalchemy_exception, with_traceback=exc_info[2], from_=e
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\util\compat.py", line 211, in raise_
+    raise exception
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\base.py", line 1910, in _execute_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, statement, parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+[SQL: SELECT fights.id AS fights_id, fights.bracket_id AS fights_bracket_id, fights.participant1_id AS fights_participant1_id, fights.participant2_id AS fights_participant2_id, fights.fight_number AS fights_fight_number, fights.score1 AS fights_score1, fights.score2 AS fights_score2, fights.duration AS fights_duration, fights.status AS fights_status, fights.bracket_phase AS fights_bracket_phase, fights.round AS fights_round, fights.pos_in_round AS fights_pos_in_round, fights.pool_index AS fights_pool_index, fights.winner_id AS fights_winner_id, fights.table_id AS fights_table_id 
+FROM fights ORDER BY fights.fight_number]
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+2026-03-13 11:24:51,343 [INFO] JudoApp: API GET / - Status: 200 - 0.006s
+2026-03-13 11:24:51,353 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-13 11:24:51,365 [INFO] JudoApp: API GET /style.css - Status: 200 - 0.004s
+2026-03-13 11:24:51,366 [INFO] JudoApp: API GET /app.js - Status: 200 - 0.005s
+2026-03-13 11:24:51,703 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-13 11:25:02,127 [INFO] JudoApp: API GET / - Status: 200 - 0.005s
+2026-03-13 11:25:02,141 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-13 11:25:02,153 [INFO] JudoApp: API GET /style.css - Status: 200 - 0.002s
+2026-03-13 11:25:02,169 [INFO] JudoApp: API GET /app.js - Status: 200 - 0.005s
+2026-03-13 11:25:02,478 [INFO] JudoApp: API GET /manifest.json - Status: 200 - 0.004s
+2026-03-13 11:25:02,506 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-13 11:25:02,561 [INFO] JudoApp: API GET / - Status: 200 - 0.005s
+2026-03-13 11:25:02,578 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-13 11:25:02,590 [INFO] JudoApp: API GET /style.css - Status: 200 - 0.003s
+2026-03-13 11:25:02,599 [INFO] JudoApp: API GET /manifest.json - Status: 200 - 0.006s
+2026-03-13 11:25:02,606 [INFO] JudoApp: API GET /app.js - Status: 200 - 0.004s
+2026-03-13 11:25:02,938 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-13 11:25:12,436 [ERROR] JudoApp: Global Error: GET /api/matches - (psycopg2.OperationalError) connection to server at "172.17.192.28", port 5432 failed: Connection timed out (0x0000274C/10060)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+Traceback (most recent call last):
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\base.py", line 3371, in _wrap_pool_connect
+    return fn()
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 327, in connect
+    return _ConnectionFairy._checkout(self)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 894, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 497, in checkout
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\util\langhelpers.py", line 70, in __exit__
+    compat.raise_(
+    ~~~~~~~~~~~~~^
+        exc_value,
+        ^^^^^^^^^^
+        with_traceback=exc_tb,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\util\compat.py", line 211, in raise_
+    raise exception
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 495, in checkout
+    dbapi_connection = rec.get_connection()
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 630, in get_connection
+    self.__connect()
+    ~~~~~~~~~~~~~~^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 690, in __connect
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\util\langhelpers.py", line 70, in __exit__
+    compat.raise_(
+    ~~~~~~~~~~~~~^
+        exc_value,
+        ^^^^^^^^^^
+        with_traceback=exc_tb,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\util\compat.py", line 211, in raise_
+    raise exception
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 686, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+                                         ~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\create.py", line 574, in connect
+    return dialect.connect(*cargs, **cparams)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\default.py", line 598, in connect
+    return self.dbapi.connect(*cargs, **cparams)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\psycopg2\__init__.py", line 135, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: connection to server at "172.17.192.28", port 5432 failed: Connection timed out (0x0000274C/10060)
+	Is the server running on that host and accepting TCP/IP connections?
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\middleware\base.py", line 191, in __call__
+    with recv_stream, send_stream, collapse_excgroups():
+                                   ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\_utils.py", line 87, in collapse_excgroups
+    raise exc
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\middleware\base.py", line 193, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\Downloads\judgefrontend\main.py", line 77, in log_requests
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\middleware\base.py", line 168, in call_next
+    raise app_exc from app_exc.__cause__ or app_exc.__context__
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\middleware\base.py", line 144, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\middleware\cors.py", line 87, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\fastapi\routing.py", line 119, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\fastapi\routing.py", line 105, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\fastapi\routing.py", line 431, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\fastapi\routing.py", line 315, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\concurrency.py", line 32, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\anyio\to_thread.py", line 63, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\anyio\_backends\_asyncio.py", line 2502, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\anyio\_backends\_asyncio.py", line 986, in run
+    result = context.run(func, *args)
+  File "C:\Users\joell\Downloads\judgefrontend\main.py", line 722, in get_matches
+    fights = session.query(FightModel).order_by(FightModel.fight_number).all()
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\orm\query.py", line 2773, in all
+    return self._iter().all()
+           ~~~~~~~~~~^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\orm\query.py", line 2916, in _iter
+    result = self.session.execute(
+        statement,
+        params,
+        execution_options={"_sa_orm_load_options": self.load_options},
+    )
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\orm\session.py", line 1716, in execute
+    conn = self._connection_for_bind(bind)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\orm\session.py", line 1555, in _connection_for_bind
+    return self._transaction._connection_for_bind(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        engine, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\orm\session.py", line 750, in _connection_for_bind
+    conn = bind.connect()
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\base.py", line 3325, in connect
+    return self._connection_cls(self, close_with_result=close_with_result)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\base.py", line 96, in __init__
+    else engine.raw_connection()
+         ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\base.py", line 3404, in raw_connection
+    return self._wrap_pool_connect(self.pool.connect, _connection)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\base.py", line 3374, in _wrap_pool_connect
+    Connection._handle_dbapi_exception_noconnection(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, dialect, self
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\base.py", line 2208, in _handle_dbapi_exception_noconnection
+    util.raise_(
+    ~~~~~~~~~~~^
+        sqlalchemy_exception, with_traceback=exc_info[2], from_=e
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\util\compat.py", line 211, in raise_
+    raise exception
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\base.py", line 3371, in _wrap_pool_connect
+    return fn()
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 327, in connect
+    return _ConnectionFairy._checkout(self)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 894, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 497, in checkout
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\util\langhelpers.py", line 70, in __exit__
+    compat.raise_(
+    ~~~~~~~~~~~~~^
+        exc_value,
+        ^^^^^^^^^^
+        with_traceback=exc_tb,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\util\compat.py", line 211, in raise_
+    raise exception
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 495, in checkout
+    dbapi_connection = rec.get_connection()
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 630, in get_connection
+    self.__connect()
+    ~~~~~~~~~~~~~~^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 690, in __connect
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\util\langhelpers.py", line 70, in __exit__
+    compat.raise_(
+    ~~~~~~~~~~~~~^
+        exc_value,
+        ^^^^^^^^^^
+        with_traceback=exc_tb,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\util\compat.py", line 211, in raise_
+    raise exception
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 686, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+                                         ~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\create.py", line 574, in connect
+    return dialect.connect(*cargs, **cparams)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\default.py", line 598, in connect
+    return self.dbapi.connect(*cargs, **cparams)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\psycopg2\__init__.py", line 135, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) connection to server at "172.17.192.28", port 5432 failed: Connection timed out (0x0000274C/10060)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+2026-03-13 11:25:23,253 [ERROR] JudoApp: Global Error: GET /api/matches - (psycopg2.OperationalError) connection to server at "172.17.192.28", port 5432 failed: Connection timed out (0x0000274C/10060)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+Traceback (most recent call last):
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\base.py", line 3371, in _wrap_pool_connect
+    return fn()
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 327, in connect
+    return _ConnectionFairy._checkout(self)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 894, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 493, in checkout
+    rec = pool._do_get()
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\impl.py", line 145, in _do_get
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\util\langhelpers.py", line 70, in __exit__
+    compat.raise_(
+    ~~~~~~~~~~~~~^
+        exc_value,
+        ^^^^^^^^^^
+        with_traceback=exc_tb,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\util\compat.py", line 211, in raise_
+    raise exception
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\impl.py", line 143, in _do_get
+    return self._create_connection()
+           ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 273, in _create_connection
+    return _ConnectionRecord(self)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 388, in __init__
+    self.__connect()
+    ~~~~~~~~~~~~~~^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 690, in __connect
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\util\langhelpers.py", line 70, in __exit__
+    compat.raise_(
+    ~~~~~~~~~~~~~^
+        exc_value,
+        ^^^^^^^^^^
+        with_traceback=exc_tb,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\util\compat.py", line 211, in raise_
+    raise exception
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 686, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+                                         ~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\create.py", line 574, in connect
+    return dialect.connect(*cargs, **cparams)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\default.py", line 598, in connect
+    return self.dbapi.connect(*cargs, **cparams)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\psycopg2\__init__.py", line 135, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: connection to server at "172.17.192.28", port 5432 failed: Connection timed out (0x0000274C/10060)
+	Is the server running on that host and accepting TCP/IP connections?
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\middleware\base.py", line 191, in __call__
+    with recv_stream, send_stream, collapse_excgroups():
+                                   ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\_utils.py", line 87, in collapse_excgroups
+    raise exc
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\middleware\base.py", line 193, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\Downloads\judgefrontend\main.py", line 77, in log_requests
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\middleware\base.py", line 168, in call_next
+    raise app_exc from app_exc.__cause__ or app_exc.__context__
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\middleware\base.py", line 144, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\middleware\cors.py", line 87, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\fastapi\routing.py", line 119, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\fastapi\routing.py", line 105, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\fastapi\routing.py", line 431, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\fastapi\routing.py", line 315, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\concurrency.py", line 32, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\anyio\to_thread.py", line 63, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\anyio\_backends\_asyncio.py", line 2502, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\anyio\_backends\_asyncio.py", line 986, in run
+    result = context.run(func, *args)
+  File "C:\Users\joell\Downloads\judgefrontend\main.py", line 722, in get_matches
+    fights = session.query(FightModel).order_by(FightModel.fight_number).all()
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\orm\query.py", line 2773, in all
+    return self._iter().all()
+           ~~~~~~~~~~^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\orm\query.py", line 2916, in _iter
+    result = self.session.execute(
+        statement,
+        params,
+        execution_options={"_sa_orm_load_options": self.load_options},
+    )
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\orm\session.py", line 1716, in execute
+    conn = self._connection_for_bind(bind)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\orm\session.py", line 1555, in _connection_for_bind
+    return self._transaction._connection_for_bind(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        engine, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\orm\session.py", line 750, in _connection_for_bind
+    conn = bind.connect()
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\base.py", line 3325, in connect
+    return self._connection_cls(self, close_with_result=close_with_result)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\base.py", line 96, in __init__
+    else engine.raw_connection()
+         ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\base.py", line 3404, in raw_connection
+    return self._wrap_pool_connect(self.pool.connect, _connection)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\base.py", line 3374, in _wrap_pool_connect
+    Connection._handle_dbapi_exception_noconnection(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, dialect, self
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\base.py", line 2208, in _handle_dbapi_exception_noconnection
+    util.raise_(
+    ~~~~~~~~~~~^
+        sqlalchemy_exception, with_traceback=exc_info[2], from_=e
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\util\compat.py", line 211, in raise_
+    raise exception
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\base.py", line 3371, in _wrap_pool_connect
+    return fn()
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 327, in connect
+    return _ConnectionFairy._checkout(self)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 894, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 493, in checkout
+    rec = pool._do_get()
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\impl.py", line 145, in _do_get
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\util\langhelpers.py", line 70, in __exit__
+    compat.raise_(
+    ~~~~~~~~~~~~~^
+        exc_value,
+        ^^^^^^^^^^
+        with_traceback=exc_tb,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\util\compat.py", line 211, in raise_
+    raise exception
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\impl.py", line 143, in _do_get
+    return self._create_connection()
+           ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 273, in _create_connection
+    return _ConnectionRecord(self)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 388, in __init__
+    self.__connect()
+    ~~~~~~~~~~~~~~^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 690, in __connect
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\util\langhelpers.py", line 70, in __exit__
+    compat.raise_(
+    ~~~~~~~~~~~~~^
+        exc_value,
+        ^^^^^^^^^^
+        with_traceback=exc_tb,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\util\compat.py", line 211, in raise_
+    raise exception
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 686, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+                                         ~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\create.py", line 574, in connect
+    return dialect.connect(*cargs, **cparams)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\default.py", line 598, in connect
+    return self.dbapi.connect(*cargs, **cparams)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\psycopg2\__init__.py", line 135, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) connection to server at "172.17.192.28", port 5432 failed: Connection timed out (0x0000274C/10060)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+2026-03-13 11:25:23,658 [ERROR] JudoApp: Global Error: GET /api/matches - (psycopg2.OperationalError) connection to server at "172.17.192.28", port 5432 failed: Connection timed out (0x0000274C/10060)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+Traceback (most recent call last):
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\base.py", line 3371, in _wrap_pool_connect
+    return fn()
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 327, in connect
+    return _ConnectionFairy._checkout(self)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 894, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 493, in checkout
+    rec = pool._do_get()
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\impl.py", line 145, in _do_get
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\util\langhelpers.py", line 70, in __exit__
+    compat.raise_(
+    ~~~~~~~~~~~~~^
+        exc_value,
+        ^^^^^^^^^^
+        with_traceback=exc_tb,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\util\compat.py", line 211, in raise_
+    raise exception
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\impl.py", line 143, in _do_get
+    return self._create_connection()
+           ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 273, in _create_connection
+    return _ConnectionRecord(self)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 388, in __init__
+    self.__connect()
+    ~~~~~~~~~~~~~~^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 690, in __connect
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\util\langhelpers.py", line 70, in __exit__
+    compat.raise_(
+    ~~~~~~~~~~~~~^
+        exc_value,
+        ^^^^^^^^^^
+        with_traceback=exc_tb,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\util\compat.py", line 211, in raise_
+    raise exception
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 686, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+                                         ~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\create.py", line 574, in connect
+    return dialect.connect(*cargs, **cparams)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\default.py", line 598, in connect
+    return self.dbapi.connect(*cargs, **cparams)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\psycopg2\__init__.py", line 135, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: connection to server at "172.17.192.28", port 5432 failed: Connection timed out (0x0000274C/10060)
+	Is the server running on that host and accepting TCP/IP connections?
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\middleware\base.py", line 191, in __call__
+    with recv_stream, send_stream, collapse_excgroups():
+                                   ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    ~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\_utils.py", line 87, in collapse_excgroups
+    raise exc
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\middleware\base.py", line 193, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\Downloads\judgefrontend\main.py", line 77, in log_requests
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\middleware\base.py", line 168, in call_next
+    raise app_exc from app_exc.__cause__ or app_exc.__context__
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\middleware\base.py", line 144, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\middleware\cors.py", line 87, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\fastapi\routing.py", line 119, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\fastapi\routing.py", line 105, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\fastapi\routing.py", line 431, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\fastapi\routing.py", line 315, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\starlette\concurrency.py", line 32, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\anyio\to_thread.py", line 63, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\anyio\_backends\_asyncio.py", line 2502, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\anyio\_backends\_asyncio.py", line 986, in run
+    result = context.run(func, *args)
+  File "C:\Users\joell\Downloads\judgefrontend\main.py", line 722, in get_matches
+    fights = session.query(FightModel).order_by(FightModel.fight_number).all()
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\orm\query.py", line 2773, in all
+    return self._iter().all()
+           ~~~~~~~~~~^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\orm\query.py", line 2916, in _iter
+    result = self.session.execute(
+        statement,
+        params,
+        execution_options={"_sa_orm_load_options": self.load_options},
+    )
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\orm\session.py", line 1716, in execute
+    conn = self._connection_for_bind(bind)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\orm\session.py", line 1555, in _connection_for_bind
+    return self._transaction._connection_for_bind(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        engine, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\orm\session.py", line 750, in _connection_for_bind
+    conn = bind.connect()
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\base.py", line 3325, in connect
+    return self._connection_cls(self, close_with_result=close_with_result)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\base.py", line 96, in __init__
+    else engine.raw_connection()
+         ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\base.py", line 3404, in raw_connection
+    return self._wrap_pool_connect(self.pool.connect, _connection)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\base.py", line 3374, in _wrap_pool_connect
+    Connection._handle_dbapi_exception_noconnection(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, dialect, self
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\base.py", line 2208, in _handle_dbapi_exception_noconnection
+    util.raise_(
+    ~~~~~~~~~~~^
+        sqlalchemy_exception, with_traceback=exc_info[2], from_=e
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\util\compat.py", line 211, in raise_
+    raise exception
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\base.py", line 3371, in _wrap_pool_connect
+    return fn()
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 327, in connect
+    return _ConnectionFairy._checkout(self)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 894, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 493, in checkout
+    rec = pool._do_get()
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\impl.py", line 145, in _do_get
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\util\langhelpers.py", line 70, in __exit__
+    compat.raise_(
+    ~~~~~~~~~~~~~^
+        exc_value,
+        ^^^^^^^^^^
+        with_traceback=exc_tb,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\util\compat.py", line 211, in raise_
+    raise exception
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\impl.py", line 143, in _do_get
+    return self._create_connection()
+           ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 273, in _create_connection
+    return _ConnectionRecord(self)
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 388, in __init__
+    self.__connect()
+    ~~~~~~~~~~~~~~^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 690, in __connect
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\util\langhelpers.py", line 70, in __exit__
+    compat.raise_(
+    ~~~~~~~~~~~~~^
+        exc_value,
+        ^^^^^^^^^^
+        with_traceback=exc_tb,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\util\compat.py", line 211, in raise_
+    raise exception
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\pool\base.py", line 686, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+                                         ~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\create.py", line 574, in connect
+    return dialect.connect(*cargs, **cparams)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\sqlalchemy\engine\default.py", line 598, in connect
+    return self.dbapi.connect(*cargs, **cparams)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\joell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\psycopg2\__init__.py", line 135, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) connection to server at "172.17.192.28", port 5432 failed: Connection timed out (0x0000274C/10060)
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+2026-03-13 11:26:07,732 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-13 11:26:11,925 [INFO] JudoApp: Starting up Judo Real-Time API...
+2026-03-13 11:26:12,019 [INFO] JudoApp: Generating WB shells for Bracket 48
+2026-03-13 11:26:12,023 [INFO] JudoApp: Generating LB fights for Bracket 48
+2026-03-13 11:26:12,026 [INFO] JudoApp: Generating WB shells for Bracket 49
+2026-03-13 11:26:12,029 [INFO] JudoApp: Generating LB fights for Bracket 49
+2026-03-13 11:26:12,031 [INFO] JudoApp: Generating WB shells for Bracket 50
+2026-03-13 11:26:12,034 [INFO] JudoApp: Generating LB fights for Bracket 50
+2026-03-13 11:26:12,040 [INFO] JudoApp: Generating WB shells for Bracket 53
+2026-03-13 11:26:12,044 [INFO] JudoApp: Generating LB fights for Bracket 53
+2026-03-13 11:26:12,048 [INFO] JudoApp: Generating WB shells for Bracket 56
+2026-03-13 11:26:12,051 [INFO] JudoApp: Generating LB fights for Bracket 56
+2026-03-13 11:26:12,054 [INFO] JudoApp: Generating WB shells for Bracket 58
+2026-03-13 11:26:12,058 [INFO] JudoApp: Generating LB fights for Bracket 58
+2026-03-13 11:26:12,061 [INFO] JudoApp: Generating WB shells for Bracket 59
+2026-03-13 11:26:12,064 [INFO] JudoApp: Generating LB fights for Bracket 59
+2026-03-13 11:26:12,067 [INFO] JudoApp: Generating WB shells for Bracket 61
+2026-03-13 11:26:12,070 [INFO] JudoApp: Generating LB fights for Bracket 61
+2026-03-13 11:26:12,076 [INFO] JudoApp: Generating WB shells for Bracket 62
+2026-03-13 11:26:12,080 [INFO] JudoApp: Generating LB fights for Bracket 62
+2026-03-13 11:26:12,082 [INFO] JudoApp: Generating WB shells for Bracket 64
+2026-03-13 11:26:12,089 [INFO] JudoApp: Generating LB fights for Bracket 64
+2026-03-13 11:26:12,092 [INFO] JudoApp: Generating WB shells for Bracket 65
+2026-03-13 11:26:12,095 [INFO] JudoApp: Generating LB fights for Bracket 65
+2026-03-13 11:26:12,099 [INFO] JudoApp: Generating WB shells for Bracket 66
+2026-03-13 11:26:12,105 [INFO] JudoApp: Generating LB fights for Bracket 66
+2026-03-13 11:26:12,108 [INFO] JudoApp: Generating WB shells for Bracket 68
+2026-03-13 11:26:12,112 [INFO] JudoApp: Generating LB fights for Bracket 68
+2026-03-13 11:26:12,116 [INFO] JudoApp: Generating WB shells for Bracket 69
+2026-03-13 11:26:12,121 [INFO] JudoApp: Generating LB fights for Bracket 69
+2026-03-13 11:26:12,130 [INFO] JudoApp: Generating WB shells for Bracket 75
+2026-03-13 11:26:12,135 [INFO] JudoApp: Generating LB fights for Bracket 75
+2026-03-13 11:26:12,138 [INFO] JudoApp: Generating WB shells for Bracket 76
+2026-03-13 11:26:12,141 [INFO] JudoApp: Generating LB fights for Bracket 76
+2026-03-13 11:26:12,145 [INFO] JudoApp: Generating WB shells for Bracket 77
+2026-03-13 11:26:12,148 [INFO] JudoApp: Generating LB fights for Bracket 77
+2026-03-13 11:26:12,152 [INFO] JudoApp: Generating WB shells for Bracket 80
+2026-03-13 11:26:12,155 [INFO] JudoApp: Generating LB fights for Bracket 80
+2026-03-13 11:26:12,159 [INFO] JudoApp: Generating WB shells for Bracket 81
+2026-03-13 11:26:12,162 [INFO] JudoApp: Generating LB fights for Bracket 81
+2026-03-13 11:26:12,165 [INFO] JudoApp: Generating WB shells for Bracket 82
+2026-03-13 11:26:12,168 [INFO] JudoApp: Generating LB fights for Bracket 82
+2026-03-13 11:26:12,173 [INFO] JudoApp: Generating WB shells for Bracket 83
+2026-03-13 11:26:12,178 [INFO] JudoApp: Generating LB fights for Bracket 83
+2026-03-13 11:26:12,180 [INFO] JudoApp: Generating WB shells for Bracket 85
+2026-03-13 11:26:12,183 [INFO] JudoApp: Generating LB fights for Bracket 85
+2026-03-13 11:26:12,186 [INFO] JudoApp: Generating WB shells for Bracket 86
+2026-03-13 11:26:12,189 [INFO] JudoApp: Generating LB fights for Bracket 86
+2026-03-13 11:26:12,193 [INFO] JudoApp: Generating WB shells for Bracket 88
+2026-03-13 11:26:12,196 [INFO] JudoApp: Generating LB fights for Bracket 88
+2026-03-13 11:26:12,198 [INFO] JudoApp: Generating WB shells for Bracket 89
+2026-03-13 11:26:12,205 [INFO] JudoApp: Generating LB fights for Bracket 89
+2026-03-13 11:26:12,209 [INFO] JudoApp: Generating WB shells for Bracket 91
+2026-03-13 11:26:12,212 [INFO] JudoApp: Generating LB fights for Bracket 91
+2026-03-13 11:26:12,215 [INFO] JudoApp: Generating WB shells for Bracket 92
+2026-03-13 11:26:12,222 [INFO] JudoApp: Generating LB fights for Bracket 92
+2026-03-13 11:26:12,226 [INFO] JudoApp: Generating WB shells for Bracket 93
+2026-03-13 11:26:12,228 [INFO] JudoApp: Generating LB fights for Bracket 93
+2026-03-13 11:26:12,231 [INFO] JudoApp: Generating WB shells for Bracket 94
+2026-03-13 11:26:12,234 [INFO] JudoApp: Generating LB fights for Bracket 94
+2026-03-13 11:26:12,240 [INFO] JudoApp: Generating WB shells for Bracket 96
+2026-03-13 11:26:12,244 [INFO] JudoApp: Generating LB fights for Bracket 96
+2026-03-13 11:26:12,247 [INFO] JudoApp: Generating WB shells for Bracket 98
+2026-03-13 11:26:12,250 [INFO] JudoApp: Generating LB fights for Bracket 98
+2026-03-13 11:26:12,253 [INFO] JudoApp: Generating WB shells for Bracket 100
+2026-03-13 11:26:12,256 [INFO] JudoApp: Generating LB fights for Bracket 100
+2026-03-13 11:26:12,259 [INFO] JudoApp: Generating WB shells for Bracket 102
+2026-03-13 11:26:12,262 [INFO] JudoApp: Generating LB fights for Bracket 102
+2026-03-13 11:26:12,265 [INFO] JudoApp: Generating WB shells for Bracket 52
+2026-03-13 11:26:12,306 [INFO] JudoApp: Generating LB fights for Bracket 52
+2026-03-13 11:26:12,349 [INFO] JudoApp: Generating WB shells for Bracket 47
+2026-03-13 11:26:12,363 [INFO] JudoApp: Generating LB fights for Bracket 47
+2026-03-13 11:26:12,385 [INFO] JudoApp: Generating WB shells for Bracket 54
+2026-03-13 11:26:12,411 [INFO] JudoApp: Generating LB fights for Bracket 54
+2026-03-13 11:26:12,454 [INFO] JudoApp: Healing bracket progressions...
+2026-03-13 11:26:12,587 [INFO] JudoApp: Advancing Winner 235 from Fight 95 to WB Fight 103 (p1)
+2026-03-13 11:26:12,594 [INFO] JudoApp: Advancing Loser 222 from WB Fight 95 to LB Fight 104 (p1)
+2026-03-13 11:26:12,601 [INFO] JudoApp: Advancing Winner 466 from Fight 62 to WB Fight 64 (p1)
+2026-03-13 11:26:12,608 [INFO] JudoApp: Advancing Winner 220 from Fight 59 to WB Fight 61 (p1)
+2026-03-13 11:26:12,615 [INFO] JudoApp: Advancing Winner 222 from Fight 104 to LB Fight 113 (p1)
+2026-03-13 11:26:12,622 [INFO] JudoApp: Advancing Winner 249 from Fight 80 to LB Fight 84 (p1)
+2026-03-13 11:26:12,628 [INFO] JudoApp: Advancing Winner 331 from Fight 33 to WB Fight 35 (p1)
+2026-03-13 11:26:12,635 [INFO] JudoApp: Advancing Winner 247 from Fight 65 to WB Fight 73 (p1)
+2026-03-13 11:26:12,641 [INFO] JudoApp: Advancing Loser 249 from WB Fight 65 to LB Fight 80 (p1)
+2026-03-13 11:26:12,647 [INFO] JudoApp: Advancing Winner 262 from Fight 66 to WB Fight 73 (p2)
+2026-03-13 11:26:12,653 [INFO] JudoApp: Advancing Loser 255 from WB Fight 66 to LB Fight 80 (p2)
+2026-03-13 11:26:12,660 [INFO] JudoApp: Advancing Winner 332 from Fight 34 to WB Fight 35 (p2)
+2026-03-13 11:26:12,665 [INFO] JudoApp: Advancing Winner 250 from Fight 81 to LB Fight 85 (p1)
+2026-03-13 11:26:12,675 [INFO] JudoApp: Advancing Winner 471 from Fight 63 to WB Fight 64 (p2)
+2026-03-13 11:26:12,681 [INFO] JudoApp: Advancing Winner 214 from Fight 60 to WB Fight 61 (p2)
+2026-03-13 11:26:12,690 [INFO] JudoApp: Advancing Winner 228 from Fight 110 to LB Fight 114 (p1)
+2026-03-13 11:26:12,697 [INFO] JudoApp: Advancing Winner 234 from Fight 96 to WB Fight 103 (p2)
+2026-03-13 11:26:12,702 [INFO] JudoApp: Advancing Loser 226 from WB Fight 96 to LB Fight 104 (p2)
+2026-03-13 11:26:12,709 [INFO] JudoApp: Advancing Winner 232 from Fight 111 to LB Fight 115 (p1)
+2026-03-13 11:26:12,715 [INFO] JudoApp: Advancing Winner 253 from Fight 82 to LB Fight 86 (p1)
+2026-03-13 11:26:12,725 [INFO] JudoApp: Advancing Winner 229 from Fight 97 to WB Fight 105 (p1)
+2026-03-13 11:26:12,730 [INFO] JudoApp: Advancing Winner 260 from Fight 67 to WB Fight 74 (p1)
+2026-03-13 11:26:12,739 [INFO] JudoApp: Advancing Loser 259 from WB Fight 67 to LB Fight 81 (p1)
+2026-03-13 11:26:12,745 [INFO] JudoApp: Advancing Winner 256 from Fight 68 to WB Fight 74 (p2)
+2026-03-13 11:26:12,751 [INFO] JudoApp: Advancing Loser 250 from WB Fight 68 to LB Fight 81 (p2)
+2026-03-13 11:26:12,759 [INFO] JudoApp: Advancing Winner 248 from Fight 83 to LB Fight 87 (p1)
+2026-03-13 11:26:12,765 [INFO] JudoApp: Advancing Winner 224 from Fight 98 to WB Fight 105 (p2)
+2026-03-13 11:26:12,779 [INFO] JudoApp: Advancing Winner 228 from Fight 110 to LB Fight 114 (p1)
+2026-03-13 11:26:12,779 [INFO] JudoApp: Advancing Loser 228 from WB Fight 98 to LB Fight 110 (p2)
+2026-03-13 11:26:12,790 [INFO] JudoApp: Advancing Winner 252 from Fight 69 to WB Fight 75 (p1)
+2026-03-13 11:26:12,797 [INFO] JudoApp: Advancing Loser 257 from WB Fight 69 to LB Fight 82 (p1)
+2026-03-13 11:26:12,816 [INFO] JudoApp: Advancing Winner 225 from Fight 99 to WB Fight 106 (p1)
+2026-03-13 11:26:12,837 [INFO] JudoApp: Advancing Winner 232 from Fight 111 to LB Fight 115 (p1)
+2026-03-13 11:26:12,837 [INFO] JudoApp: Advancing Loser 232 from WB Fight 99 to LB Fight 111 (p1)
+2026-03-13 11:26:12,845 [INFO] JudoApp: Advancing Winner 261 from Fight 70 to WB Fight 75 (p2)
+2026-03-13 11:26:12,857 [INFO] JudoApp: Advancing Loser 253 from WB Fight 70 to LB Fight 82 (p2)
+2026-03-13 11:26:12,863 [INFO] JudoApp: Advancing Winner 230 from Fight 100 to WB Fight 106 (p2)
+2026-03-13 11:26:12,873 [INFO] JudoApp: Advancing Winner 258 from Fight 71 to WB Fight 76 (p1)
+2026-03-13 11:26:12,878 [INFO] JudoApp: Advancing Loser 254 from WB Fight 71 to LB Fight 83 (p1)
+2026-03-13 11:26:12,884 [INFO] JudoApp: Advancing Winner 227 from Fight 101 to WB Fight 107 (p1)
+2026-03-13 11:26:12,894 [INFO] JudoApp: Advancing Loser 233 from WB Fight 101 to LB Fight 112 (p1)
+2026-03-13 11:26:12,900 [INFO] JudoApp: Advancing Winner 223 from Fight 102 to WB Fight 107 (p2)
+2026-03-13 11:26:12,909 [INFO] JudoApp: Advancing Loser 231 from WB Fight 102 to LB Fight 112 (p2)
+2026-03-13 11:26:12,915 [INFO] JudoApp: Advancing Winner 251 from Fight 72 to WB Fight 76 (p2)
+2026-03-13 11:26:12,921 [INFO] JudoApp: Advancing Loser 248 from WB Fight 72 to LB Fight 83 (p2)
+2026-03-13 11:26:12,928 [INFO] JudoApp: Advancing Winner 234 from Fight 103 to WB Fight 108 (p1)
+2026-03-13 11:26:12,934 [INFO] JudoApp: Advancing Loser 235 from WB Fight 103 to LB Fight 113 (p2)
+2026-03-13 11:26:12,946 [INFO] JudoApp: Advancing Winner 247 from Fight 84 to LB Fight 88 (p1)
+2026-03-13 11:26:12,954 [INFO] JudoApp: Advancing Winner 262 from Fight 73 to WB Fight 77 (p1)
+2026-03-13 11:26:12,968 [INFO] JudoApp: Advancing Loser 247 from WB Fight 73 to LB Fight 84 (p2)
+2026-03-13 11:26:12,982 [INFO] JudoApp: Advancing Winner 256 from Fight 74 to WB Fight 77 (p2)
+2026-03-13 11:26:12,987 [INFO] JudoApp: Advancing Loser 260 from WB Fight 74 to LB Fight 85 (p2)
+2026-03-13 11:26:12,997 [INFO] JudoApp: Advancing Winner 229 from Fight 105 to WB Fight 108 (p2)
+2026-03-13 11:26:13,001 [INFO] JudoApp: Advancing Loser 224 from WB Fight 105 to LB Fight 114 (p2)
+2026-03-13 11:26:13,007 [INFO] JudoApp: Advancing Winner 260 from Fight 85 to LB Fight 88 (p2)
+2026-03-13 11:26:13,012 [INFO] JudoApp: Advancing Winner 261 from Fight 75 to WB Fight 78 (p1)
+2026-03-13 11:26:13,023 [INFO] JudoApp: Advancing Loser 252 from WB Fight 75 to LB Fight 86 (p2)
+2026-03-13 11:26:13,028 [INFO] JudoApp: Advancing Winner 253 from Fight 86 to LB Fight 89 (p1)
+2026-03-13 11:26:13,034 [INFO] JudoApp: Advancing Winner 225 from Fight 106 to WB Fight 109 (p1)
+2026-03-13 11:26:13,042 [INFO] JudoApp: Advancing Loser 230 from WB Fight 106 to LB Fight 115 (p2)
+2026-03-13 11:26:13,048 [INFO] JudoApp: Advancing Winner 227 from Fight 107 to WB Fight 109 (p2)
+2026-03-13 11:26:13,054 [INFO] JudoApp: Advancing Loser 223 from WB Fight 107 to LB Fight 116 (p2)
+2026-03-13 11:26:13,060 [INFO] JudoApp: Advancing Winner 258 from Fight 87 to LB Fight 89 (p2)
+2026-03-13 11:26:13,065 [INFO] JudoApp: Advancing Winner 251 from Fight 76 to WB Fight 78 (p2)
+2026-03-13 11:26:13,071 [INFO] JudoApp: Advancing Loser 258 from WB Fight 76 to LB Fight 87 (p2)
+2026-03-13 11:26:13,078 [INFO] JudoApp: Advancing Winner 256 from Fight 77 to WB Fight 79 (p1)
+2026-03-13 11:26:13,103 [INFO] JudoApp: Advancing Loser 262 from WB Fight 77 to LB Fight 90 (p2)
+2026-03-13 11:26:13,114 [INFO] JudoApp: Advancing Winner 247 from Fight 88 to LB Fight 90 (p1)
+2026-03-13 11:26:13,124 [INFO] JudoApp: Advancing Winner 229 from Fight 108 to WB Fight 122 (p1)
+2026-03-13 11:26:13,131 [INFO] JudoApp: Advancing Loser 234 from WB Fight 108 to LB Fight 119 (p2)
+2026-03-13 11:26:13,141 [INFO] JudoApp: Advancing Winner 225 from Fight 109 to WB Fight 122 (p2)
+2026-03-13 11:26:13,149 [INFO] JudoApp: Advancing Loser 227 from WB Fight 109 to LB Fight 120 (p2)
+2026-03-13 11:26:13,158 [INFO] JudoApp: Advancing Winner 258 from Fight 89 to LB Fight 91 (p1)
+2026-03-13 11:26:13,164 [INFO] JudoApp: Advancing Winner 251 from Fight 78 to WB Fight 79 (p2)
+2026-03-13 11:26:13,171 [INFO] JudoApp: Advancing Loser 261 from WB Fight 78 to LB Fight 91 (p2)
+2026-03-13 11:26:13,177 [INFO] JudoApp: Advancing Winner 262 from Fight 90 to LB Fight 92 (p1)
+2026-03-13 11:26:13,191 [INFO] JudoApp: Advancing Winner 261 from Fight 91 to LB Fight 92 (p2)
+2026-03-13 11:26:13,209 [INFO] JudoApp: Generating Double-Pool KO phase for Bracket 51
+2026-03-13 11:26:13,216 [INFO] JudoApp: Generating Double-Pool KO phase for Bracket 60
+2026-03-13 11:26:13,222 [INFO] JudoApp: Generating Double-Pool KO phase for Bracket 78
+2026-03-13 11:26:13,555 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-13 11:26:18,012 [INFO] JudoApp: API GET / - Status: 200 - 0.166s
+2026-03-13 11:26:18,023 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-13 11:26:18,033 [INFO] JudoApp: API GET /style.css - Status: 200 - 0.004s
+2026-03-13 11:26:18,036 [INFO] JudoApp: API GET /app.js - Status: 200 - 0.007s
+2026-03-13 11:26:18,129 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.073s
+2026-03-13 11:26:18,353 [INFO] JudoApp: API GET /manifest.json - Status: 200 - 0.005s
+2026-03-13 11:26:18,362 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-13 11:26:46,119 [INFO] JudoApp: IPPON START requested for Match 112
+2026-03-13 11:36:11,206 [INFO] JudoApp: API GET / - Status: 200 - 0.004s
+2026-03-13 11:36:11,217 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-13 11:36:11,232 [INFO] JudoApp: API GET /style.css - Status: 200 - 0.004s
+2026-03-13 11:36:11,234 [INFO] JudoApp: API GET /app.js - Status: 200 - 0.006s
+2026-03-13 11:36:11,411 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.060s
+2026-03-13 11:36:11,555 [INFO] JudoApp: API GET /manifest.json - Status: 200 - 0.002s
+2026-03-13 11:36:11,664 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-13 11:36:14,939 [INFO] JudoApp: IPPON START requested for Match 112
+2026-03-13 11:38:03,930 [INFO] JudoApp: API GET / - Status: 200 - 0.005s
+2026-03-13 11:38:03,937 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-13 11:38:03,949 [INFO] JudoApp: API GET /style.css - Status: 200 - 0.004s
+2026-03-13 11:38:03,952 [INFO] JudoApp: API GET /app.js - Status: 200 - 0.007s
+2026-03-13 11:38:04,144 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.168s
+2026-03-13 11:38:04,276 [INFO] JudoApp: API GET /manifest.json - Status: 200 - 0.003s
+2026-03-13 11:38:04,282 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-13 11:38:08,626 [INFO] JudoApp: IPPON START requested for Match 112
+2026-03-13 11:46:22,638 [INFO] JudoApp: API GET / - Status: 200 - 0.005s
+2026-03-13 11:46:22,652 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-13 11:46:22,674 [INFO] JudoApp: API GET /style.css - Status: 200 - 0.010s
+2026-03-13 11:46:22,679 [INFO] JudoApp: API GET /app.js - Status: 200 - 0.013s
+2026-03-13 11:46:22,832 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.062s
+2026-03-13 11:46:22,986 [INFO] JudoApp: API GET /manifest.json - Status: 200 - 0.003s
+2026-03-13 11:46:23,086 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-13 11:49:25,403 [INFO] JudoApp: API GET / - Status: 200 - 0.005s
+2026-03-13 11:49:25,415 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-13 11:49:25,430 [INFO] JudoApp: API GET /style.css - Status: 200 - 0.007s
+2026-03-13 11:49:25,436 [INFO] JudoApp: API GET /app.js - Status: 200 - 0.012s
+2026-03-13 11:49:25,699 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.169s
+2026-03-13 11:49:25,749 [INFO] JudoApp: API GET /manifest.json - Status: 200 - 0.005s
+2026-03-13 11:49:25,838 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-13 11:59:00,651 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-13 11:59:02,282 [INFO] JudoApp: Starting up Judo Real-Time API...
+2026-03-13 11:59:02,377 [INFO] JudoApp: Generating WB shells for Bracket 48
+2026-03-13 11:59:02,381 [INFO] JudoApp: Generating LB fights for Bracket 48
+2026-03-13 11:59:02,385 [INFO] JudoApp: Generating WB shells for Bracket 49
+2026-03-13 11:59:02,388 [INFO] JudoApp: Generating LB fights for Bracket 49
+2026-03-13 11:59:02,391 [INFO] JudoApp: Generating WB shells for Bracket 50
+2026-03-13 11:59:02,395 [INFO] JudoApp: Generating LB fights for Bracket 50
+2026-03-13 11:59:02,398 [INFO] JudoApp: Generating WB shells for Bracket 53
+2026-03-13 11:59:02,403 [INFO] JudoApp: Generating LB fights for Bracket 53
+2026-03-13 11:59:02,407 [INFO] JudoApp: Generating WB shells for Bracket 56
+2026-03-13 11:59:02,410 [INFO] JudoApp: Generating LB fights for Bracket 56
+2026-03-13 11:59:02,413 [INFO] JudoApp: Generating WB shells for Bracket 58
+2026-03-13 11:59:02,418 [INFO] JudoApp: Generating LB fights for Bracket 58
+2026-03-13 11:59:02,421 [INFO] JudoApp: Generating WB shells for Bracket 59
+2026-03-13 11:59:02,425 [INFO] JudoApp: Generating LB fights for Bracket 59
+2026-03-13 11:59:02,434 [INFO] JudoApp: Generating WB shells for Bracket 61
+2026-03-13 11:59:02,438 [INFO] JudoApp: Generating LB fights for Bracket 61
+2026-03-13 11:59:02,441 [INFO] JudoApp: Generating WB shells for Bracket 62
+2026-03-13 11:59:02,444 [INFO] JudoApp: Generating LB fights for Bracket 62
+2026-03-13 11:59:02,447 [INFO] JudoApp: Generating WB shells for Bracket 64
+2026-03-13 11:59:02,450 [INFO] JudoApp: Generating LB fights for Bracket 64
+2026-03-13 11:59:02,454 [INFO] JudoApp: Generating WB shells for Bracket 65
+2026-03-13 11:59:02,457 [INFO] JudoApp: Generating LB fights for Bracket 65
+2026-03-13 11:59:02,461 [INFO] JudoApp: Generating WB shells for Bracket 66
+2026-03-13 11:59:02,464 [INFO] JudoApp: Generating LB fights for Bracket 66
+2026-03-13 11:59:02,467 [INFO] JudoApp: Generating WB shells for Bracket 68
+2026-03-13 11:59:02,471 [INFO] JudoApp: Generating LB fights for Bracket 68
+2026-03-13 11:59:02,474 [INFO] JudoApp: Generating WB shells for Bracket 69
+2026-03-13 11:59:02,477 [INFO] JudoApp: Generating LB fights for Bracket 69
+2026-03-13 11:59:02,480 [INFO] JudoApp: Generating WB shells for Bracket 75
+2026-03-13 11:59:02,482 [INFO] JudoApp: Generating LB fights for Bracket 75
+2026-03-13 11:59:02,485 [INFO] JudoApp: Generating WB shells for Bracket 76
+2026-03-13 11:59:02,488 [INFO] JudoApp: Generating LB fights for Bracket 76
+2026-03-13 11:59:02,491 [INFO] JudoApp: Generating WB shells for Bracket 77
+2026-03-13 11:59:02,494 [INFO] JudoApp: Generating LB fights for Bracket 77
+2026-03-13 11:59:02,496 [INFO] JudoApp: Generating WB shells for Bracket 80
+2026-03-13 11:59:02,500 [INFO] JudoApp: Generating LB fights for Bracket 80
+2026-03-13 11:59:02,503 [INFO] JudoApp: Generating WB shells for Bracket 81
+2026-03-13 11:59:02,507 [INFO] JudoApp: Generating LB fights for Bracket 81
+2026-03-13 11:59:02,510 [INFO] JudoApp: Generating WB shells for Bracket 82
+2026-03-13 11:59:02,513 [INFO] JudoApp: Generating LB fights for Bracket 82
+2026-03-13 11:59:02,516 [INFO] JudoApp: Generating WB shells for Bracket 83
+2026-03-13 11:59:02,520 [INFO] JudoApp: Generating LB fights for Bracket 83
+2026-03-13 11:59:02,523 [INFO] JudoApp: Generating WB shells for Bracket 85
+2026-03-13 11:59:02,526 [INFO] JudoApp: Generating LB fights for Bracket 85
+2026-03-13 11:59:02,529 [INFO] JudoApp: Generating WB shells for Bracket 86
+2026-03-13 11:59:02,533 [INFO] JudoApp: Generating LB fights for Bracket 86
+2026-03-13 11:59:02,537 [INFO] JudoApp: Generating WB shells for Bracket 88
+2026-03-13 11:59:02,540 [INFO] JudoApp: Generating LB fights for Bracket 88
+2026-03-13 11:59:02,543 [INFO] JudoApp: Generating WB shells for Bracket 89
+2026-03-13 11:59:02,546 [INFO] JudoApp: Generating LB fights for Bracket 89
+2026-03-13 11:59:02,549 [INFO] JudoApp: Generating WB shells for Bracket 91
+2026-03-13 11:59:02,554 [INFO] JudoApp: Generating LB fights for Bracket 91
+2026-03-13 11:59:02,557 [INFO] JudoApp: Generating WB shells for Bracket 92
+2026-03-13 11:59:02,560 [INFO] JudoApp: Generating LB fights for Bracket 92
+2026-03-13 11:59:02,564 [INFO] JudoApp: Generating WB shells for Bracket 93
+2026-03-13 11:59:02,567 [INFO] JudoApp: Generating LB fights for Bracket 93
+2026-03-13 11:59:02,570 [INFO] JudoApp: Generating WB shells for Bracket 94
+2026-03-13 11:59:02,573 [INFO] JudoApp: Generating LB fights for Bracket 94
+2026-03-13 11:59:02,576 [INFO] JudoApp: Generating WB shells for Bracket 96
+2026-03-13 11:59:02,579 [INFO] JudoApp: Generating LB fights for Bracket 96
+2026-03-13 11:59:02,581 [INFO] JudoApp: Generating WB shells for Bracket 98
+2026-03-13 11:59:02,584 [INFO] JudoApp: Generating LB fights for Bracket 98
+2026-03-13 11:59:02,587 [INFO] JudoApp: Generating WB shells for Bracket 100
+2026-03-13 11:59:02,591 [INFO] JudoApp: Generating LB fights for Bracket 100
+2026-03-13 11:59:02,595 [INFO] JudoApp: Generating WB shells for Bracket 102
+2026-03-13 11:59:02,601 [INFO] JudoApp: Generating LB fights for Bracket 102
+2026-03-13 11:59:02,605 [INFO] JudoApp: Generating WB shells for Bracket 52
+2026-03-13 11:59:02,686 [INFO] JudoApp: Generating LB fights for Bracket 52
+2026-03-13 11:59:02,765 [INFO] JudoApp: Generating WB shells for Bracket 47
+2026-03-13 11:59:02,779 [INFO] JudoApp: Generating LB fights for Bracket 47
+2026-03-13 11:59:02,800 [INFO] JudoApp: Generating WB shells for Bracket 54
+2026-03-13 11:59:02,832 [INFO] JudoApp: Generating LB fights for Bracket 54
+2026-03-13 11:59:02,874 [INFO] JudoApp: Healing bracket progressions...
+2026-03-13 11:59:02,900 [INFO] JudoApp: Advancing Winner 235 from Fight 95 to WB Fight 103 (p1)
+2026-03-13 11:59:02,907 [INFO] JudoApp: Advancing Loser 222 from WB Fight 95 to LB Fight 104 (p1)
+2026-03-13 11:59:02,913 [INFO] JudoApp: Advancing Winner 466 from Fight 62 to WB Fight 64 (p1)
+2026-03-13 11:59:02,919 [INFO] JudoApp: Advancing Winner 220 from Fight 59 to WB Fight 61 (p1)
+2026-03-13 11:59:02,926 [INFO] JudoApp: Advancing Winner 249 from Fight 80 to LB Fight 84 (p1)
+2026-03-13 11:59:02,932 [INFO] JudoApp: Advancing Winner 222 from Fight 104 to LB Fight 113 (p1)
+2026-03-13 11:59:02,937 [INFO] JudoApp: Advancing Winner 331 from Fight 33 to WB Fight 35 (p1)
+2026-03-13 11:59:02,943 [INFO] JudoApp: Advancing Winner 247 from Fight 65 to WB Fight 73 (p1)
+2026-03-13 11:59:02,950 [INFO] JudoApp: Advancing Loser 249 from WB Fight 65 to LB Fight 80 (p1)
+2026-03-13 11:59:02,957 [INFO] JudoApp: Advancing Winner 471 from Fight 63 to WB Fight 64 (p2)
+2026-03-13 11:59:02,963 [INFO] JudoApp: Advancing Winner 214 from Fight 60 to WB Fight 61 (p2)
+2026-03-13 11:59:02,969 [INFO] JudoApp: Advancing Winner 262 from Fight 66 to WB Fight 73 (p2)
+2026-03-13 11:59:02,976 [INFO] JudoApp: Advancing Loser 255 from WB Fight 66 to LB Fight 80 (p2)
+2026-03-13 11:59:02,982 [INFO] JudoApp: Advancing Winner 250 from Fight 81 to LB Fight 85 (p1)
+2026-03-13 11:59:02,989 [INFO] JudoApp: Advancing Winner 234 from Fight 96 to WB Fight 103 (p2)
+2026-03-13 11:59:02,995 [INFO] JudoApp: Advancing Loser 226 from WB Fight 96 to LB Fight 104 (p2)
+2026-03-13 11:59:03,000 [INFO] JudoApp: Advancing Winner 332 from Fight 34 to WB Fight 35 (p2)
+2026-03-13 11:59:03,007 [INFO] JudoApp: Advancing Winner 228 from Fight 110 to LB Fight 114 (p1)
+2026-03-13 11:59:03,017 [INFO] JudoApp: Advancing Winner 229 from Fight 97 to WB Fight 105 (p1)
+2026-03-13 11:59:03,027 [INFO] JudoApp: Advancing Winner 260 from Fight 67 to WB Fight 74 (p1)
+2026-03-13 11:59:03,037 [INFO] JudoApp: Advancing Loser 259 from WB Fight 67 to LB Fight 81 (p1)
+2026-03-13 11:59:03,043 [INFO] JudoApp: Advancing Winner 232 from Fight 111 to LB Fight 115 (p1)
+2026-03-13 11:59:03,049 [INFO] JudoApp: Advancing Winner 253 from Fight 82 to LB Fight 86 (p1)
+2026-03-13 11:59:03,057 [INFO] JudoApp: Advancing Winner 231 from Fight 112 to LB Fight 116 (p1)
+2026-03-13 11:59:03,063 [INFO] JudoApp: Advancing Winner 248 from Fight 83 to LB Fight 87 (p1)
+2026-03-13 11:59:03,070 [INFO] JudoApp: Advancing Winner 224 from Fight 98 to WB Fight 105 (p2)
+2026-03-13 11:59:03,084 [INFO] JudoApp: Advancing Winner 228 from Fight 110 to LB Fight 114 (p1)
+2026-03-13 11:59:03,085 [INFO] JudoApp: Advancing Loser 228 from WB Fight 98 to LB Fight 110 (p2)
+2026-03-13 11:59:03,096 [INFO] JudoApp: Advancing Winner 256 from Fight 68 to WB Fight 74 (p2)
+2026-03-13 11:59:03,104 [INFO] JudoApp: Advancing Loser 250 from WB Fight 68 to LB Fight 81 (p2)
+2026-03-13 11:59:03,110 [INFO] JudoApp: Advancing Winner 225 from Fight 99 to WB Fight 106 (p1)
+2026-03-13 11:59:03,123 [INFO] JudoApp: Advancing Winner 232 from Fight 111 to LB Fight 115 (p1)
+2026-03-13 11:59:03,124 [INFO] JudoApp: Advancing Loser 232 from WB Fight 99 to LB Fight 111 (p1)
+2026-03-13 11:59:03,129 [INFO] JudoApp: Advancing Winner 252 from Fight 69 to WB Fight 75 (p1)
+2026-03-13 11:59:03,137 [INFO] JudoApp: Advancing Loser 257 from WB Fight 69 to LB Fight 82 (p1)
+2026-03-13 11:59:03,143 [INFO] JudoApp: Advancing Winner 230 from Fight 100 to WB Fight 106 (p2)
+2026-03-13 11:59:03,148 [INFO] JudoApp: Advancing Winner 261 from Fight 70 to WB Fight 75 (p2)
+2026-03-13 11:59:03,156 [INFO] JudoApp: Advancing Loser 253 from WB Fight 70 to LB Fight 82 (p2)
+2026-03-13 11:59:03,163 [INFO] JudoApp: Advancing Winner 258 from Fight 71 to WB Fight 76 (p1)
+2026-03-13 11:59:03,172 [INFO] JudoApp: Advancing Loser 254 from WB Fight 71 to LB Fight 83 (p1)
+2026-03-13 11:59:03,183 [INFO] JudoApp: Advancing Winner 227 from Fight 101 to WB Fight 107 (p1)
+2026-03-13 11:59:03,190 [INFO] JudoApp: Advancing Loser 233 from WB Fight 101 to LB Fight 112 (p1)
+2026-03-13 11:59:03,196 [INFO] JudoApp: Advancing Winner 223 from Fight 102 to WB Fight 107 (p2)
+2026-03-13 11:59:03,205 [INFO] JudoApp: Advancing Loser 231 from WB Fight 102 to LB Fight 112 (p2)
+2026-03-13 11:59:03,211 [INFO] JudoApp: Advancing Winner 251 from Fight 72 to WB Fight 76 (p2)
+2026-03-13 11:59:03,217 [INFO] JudoApp: Advancing Loser 248 from WB Fight 72 to LB Fight 83 (p2)
+2026-03-13 11:59:03,224 [INFO] JudoApp: Advancing Winner 235 from Fight 113 to LB Fight 117 (p1)
+2026-03-13 11:59:03,241 [INFO] JudoApp: Advancing Winner 262 from Fight 73 to WB Fight 77 (p1)
+2026-03-13 11:59:03,249 [INFO] JudoApp: Advancing Loser 247 from WB Fight 73 to LB Fight 84 (p2)
+2026-03-13 11:59:03,257 [INFO] JudoApp: Advancing Winner 247 from Fight 84 to LB Fight 88 (p1)
+2026-03-13 11:59:03,271 [INFO] JudoApp: Advancing Winner 234 from Fight 103 to WB Fight 108 (p1)
+2026-03-13 11:59:03,278 [INFO] JudoApp: Advancing Loser 235 from WB Fight 103 to LB Fight 113 (p2)
+2026-03-13 11:59:03,285 [INFO] JudoApp: Advancing Winner 256 from Fight 74 to WB Fight 77 (p2)
+2026-03-13 11:59:03,292 [INFO] JudoApp: Advancing Loser 260 from WB Fight 74 to LB Fight 85 (p2)
+2026-03-13 11:59:03,299 [INFO] JudoApp: Advancing Winner 229 from Fight 105 to WB Fight 108 (p2)
+2026-03-13 11:59:03,306 [INFO] JudoApp: Advancing Loser 224 from WB Fight 105 to LB Fight 114 (p2)
+2026-03-13 11:59:03,313 [INFO] JudoApp: Advancing Winner 260 from Fight 85 to LB Fight 88 (p2)
+2026-03-13 11:59:03,319 [INFO] JudoApp: Advancing Winner 228 from Fight 114 to LB Fight 117 (p2)
+2026-03-13 11:59:03,326 [INFO] JudoApp: Advancing Winner 230 from Fight 115 to LB Fight 118 (p1)
+2026-03-13 11:59:03,333 [INFO] JudoApp: Advancing Winner 253 from Fight 86 to LB Fight 89 (p1)
+2026-03-13 11:59:03,339 [INFO] JudoApp: Advancing Winner 225 from Fight 106 to WB Fight 109 (p1)
+2026-03-13 11:59:03,345 [INFO] JudoApp: Advancing Loser 230 from WB Fight 106 to LB Fight 115 (p2)
+2026-03-13 11:59:03,355 [INFO] JudoApp: Advancing Winner 261 from Fight 75 to WB Fight 78 (p1)
+2026-03-13 11:59:03,361 [INFO] JudoApp: Advancing Loser 252 from WB Fight 75 to LB Fight 86 (p2)
+2026-03-13 11:59:03,367 [INFO] JudoApp: Advancing Winner 258 from Fight 87 to LB Fight 89 (p2)
+2026-03-13 11:59:03,376 [INFO] JudoApp: Advancing Winner 227 from Fight 107 to WB Fight 109 (p2)
+2026-03-13 11:59:03,387 [INFO] JudoApp: Advancing Loser 223 from WB Fight 107 to LB Fight 116 (p2)
+2026-03-13 11:59:03,406 [INFO] JudoApp: Advancing Winner 251 from Fight 76 to WB Fight 78 (p2)
+2026-03-13 11:59:03,412 [INFO] JudoApp: Advancing Loser 258 from WB Fight 76 to LB Fight 87 (p2)
+2026-03-13 11:59:03,418 [INFO] JudoApp: Advancing Winner 256 from Fight 77 to WB Fight 79 (p1)
+2026-03-13 11:59:03,424 [INFO] JudoApp: Advancing Loser 262 from WB Fight 77 to LB Fight 90 (p2)
+2026-03-13 11:59:03,430 [INFO] JudoApp: Advancing Winner 229 from Fight 108 to WB Fight 122 (p1)
+2026-03-13 11:59:03,437 [INFO] JudoApp: Advancing Loser 234 from WB Fight 108 to LB Fight 119 (p2)
+2026-03-13 11:59:03,444 [INFO] JudoApp: Advancing Winner 247 from Fight 88 to LB Fight 90 (p1)
+2026-03-13 11:59:03,449 [INFO] JudoApp: Advancing Winner 258 from Fight 89 to LB Fight 91 (p1)
+2026-03-13 11:59:03,456 [INFO] JudoApp: Advancing Winner 251 from Fight 78 to WB Fight 79 (p2)
+2026-03-13 11:59:03,462 [INFO] JudoApp: Advancing Loser 261 from WB Fight 78 to LB Fight 91 (p2)
+2026-03-13 11:59:03,468 [INFO] JudoApp: Advancing Winner 225 from Fight 109 to WB Fight 122 (p2)
+2026-03-13 11:59:03,477 [INFO] JudoApp: Advancing Loser 227 from WB Fight 109 to LB Fight 120 (p2)
+2026-03-13 11:59:03,495 [INFO] JudoApp: Advancing Winner 262 from Fight 90 to LB Fight 92 (p1)
+2026-03-13 11:59:03,509 [INFO] JudoApp: Advancing Winner 261 from Fight 91 to LB Fight 92 (p2)
+2026-03-13 11:59:03,526 [INFO] JudoApp: Generating Double-Pool KO phase for Bracket 51
+2026-03-13 11:59:03,533 [INFO] JudoApp: Generating Double-Pool KO phase for Bracket 60
+2026-03-13 11:59:03,540 [INFO] JudoApp: Generating Double-Pool KO phase for Bracket 78
+2026-03-13 11:59:06,542 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-13 11:59:24,872 [INFO] JudoApp: API GET / - Status: 200 - 0.142s
+2026-03-13 11:59:24,880 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-13 11:59:24,892 [INFO] JudoApp: API GET /style.css - Status: 200 - 0.005s
+2026-03-13 11:59:24,894 [INFO] JudoApp: API GET /app.js - Status: 200 - 0.006s
+2026-03-13 11:59:24,999 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.076s
+2026-03-13 11:59:25,204 [INFO] JudoApp: API GET /manifest.json - Status: 200 - 0.002s
+2026-03-13 11:59:25,236 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-13 11:59:25,792 [INFO] JudoApp: API GET / - Status: 200 - 0.002s
+2026-03-13 11:59:25,798 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-13 11:59:25,809 [INFO] JudoApp: API GET /app.js - Status: 200 - 0.003s
+2026-03-13 11:59:25,812 [INFO] JudoApp: API GET /style.css - Status: 200 - 0.007s
+2026-03-13 11:59:25,819 [INFO] JudoApp: API GET /manifest.json - Status: 200 - 0.007s
+2026-03-13 11:59:25,897 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.068s
+2026-03-13 11:59:26,133 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-13 11:59:28,064 [INFO] JudoApp: IPPON START requested for Match 116
+2026-03-13 12:24:38,550 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-13 13:04:02,433 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-13 13:05:01,505 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-13 13:59:51,780 [INFO] JudoApp: Starting up Judo Real-Time API...
+2026-03-13 14:00:42,210 [INFO] JudoApp: Starting up Judo Real-Time API...
+2026-03-13 14:01:10,024 [INFO] JudoApp: Starting up Judo Real-Time API...
+2026-03-13 14:01:31,950 [INFO] JudoApp: Starting up Judo Real-Time API...

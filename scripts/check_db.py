@@ -10,5 +10,6 @@ def check():
         print(f"GroupID: {groups[0] if groups else 'None'}")
         print(f"MatID: {mats[0] if mats else 'None'}")
 
+
 if __name__ == "__main__":
     check()

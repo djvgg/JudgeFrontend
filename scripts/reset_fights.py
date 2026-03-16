@@ -8,12 +8,13 @@ def reset_fights():
     with SessionLocal() as session:
         fights = session.query(FightModel).all()
         for f in fights:
-            f.status = 'pending'
+            f.status = "pending"
             f.score1 = 0
             f.score2 = 0
             f.winner_id = None
         session.commit()
         print(f"Resetted {len(fights)} fights to 'pending' state.")
+
 
 if __name__ == "__main__":
     reset_fights()

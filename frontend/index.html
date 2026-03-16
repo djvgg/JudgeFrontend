@@ -13,6 +13,7 @@
 </head>
 
 <body>
+    <div id="global-notification-container" class="notification-container"></div>
     <!-- Global Application State & Table Selection -->
     <div id="login-screen" class="login-overlay">
         <div class="login-box">
@@ -46,10 +47,12 @@
                     <h1 id="tournament-title">Turnier wird geladen...</h1>
                 </div>
                 <div class="header-controls">
-                    <div class="select-wrapper" onclick="UI.switchToBrackets('upcoming')" style="cursor:pointer" title="Live Turnierbaum">
+                    <div class="select-wrapper" onclick="UI.switchToBrackets('upcoming')" style="cursor:pointer"
+                        title="Live Turnierbaum anzeigen">
                         <span class="finished-brackets-btn" style="color: #2ecc71;">Live-Turnierbaum</span>
                     </div>
-                    <div class="select-wrapper" onclick="UI.switchToBrackets('finished')" style="cursor:pointer" title="Fertige Brackets anzeigen">
+                    <div class="select-wrapper" onclick="UI.switchToBrackets('finished')" style="cursor:pointer"
+                        title="Abgeschlossene Turniere">
                         <span class="finished-brackets-btn">Fertige Brackets</span>
                     </div>
                     <div class="table-badge">
@@ -63,9 +66,9 @@
                             </select>
                         </div>
                     </div>
-                    <div id="connection-status" class="status-indicator offline" title="Connection Status"></div>
+                    <div id="connection-status" class="status-indicator offline" title="Verbindungsstatus"></div>
                     <button class="logout-btn" id="header-logout-btn" onclick="App.handleLogout()"
-                        title="Log out from the session">Abmelden</button>
+                        title="Vom System abmelden">Abmelden</button>
                 </div>
             </div>
         </header>
@@ -131,7 +134,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <div class="modal-title-group">
-                        <h3 id="modal-category">Category</h3>
+                        <h3 id="modal-category">Kategorie</h3>
                     </div>
                     <div class="center-timer">
                         <div id="match-timer" class="big-timer">04:00</div>
@@ -145,54 +148,54 @@
 
                 <div class="scoring-grid">
                     <div class="player-panel p1">
-                        <div class="scoring-name" id="p1-name">Fighter 1</div>
+                        <div class="scoring-name" id="p1-name">Kämpfer 1</div>
                         <div class="score-main" id="p1-points-display">0</div>
                         <div class="score-controls" style="margin-top: 15px;">
                             <button type="button" class="score-btn points-5" onclick="Scoring.addPoints(1, 5)">+5
-                                POINTS</button>
+                                PUNKTE</button>
                             <button type="button" class="score-btn points-7" onclick="Scoring.addPoints(1, 7)">+7
-                                POINTS</button>
+                                PUNKTE</button>
                             <button type="button" class="score-btn points-10" onclick="Scoring.addPoints(1, 10)">+10
-                                POINTS</button>
+                                PUNKTE</button>
                         </div>
                         <div class="victory-zone">
-                            <button class="victory-btn" onclick="winByDecision(1)">SET AS WINNER</button>
+                            <button class="victory-btn" onclick="winByDecision(1)">ALS GEWINNER FESTLEGEN</button>
                         </div>
                     </div>
 
                     <div class="vs-label">VS</div>
 
                     <div class="player-panel p2">
-                        <div class="scoring-name" id="p2-name">Fighter 2</div>
+                        <div class="scoring-name" id="p2-name">Kämpfer 2</div>
                         <div class="score-main" id="p2-points-display">0</div>
                         <div class="score-controls" style="margin-top: 15px;">
                             <button type="button" class="score-btn points-5" onclick="Scoring.addPoints(2, 5)">+5
-                                POINTS</button>
+                                PUNKTE</button>
                             <button type="button" class="score-btn points-7" onclick="Scoring.addPoints(2, 7)">+7
-                                POINTS</button>
+                                PUNKTE</button>
                             <button type="button" class="score-btn points-10" onclick="Scoring.addPoints(2, 10)">+10
-                                POINTS</button>
+                                PUNKTE</button>
                         </div>
                         <div class="victory-zone">
-                            <button class="victory-btn" onclick="winByDecision(2)">SET AS WINNER</button>
+                            <button class="victory-btn" onclick="winByDecision(2)">ALS GEWINNER FESTLEGEN</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="modal-footer">
-                    <button class="footer-btn btn-undo" id="undo-btn" onclick="Scoring.undo()" disabled>UNDO
-                        ACTION</button>
-                    <button class="footer-btn btn-finish" onclick="Scoring.finishMatch()">END MATCH</button>
-                    <button class="footer-btn btn-undo" onclick="Scoring.closeModal()">CLOSE</button>
+                    <button class="footer-btn btn-undo" id="undo-btn" onclick="Scoring.undo()" disabled>AKTION
+                        RÜCKGÄNGIG</button>
+                    <button class="footer-btn btn-finish" onclick="Scoring.finishMatch()">KAMPF BEENDEN</button>
+                    <button class="footer-btn btn-undo" onclick="Scoring.closeModal()">SCHLIESSEN</button>
                 </div>
 
                 <!-- Victory Overlay -->
                 <div id="victory-overlay" class="victory-overlay" style="display: none;">
                     <div class="victory-content">
-                        <h2 class="victory-title">MATCH FINISHED!</h2>
-                        <p class="victory-subtitle" id="victory-subtitle">Player wins by reaching 10 points!</p>
-                        <button class="victory-close-btn" onclick="Scoring.finishMatch()">CLOSE MATCH & RETURN TO
-                            LIST</button>
+                        <h2 class="victory-title">KAMPF BEENDET!</h2>
+                        <p class="victory-subtitle" id="victory-subtitle">Kämpfer gewinnt durch Ippon!</p>
+                        <button class="victory-close-btn" onclick="Scoring.finishMatch()">KAMPF ABSCHLIESSEN &
+                            ZURÜCK</button>
                     </div>
                 </div>
             </div>

@@ -138,6 +138,8 @@ const Network = {
                 UI.renderFightList();
                 UI.renderBracketVisualization(); // Refresh bracket as well
             });
+        } else if (data.type === 'ERROR') {
+            UI.displayError(data.message || 'Ein unbekannter Fehler ist aufgetreten.');
         }
     },
 
@@ -192,6 +194,25 @@ const UI = {
     updateConnectionStatus(isOnline) {
         const indicator = document.getElementById('connection-status');
         if (indicator) indicator.className = `status-indicator ${isOnline ? 'online' : 'offline'}`;
+    },
+
+    displayError(msg) {
+        const container = document.getElementById('global-notification-container');
+        if (!container) return;
+
+        const el = document.createElement('div');
+        el.className = 'error-notification';
+        el.innerHTML = `
+            <div class="error-notification-content">${msg}</div>
+        `;
+
+        container.appendChild(el);
+
+        // Auto-remove after 10 seconds
+        setTimeout(() => {
+            el.className += ' hide';
+            setTimeout(() => el.remove(), 400);
+        }, 10000);
     },
 
     renderFightList() {
@@ -506,7 +527,7 @@ const UI = {
             }
             return null;
         };
-        const tbd = () => ({ id: 'WAIT', firstName: '', lastName: 'TBD', club: '', score: { points: 0 } });
+        const tbd = () => ({ id: 'WAIT', firstName: '', lastName: 'WARTET', club: '', score: { points: 0 } });
 
         // Position lookup: "round-posInRound" → matchId (includes virtual fights as we add them)
         const posKey = (r, p) => `${r}-${p}`;
@@ -577,7 +598,7 @@ const UI = {
         const result = lbMatches.map(m => ({ ...m }));
         const resultMap = new Map(result.map(m => [m.matchId, m]));
         let virtualId = -2000;
-        const tbd = () => ({ id: 'WAIT', firstName: '', lastName: 'TBD', club: '', score: { points: 0 } });
+        const tbd = () => ({ id: 'WAIT', firstName: '', lastName: 'WARTET', club: '', score: { points: 0 } });
 
         // Build each LB round deterministically
         const roundFights = [];
@@ -890,8 +911,8 @@ const UI = {
             const slotInfo = (p, child, won, isSecondByeSlot = false) => {
                 if (child && p.id === 'WAIT') {
                     const isFromWb = child.phase === 'wb' && m.phase === 'lb';
-                    const prefix = isFromWb ? 'Loser' : 'Winner';
-                    const label = child.fightNr ? `${prefix} ${child.fightNr}` : '?';
+                    const prefix = isFromWb ? 'Verlierer' : 'Gewinner';
+                    const label = child.fightNr ? `${prefix} ${child.fightNr}` : 'TBD';
                     return { label, cls: 'edv-pending', score: null };
                 }
                 const isBye = !p.lastName || p.lastName === 'TBD' || p.id === 'WAIT';
@@ -1204,10 +1225,6 @@ const UI = {
         document.getElementById('p1-points-display').textContent = p1.score.points || 0;
         document.getElementById('p2-points-display').textContent = p2.score.points || 0;
         document.getElementById('undo-btn').disabled = State.scoreHistory.length === 0;
-    },
-
-    displayError(msg) {
-        document.getElementById('fight-list').innerHTML = `<div class="status-msg" style="color: var(--error-color)">${msg}</div>`;
     }
 };
 
@@ -1224,7 +1241,7 @@ const Scoring = {
         }
 
         if (m.p1.id === 'WAIT' || m.p2.id === 'WAIT') {
-            alert("Dieser Kampf ist noch pas bereit (Teilnehmer fehlen).");
+            alert("Dieser Kampf ist noch nicht bereit (Teilnehmer fehlen).");
             return;
         }
 
@@ -1308,7 +1325,7 @@ const Scoring = {
         if (State.timer.isRunning) return;
         State.timer.isRunning = true;
         const btn = document.getElementById('timer-toggle-btn');
-        btn.textContent = 'Stop'; btn.className = 'timer-btn stop';
+        btn.textContent = 'STOPP'; btn.className = 'timer-btn stop';
         State.timer.interval = setInterval(() => {
             if (State.timer.remainingSeconds > 0) {
                 State.timer.remainingSeconds--;
@@ -1323,7 +1340,7 @@ const Scoring = {
         State.timer.isRunning = false;
         clearInterval(State.timer.interval);
         const btn = document.getElementById('timer-toggle-btn');
-        if (btn) { btn.textContent = 'Start'; btn.className = 'timer-btn start'; }
+        if (btn) { btn.textContent = 'START'; btn.className = 'timer-btn start'; }
     },
 
     resetTimer() {
