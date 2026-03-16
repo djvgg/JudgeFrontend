@@ -4266,3 +4266,127 @@ ModuleNotFoundError: No module named 'requests'
 2026-03-16 10:14:40,848 [INFO] JudoApp: Advancing Winner 270 from Fight 25 to LB Fight 27 (p1)
 2026-03-16 10:14:43,485 [INFO] JudoApp: New client connected. Total connections: 1
 2026-03-16 10:15:16,792 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-16 10:15:18,563 [INFO] JudoApp: Starting up Judo Real-Time API...
+2026-03-16 10:15:19,642 [INFO] JudoApp: Generating WB shells for Bracket 48
+2026-03-16 10:15:19,647 [INFO] JudoApp: Generating LB fights for Bracket 48
+2026-03-16 10:15:19,650 [INFO] JudoApp: Generating WB shells for Bracket 49
+2026-03-16 10:15:19,653 [INFO] JudoApp: Generating LB fights for Bracket 49
+2026-03-16 10:15:19,657 [INFO] JudoApp: Generating WB shells for Bracket 50
+2026-03-16 10:15:19,660 [INFO] JudoApp: Generating LB fights for Bracket 50
+2026-03-16 10:15:19,663 [INFO] JudoApp: Generating WB shells for Bracket 51
+2026-03-16 10:15:19,670 [INFO] JudoApp: Generating LB fights for Bracket 51
+2026-03-16 10:15:19,680 [INFO] JudoApp: Generating WB shells for Bracket 52
+2026-03-16 10:15:19,684 [INFO] JudoApp: Generating LB fights for Bracket 52
+2026-03-16 10:15:19,688 [INFO] JudoApp: Generating WB shells for Bracket 53
+2026-03-16 10:15:19,692 [INFO] JudoApp: Generating LB fights for Bracket 53
+2026-03-16 10:15:19,695 [INFO] JudoApp: Generating WB shells for Bracket 54
+2026-03-16 10:15:19,699 [INFO] JudoApp: Generating LB fights for Bracket 54
+2026-03-16 10:15:19,705 [INFO] JudoApp: Generating WB shells for Bracket 55
+2026-03-16 10:15:19,708 [INFO] JudoApp: Generating LB fights for Bracket 55
+2026-03-16 10:15:19,711 [INFO] JudoApp: Generating WB shells for Bracket 59
+2026-03-16 10:15:19,715 [INFO] JudoApp: Generating LB fights for Bracket 59
+2026-03-16 10:15:19,719 [INFO] JudoApp: Generating WB shells for Bracket 60
+2026-03-16 10:15:19,722 [INFO] JudoApp: Generating LB fights for Bracket 60
+2026-03-16 10:15:19,725 [INFO] JudoApp: Generating WB shells for Bracket 61
+2026-03-16 10:15:19,728 [INFO] JudoApp: Generating LB fights for Bracket 61
+2026-03-16 10:15:19,732 [INFO] JudoApp: Generating WB shells for Bracket 62
+2026-03-16 10:15:19,735 [INFO] JudoApp: Generating LB fights for Bracket 62
+2026-03-16 10:15:19,738 [INFO] JudoApp: Generating WB shells for Bracket 63
+2026-03-16 10:15:19,741 [INFO] JudoApp: Generating LB fights for Bracket 63
+2026-03-16 10:15:19,746 [INFO] JudoApp: Generating WB shells for Bracket 65
+2026-03-16 10:15:19,750 [INFO] JudoApp: Generating LB fights for Bracket 65
+2026-03-16 10:15:19,754 [INFO] JudoApp: Generating WB shells for Bracket 66
+2026-03-16 10:15:19,757 [INFO] JudoApp: Generating LB fights for Bracket 66
+2026-03-16 10:15:19,760 [INFO] JudoApp: Generating WB shells for Bracket 67
+2026-03-16 10:15:19,763 [INFO] JudoApp: Generating LB fights for Bracket 67
+2026-03-16 10:15:19,767 [INFO] JudoApp: Generating WB shells for Bracket 69
+2026-03-16 10:15:19,770 [INFO] JudoApp: Generating LB fights for Bracket 69
+2026-03-16 10:15:19,773 [INFO] JudoApp: Generating WB shells for Bracket 70
+2026-03-16 10:15:19,776 [INFO] JudoApp: Generating LB fights for Bracket 70
+2026-03-16 10:15:19,779 [INFO] JudoApp: Generating WB shells for Bracket 76
+2026-03-16 10:15:19,782 [INFO] JudoApp: Generating LB fights for Bracket 76
+2026-03-16 10:15:19,785 [INFO] JudoApp: Generating WB shells for Bracket 77
+2026-03-16 10:15:19,787 [INFO] JudoApp: Generating LB fights for Bracket 77
+2026-03-16 10:15:19,790 [INFO] JudoApp: Generating WB shells for Bracket 78
+2026-03-16 10:15:19,793 [INFO] JudoApp: Generating LB fights for Bracket 78
+2026-03-16 10:15:19,798 [INFO] JudoApp: Generating WB shells for Bracket 79
+2026-03-16 10:15:19,801 [INFO] JudoApp: Generating LB fights for Bracket 79
+2026-03-16 10:15:19,804 [INFO] JudoApp: Generating WB shells for Bracket 81
+2026-03-16 10:15:19,806 [INFO] JudoApp: Generating LB fights for Bracket 81
+2026-03-16 10:15:19,809 [INFO] JudoApp: Generating WB shells for Bracket 82
+2026-03-16 10:15:19,812 [INFO] JudoApp: Generating LB fights for Bracket 82
+2026-03-16 10:15:19,816 [INFO] JudoApp: Generating WB shells for Bracket 83
+2026-03-16 10:15:19,819 [INFO] JudoApp: Generating LB fights for Bracket 83
+2026-03-16 10:15:19,822 [INFO] JudoApp: Generating WB shells for Bracket 84
+2026-03-16 10:15:19,825 [INFO] JudoApp: Generating LB fights for Bracket 84
+2026-03-16 10:15:19,828 [INFO] JudoApp: Generating WB shells for Bracket 86
+2026-03-16 10:15:19,831 [INFO] JudoApp: Generating LB fights for Bracket 86
+2026-03-16 10:15:19,834 [INFO] JudoApp: Generating WB shells for Bracket 87
+2026-03-16 10:15:19,836 [INFO] JudoApp: Generating LB fights for Bracket 87
+2026-03-16 10:15:19,839 [INFO] JudoApp: Generating WB shells for Bracket 89
+2026-03-16 10:15:19,842 [INFO] JudoApp: Generating LB fights for Bracket 89
+2026-03-16 10:15:19,845 [INFO] JudoApp: Generating WB shells for Bracket 90
+2026-03-16 10:15:19,848 [INFO] JudoApp: Generating LB fights for Bracket 90
+2026-03-16 10:15:19,851 [INFO] JudoApp: Generating WB shells for Bracket 92
+2026-03-16 10:15:19,854 [INFO] JudoApp: Generating LB fights for Bracket 92
+2026-03-16 10:15:19,857 [INFO] JudoApp: Generating WB shells for Bracket 93
+2026-03-16 10:15:19,860 [INFO] JudoApp: Generating LB fights for Bracket 93
+2026-03-16 10:15:19,864 [INFO] JudoApp: Generating WB shells for Bracket 94
+2026-03-16 10:15:19,867 [INFO] JudoApp: Generating LB fights for Bracket 94
+2026-03-16 10:15:19,870 [INFO] JudoApp: Generating WB shells for Bracket 95
+2026-03-16 10:15:19,873 [INFO] JudoApp: Generating LB fights for Bracket 95
+2026-03-16 10:15:19,876 [INFO] JudoApp: Generating WB shells for Bracket 97
+2026-03-16 10:15:19,882 [INFO] JudoApp: Generating LB fights for Bracket 97
+2026-03-16 10:15:19,885 [INFO] JudoApp: Generating WB shells for Bracket 99
+2026-03-16 10:15:19,888 [INFO] JudoApp: Generating LB fights for Bracket 99
+2026-03-16 10:15:19,891 [INFO] JudoApp: Generating WB shells for Bracket 101
+2026-03-16 10:15:19,894 [INFO] JudoApp: Generating LB fights for Bracket 101
+2026-03-16 10:15:19,897 [INFO] JudoApp: Generating WB shells for Bracket 103
+2026-03-16 10:15:19,901 [INFO] JudoApp: Generating LB fights for Bracket 103
+2026-03-16 10:15:19,903 [INFO] JudoApp: Generating WB shells for Bracket 57
+2026-03-16 10:15:19,928 [INFO] JudoApp: Generating LB fights for Bracket 57
+2026-03-16 10:15:19,964 [INFO] JudoApp: Healing bracket progressions...
+2026-03-16 10:15:19,999 [INFO] JudoApp: Advancing Winner 276 from Fight 10 to LB Fight 23 (p1)
+2026-03-16 10:15:20,005 [INFO] JudoApp: Advancing Winner 269 from Fight 1 to WB Fight 9 (p1)
+2026-03-16 10:15:20,018 [INFO] JudoApp: Advancing Winner 276 from Fight 10 to LB Fight 23 (p1)
+2026-03-16 10:15:20,018 [INFO] JudoApp: Advancing Loser 276 from WB Fight 1 to LB Fight 10 (p1)
+2026-03-16 10:15:20,050 [INFO] JudoApp: Advancing Winner 278 from Fight 12 to LB Fight 13 (p1)
+2026-03-16 10:15:20,057 [INFO] JudoApp: Advancing Winner 274 from Fight 2 to WB Fight 9 (p2)
+2026-03-16 10:15:20,063 [INFO] JudoApp: Advancing Winner 273 from Fight 15 to LB Fight 16 (p1)
+2026-03-16 10:15:20,070 [INFO] JudoApp: Advancing Winner 279 from Fight 3 to WB Fight 11 (p1)
+2026-03-16 10:15:20,076 [INFO] JudoApp: Advancing Winner 270 from Fight 18 to LB Fight 19 (p1)
+2026-03-16 10:15:20,082 [INFO] JudoApp: Advancing Winner 272 from Fight 4 to WB Fight 11 (p2)
+2026-03-16 10:15:20,094 [INFO] JudoApp: Advancing Winner 278 from Fight 12 to LB Fight 13 (p1)
+2026-03-16 10:15:20,094 [INFO] JudoApp: Advancing Loser 278 from WB Fight 4 to LB Fight 12 (p2)
+2026-03-16 10:15:20,101 [INFO] JudoApp: Advancing Winner 280 from Fight 5 to WB Fight 14 (p1)
+2026-03-16 10:15:20,112 [INFO] JudoApp: Advancing Winner 273 from Fight 15 to LB Fight 16 (p1)
+2026-03-16 10:15:20,113 [INFO] JudoApp: Advancing Loser 273 from WB Fight 5 to LB Fight 15 (p1)
+2026-03-16 10:15:20,118 [INFO] JudoApp: Advancing Winner 271 from Fight 6 to WB Fight 14 (p2)
+2026-03-16 10:15:20,123 [INFO] JudoApp: Advancing Winner 275 from Fight 7 to WB Fight 17 (p1)
+2026-03-16 10:15:20,129 [INFO] JudoApp: Advancing Winner 277 from Fight 8 to WB Fight 17 (p2)
+2026-03-16 10:15:20,140 [INFO] JudoApp: Advancing Winner 270 from Fight 18 to LB Fight 19 (p1)
+2026-03-16 10:15:20,140 [INFO] JudoApp: Advancing Loser 270 from WB Fight 8 to LB Fight 18 (p2)
+2026-03-16 10:15:20,148 [INFO] JudoApp: Advancing Winner 269 from Fight 23 to LB Fight 24 (p1)
+2026-03-16 10:15:20,154 [INFO] JudoApp: Advancing Winner 274 from Fight 9 to WB Fight 20 (p1)
+2026-03-16 10:15:20,159 [INFO] JudoApp: Advancing Loser 269 from WB Fight 9 to LB Fight 23 (p2)
+2026-03-16 10:15:20,165 [INFO] JudoApp: Advancing Winner 279 from Fight 11 to WB Fight 20 (p2)
+2026-03-16 10:15:20,172 [INFO] JudoApp: Advancing Loser 272 from WB Fight 11 to LB Fight 13 (p2)
+2026-03-16 10:15:20,181 [INFO] JudoApp: Advancing Winner 278 from Fight 13 to LB Fight 24 (p2)
+2026-03-16 10:15:20,191 [INFO] JudoApp: Advancing Winner 280 from Fight 16 to LB Fight 25 (p1)
+2026-03-16 10:15:20,197 [INFO] JudoApp: Advancing Winner 271 from Fight 14 to WB Fight 21 (p1)
+2026-03-16 10:15:20,206 [INFO] JudoApp: Advancing Loser 280 from WB Fight 14 to LB Fight 16 (p2)
+2026-03-16 10:15:20,215 [INFO] JudoApp: Advancing Winner 270 from Fight 19 to LB Fight 25 (p2)
+2026-03-16 10:15:20,221 [INFO] JudoApp: Advancing Winner 277 from Fight 17 to WB Fight 21 (p2)
+2026-03-16 10:15:20,226 [INFO] JudoApp: Advancing Loser 275 from WB Fight 17 to LB Fight 19 (p2)
+2026-03-16 10:15:20,232 [INFO] JudoApp: Advancing Winner 279 from Fight 20 to WB Fight 22 (p1)
+2026-03-16 10:15:20,238 [INFO] JudoApp: Advancing Loser 274 from WB Fight 20 to LB Fight 26 (p2)
+2026-03-16 10:15:20,243 [INFO] JudoApp: Advancing Winner 269 from Fight 24 to LB Fight 26 (p1)
+2026-03-16 10:15:20,249 [INFO] JudoApp: Advancing Winner 277 from Fight 21 to WB Fight 22 (p2)
+2026-03-16 10:15:20,253 [INFO] JudoApp: Advancing Loser 271 from WB Fight 21 to LB Fight 27 (p2)
+2026-03-16 10:15:20,259 [INFO] JudoApp: Advancing Winner 270 from Fight 25 to LB Fight 27 (p1)
+2026-03-16 10:15:22,482 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-16 10:16:16,699 [INFO] JudoApp: API GET / - Status: 304 - 0.091s
+2026-03-16 10:16:16,705 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-16 10:16:16,771 [INFO] JudoApp: API GET /app.js - Status: 200 - 0.003s
+2026-03-16 10:16:16,855 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.041s
+2026-03-16 10:16:17,131 [INFO] JudoApp: New client connected. Total connections: 1
