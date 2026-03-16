@@ -4,7 +4,9 @@ import math as _math
 import os as _os
 from contextlib import asynccontextmanager, suppress
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+import urllib.request as _urllib_request
+
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
@@ -18,6 +20,12 @@ from backend.database import (
     SessionLocal,
     init_db,
 )
+
+
+_IPPON_HOST = _os.getenv("IPPON_HOST", "")
+_IPPON_PORT = _os.getenv("IPPON_PORT", "8080")
+_OUR_HOST   = _os.getenv("OUR_HOST", "")
+_current_ippon_fight_id: int | None = None
 
 
 @asynccontextmanager
@@ -44,6 +52,7 @@ async def lifespan(app: FastAPI):
         session.commit()
         # Catch up with any fights finished externally while the server was down
         heal_bracket_progressions(session)
+
     yield
 
 app = FastAPI(title="Judo Real-Time API", lifespan=lifespan)
@@ -675,6 +684,158 @@ def api_heal():
     return {"healed": created}
 
 
+def _send_fighters_to_board(fight_id: int, session) -> bool:
+    """POST fighter data to the Ippon board and register the callback URL."""
+    global _current_ippon_fight_id
+    if not _IPPON_HOST or not _OUR_HOST:
+        print("Ippon: IPPON_HOST or OUR_HOST not configured in .env")
+        return False
+
+    match = get_match_dict(fight_id, session)
+    if not match:
+        return False
+
+    payload = {
+        "fighter1": {
+            "firstname": match["p1"]["firstName"],
+            "lastname":  match["p1"]["lastName"],
+            "gender":    match.get("gender") or "M",
+            "agegroup":  match.get("ageGroup") or "",
+            "weightclass": match.get("weightClass") or "",
+        },
+        "fighter2": {
+            "firstname": match["p2"]["firstName"],
+            "lastname":  match["p2"]["lastName"],
+            "gender":    match.get("gender") or "M",
+            "agegroup":  match.get("ageGroup") or "",
+            "weightclass": match.get("weightClass") or "",
+        },
+        "callback": f"http://{_OUR_HOST}:5001/api/ippon-score",
+    }
+
+    url = f"http://{_IPPON_HOST}:{_IPPON_PORT}/fighters"
+    try:
+        body = _json.dumps(payload).encode()
+        req = _urllib_request.Request(url, data=body, headers={"Content-Type": "application/json"}, method="POST")
+        with _urllib_request.urlopen(req, timeout=5) as resp:
+            status = resp.status
+        if status in (200, 201):
+            _current_ippon_fight_id = fight_id
+            print(f"Ippon: sent fight {fight_id} → {url}, callback={payload['callback']}")
+            return True
+        print(f"Ippon: board rejected ({status})")
+        return False
+    except Exception as e:
+        print(f"Ippon: could not reach {url}: {e}")
+        return False
+
+
+@app.post("/api/ippon-test")
+def api_ippon_test():
+    """Send hardcoded test fighters to verify network connectivity with the Ippon board."""
+    if not _IPPON_HOST or not _OUR_HOST:
+        return {"error": "IPPON_HOST or OUR_HOST not set in .env"}
+
+    payload = {
+        "fighter1": {"firstname": "Test", "lastname": "Eins", "gender": "M", "agegroup": "U18", "weightclass": "60kg"},
+        "fighter2": {"firstname": "Test", "lastname": "Zwei", "gender": "M", "agegroup": "U18", "weightclass": "60kg"},
+        "callback": f"http://{_OUR_HOST}:5001/api/ippon-score",
+    }
+    url = f"http://{_IPPON_HOST}:{_IPPON_PORT}/fighters"
+    try:
+        body = _json.dumps(payload).encode()
+        req = _urllib_request.Request(url, data=body, headers={"Content-Type": "application/json"}, method="POST")
+        with _urllib_request.urlopen(req, timeout=5) as resp:
+            return {"status": resp.status, "body": resp.read().decode(), "sent_to": url, "callback": payload["callback"]}
+    except Exception as e:
+        return {"error": str(e), "url": url}
+
+
+@app.post("/api/ippon-score")
+async def api_ippon_score(request: Request):
+    """Receive live score callback from the Ippon board and auto-finish the fight on a winner."""
+    global _current_ippon_fight_id
+    try:
+        data = await request.json()
+    except Exception:
+        return {"ok": False, "error": "invalid JSON"}
+
+    print(f"Ippon callback: {data}")
+    await manager.broadcast({"type": "IPPON_UPDATE", "scores": data})
+
+    winner = data.get("winner", "none")
+
+    # Parse remaining time → elapsed duration in seconds
+    duration_seconds = None
+    time_str = data.get("time", "")
+    try:
+        parts = time_str.split(":")
+        remaining = int(parts[0]) * 60 + int(parts[1])
+        duration_seconds = 240 - remaining
+    except Exception:
+        pass
+
+    # Resolve winner by name if fighter1/fighter2 field is missing or "none"
+    if winner not in ("fighter1", "fighter2"):
+        winner_name = (data.get("fighter1") or {}).get("name", "") if data.get("fighter1", {}).get("ippon", 0) > 0 else ""
+        if not winner_name:
+            winner_name = (data.get("fighter2") or {}).get("name", "") if data.get("fighter2", {}).get("ippon", 0) > 0 else ""
+
+    if winner not in ("fighter1", "fighter2") or _current_ippon_fight_id is None:
+        return {"ok": True}
+
+    player_num = 1 if winner == "fighter1" else 2
+
+    with SessionLocal() as session:
+        fight = session.query(FightModel).filter(FightModel.id == _current_ippon_fight_id).first()
+        if not fight or fight.status in ("completed", "finished", "bye"):
+            return {"ok": True}
+
+        if player_num == 1:
+            fight.score1 = 10
+            fight.winner_id = fight.participant1_id
+        else:
+            fight.score2 = 10
+            fight.winner_id = fight.participant2_id
+
+        fight.status = "finished"
+        if duration_seconds is not None:
+            fight.duration = duration_seconds
+        session.commit()
+
+        try:
+            bracket = session.query(BracketModel).filter(BracketModel.id == fight.bracket_id).first()
+            if bracket and fight.winner_id:
+                next_fight = _advance_winner(fight, session)
+                if next_fight:
+                    session.commit()
+                    updated_next = get_match_dict(next_fight.id, session)
+                    if updated_next:
+                        await manager.broadcast({"type": "SCORE_SYNC", "matchId": next_fight.id, "match": updated_next})
+
+                is_pool_ko = session.query(FightModel).filter(
+                    FightModel.bracket_id    == fight.bracket_id,
+                    FightModel.bracket_phase == "pool",
+                ).first() is not None
+                if bracket.bracket_type in ("ko", "double", "DOUBLE_ELIMINATION") and fight.bracket_phase == "wb" and not is_pool_ko:
+                    lb_fight = _advance_loser(fight, session)
+                    if lb_fight:
+                        session.commit()
+                        updated_lb = get_match_dict(lb_fight.id, session)
+                        if updated_lb:
+                            await manager.broadcast({"type": "SCORE_SYNC", "matchId": lb_fight.id, "match": updated_lb})
+        except Exception as e:
+            print(f"Ippon advancement error: {e}")
+
+        match_dict = get_match_dict(fight.id, session)
+        if match_dict:
+            await manager.broadcast({"type": "SCORE_SYNC", "matchId": fight.id, "match": match_dict})
+
+    await manager.broadcast({"type": "REFRESH_LIST"})
+    _current_ippon_fight_id = None
+    return {"ok": True}
+
+
 @app.get("/api/matches")
 def get_matches():
     with SessionLocal() as session:
@@ -947,102 +1108,6 @@ async def _handle_status_update(data: dict, session) -> None:
     await manager.broadcast({"type": "REFRESH_LIST"})
 
 
-# ---------------------------------------------------------------------------
-# Ippon Board HTTP Bridge
-# ---------------------------------------------------------------------------
-
-IPPON_HOST = _os.getenv("IPPON_HOST", "172.17.192.96")
-IPPON_PORT = int(_os.getenv("IPPON_PORT", "8080"))
-OUR_HOST   = _os.getenv("OUR_HOST", "172.17.192.113")
-OUR_PORT   = 5001
-
-_GENDER_MAP = {"m": "M", "mannlich": "M", "male": "M", "w": "F", "f": "F", "weiblich": "F", "female": "F"}
-
-# matchId of the fight currently on the board (for routing score callbacks)
-_ippon_active_match: dict = {}
-
-
-@app.get("/api/ippon-config")
-def get_ippon_config():
-    return {"host": IPPON_HOST, "port": IPPON_PORT, "our_host": OUR_HOST}
-
-
-@app.post("/api/ippon-config")
-def set_ippon_config(body: dict):
-    global IPPON_HOST, IPPON_PORT, OUR_HOST
-    if "host" in body:
-        IPPON_HOST = str(body["host"])
-    if "port" in body:
-        IPPON_PORT = int(body["port"])
-    if "our_host" in body:
-        OUR_HOST = str(body["our_host"])
-    return {"host": IPPON_HOST, "port": IPPON_PORT, "our_host": OUR_HOST}
-
-
-@app.post("/api/ippon-test")
-async def ippon_test(body: dict | None = None):
-    """HTTP connectivity test — POST /fighters to the board with dummy data."""
-    b = body or {}
-    host = b.get("host", IPPON_HOST)
-    port = int(b.get("port", IPPON_PORT))
-    url  = f"http://{host}:{port}/fighters"
-    result = {"url": url, "ok": False, "status": None, "error": None}
-    try:
-        import urllib.request as _urllib
-        payload = _json.dumps({
-            "fighter1": {"firstname": "Test", "lastname": "One", "gender": "M", "weightclass": "-73kg", "agegroup": "Seniors"},
-            "fighter2": {"firstname": "Test", "lastname": "Two", "gender": "M", "weightclass": "-73kg", "agegroup": "Seniors"},
-            "callback": f"http://{OUR_HOST}:{OUR_PORT}/api/ippon-score",
-        }).encode()
-        req = _urllib.Request(url, data=payload, headers={"Content-Type": "application/json"}, method="POST")
-        resp = await _asyncio.to_thread(lambda: _urllib.urlopen(req, timeout=3))
-        result["status"] = resp.status
-        result["ok"] = True
-    except Exception as e:
-        result["error"] = str(e)
-    print(f"[IPPON-TEST] {result}")
-    return result
-
-
-@app.post("/api/ippon-score")
-async def ippon_score_callback(body: dict):
-    """Receive live score updates pushed back from the Ippon Board via HTTP callback."""
-    print(f"[IPPON] callback received: {body}")
-    match_id = _ippon_active_match.get("matchId")
-    if match_id:
-        await manager.broadcast({"type": "IPPON_UPDATE", "matchId": match_id, "data": body})
-    return {"ok": True}
-
-
-def _send_fighters_to_board(match_dict: dict) -> None:
-    """Blocking HTTP POST to board — run via asyncio.to_thread."""
-    import urllib.request as _urllib
-    p1 = match_dict.get("p1", {})
-    p2 = match_dict.get("p2", {})
-    if not p1.get("id") or p1.get("id") == "WAIT" or not p2.get("id") or p2.get("id") == "WAIT":
-        return
-    raw    = str(match_dict.get("gender") or "")
-    gender = _GENDER_MAP.get(raw.lower(), raw) or None
-    body   = {
-        "fighter1": {"firstname": p1.get("firstName", ""), "lastname": p1.get("lastName", ""), "gender": gender, "weightclass": match_dict.get("weightClass"), "agegroup": match_dict.get("ageGroup")},
-        "fighter2": {"firstname": p2.get("firstName", ""), "lastname": p2.get("lastName", ""), "gender": gender, "weightclass": match_dict.get("weightClass"), "agegroup": match_dict.get("ageGroup")},
-        "callback": f"http://{OUR_HOST}:{OUR_PORT}/api/ippon-score",
-    }
-    _ippon_active_match["matchId"] = match_dict.get("matchId")
-    try:
-        data = _json.dumps(body).encode()
-        req  = _urllib.Request(f"http://{IPPON_HOST}:{IPPON_PORT}/fighters", data=data, headers={"Content-Type": "application/json"}, method="POST")
-        _urllib.urlopen(req, timeout=3)
-        print(f"[IPPON] POST /fighters ok, matchId={match_dict.get('matchId')}")
-    except Exception as e:
-        print(f"[IPPON] POST /fighters failed: {e}")
-
-
-async def _ippon_start(match_id: int, match_dict: dict) -> None:
-    if _ippon_active_match.get("matchId") == match_id:
-        return  # already registered
-    await _asyncio.to_thread(_send_fighters_to_board, match_dict)
-
 
 async def _handle_manual_override(data: dict, session) -> None:
     fight = session.query(FightModel).filter(FightModel.id == data["matchId"]).first()
@@ -1078,13 +1143,6 @@ async def _handle_manual_override(data: dict, session) -> None:
         await manager.broadcast({"type": "SCORE_SYNC", "matchId": data["matchId"], "match": match_dict})
 
 
-async def _ippon_stop(match_id: int) -> None:
-    """Deregister the active board match so callbacks are no longer routed."""
-    if _ippon_active_match.get("matchId") == match_id:
-        _ippon_active_match.clear()
-        print(f"[IPPON] deregistered match {match_id}")
-
-
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await manager.connect(websocket)
@@ -1092,24 +1150,6 @@ async def websocket_endpoint(websocket: WebSocket):
         while True:
             data = await websocket.receive_json()
             msg_type = data.get("type")
-
-            # Ippon Board messages don't need a DB session
-            if msg_type == "IPPON_START":
-                match_id = data.get("matchId")
-                print(f"[IPPON] START received matchId={match_id}")
-                if match_id:
-                    with SessionLocal() as session:
-                        md = get_match_dict(match_id, session)
-                    if md:
-                        _asyncio.create_task(_ippon_start(match_id, md))
-                    else:
-                        print(f"[IPPON] match_dict not found for matchId={match_id}")
-                continue
-            if msg_type == "IPPON_STOP":
-                match_id = data.get("matchId")
-                if match_id:
-                    _asyncio.create_task(_ippon_stop(match_id))
-                continue
 
             with SessionLocal() as session:
                 if msg_type == "SCORE_UPDATE":
@@ -1122,6 +1162,8 @@ async def websocket_endpoint(websocket: WebSocket):
                     await _handle_status_update(data, session)
                 elif msg_type == "MANUAL_OVERRIDE":
                     await _handle_manual_override(data, session)
+                elif msg_type == "IPPON_START":
+                    _send_fighters_to_board(data["matchId"], session)
                 elif msg_type == "SIGNAL":
                     await manager.broadcast(data)
     except WebSocketDisconnect:

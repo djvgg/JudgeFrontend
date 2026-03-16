@@ -986,6 +986,8 @@ input:checked+.slider:before {
 .modal-title-group {
     display: flex;
     flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
 }
 
 #modal-category {
@@ -1064,33 +1066,72 @@ input:checked+.slider:before {
 .timer-controls {
     display: flex;
     justify-content: flex-end;
-    gap: 12px;
+    align-items: center;
+    gap: 10px;
 }
 
 .timer-btn {
-    padding: 0.6rem 1.2rem;
-    border-radius: 8px;
+    padding: 0.55rem 1.3rem;
+    border-radius: 10px;
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
     cursor: pointer;
-    border: none;
-    transition: all 0.2s;
+    border: 1px solid transparent;
+    transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+    white-space: nowrap;
+}
+
+.timer-btn:active {
+    transform: scale(0.96);
 }
 
 .timer-btn.start {
     background-color: var(--success-color);
     color: #000;
+    border-color: var(--success-color);
+    box-shadow: 0 2px 10px rgba(76, 175, 80, 0.3);
+}
+
+.timer-btn.start:hover {
+    box-shadow: 0 4px 16px rgba(76, 175, 80, 0.45);
 }
 
 .timer-btn.stop {
     background-color: var(--error-color);
     color: #fff;
+    border-color: var(--error-color);
+    box-shadow: 0 2px 10px rgba(244, 67, 54, 0.3);
+}
+
+.timer-btn.stop:hover {
+    box-shadow: 0 4px 16px rgba(244, 67, 54, 0.45);
 }
 
 .timer-btn.reset {
     background-color: var(--bg-tertiary);
-    border: 1px solid var(--border-color);
+    border-color: var(--border-color);
+    color: var(--text-muted);
+}
+
+.timer-btn.reset:hover {
+    background-color: var(--bg-secondary);
     color: var(--text-main);
+}
+
+.timer-btn.ippon-board-btn {
+    background-color: #1e2d45;
+    border: 1.5px solid #4a8fd4;
+    color: #7eb3f5;
+    box-shadow: 0 0 8px rgba(74, 143, 212, 0.2), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+.timer-btn.ippon-board-btn:hover {
+    background-color: #253650;
+    border-color: #7eb3f5;
+    color: #aed4ff;
+    box-shadow: 0 0 16px rgba(126, 179, 245, 0.35);
 }
 
 /* Score Buttons Base */
@@ -1893,5 +1934,6 @@ input:checked+.slider:before {
 .fight-card.bye .fighter-name {
     font-size: 1.1rem;
     color: var(--text-muted);
-}. e d i t a b l e - s c o r e ,   . e d i t a b l e - t i m e   {   c u r s o r :   t e x t ;   }  
+}. e d i t a b l e - s c o r e ,   . e d i t a b l e - t i m e   {   c u r s o r :   t e x t ;   } 
+ 
  

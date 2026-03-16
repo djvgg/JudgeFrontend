@@ -10,7 +10,7 @@ load_dotenv(override=True)
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 # Create sync engine
-engine = create_engine(DATABASE_URL)
+engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 
 # Create session factory (sync)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

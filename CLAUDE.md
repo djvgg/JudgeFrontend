@@ -157,13 +157,113 @@ Key UI features:
 - **Victory popup** shown on fight finish
 
 ### Ippon Board Integration
-An external hardware/software scoring board (Ippon) can be integrated:
-- **`IPPON_HOST`** env var: IP/hostname of the Ippon board
-- **`IPPON_PORT`** env var: port of the Ippon board (default: 8080)
-- **`OUR_HOST`** env var: the IP of *this server* as seen by the Ippon board (for callback URL)
-- On `IPPON_START` WS message: `_send_fighters_to_board()` pushes fighter names/gender/weight class to the board via `POST http://<IPPON_HOST>:<IPPON_PORT>/fighters`
-- Board pushes live score updates back to `POST /api/ippon-score`, which broadcasts `IPPON_UPDATE` to all WS clients
-- Judo score conversion: ippon or 2×waza-ari → 10 pts; 1×waza-ari → 7 pts; yuko → 5 pts; 3 shidos (hansoku-make) → opponent gets 10
+
+The Ippon board is a separate C++/Qt application (`ipponboard_competition-control`) running on a colleague's Linux VM. Its `ApiServer` (port **8080**) is a raw `QTcpServer` that speaks a minimal HTTP subset — not a full HTTP framework.
+
+#### Known network addresses (current setup)
+| Machine | IP |
+|---------|----|
+| This server (judge frontend, Windows laptop) | `172.17.192.190` |
+| Colleague's VM (Ippon board) | `172.17.192.168` |
+
+Both are on the same `172.17.192.x` WiFi subnet. The laptop has no ethernet port — WiFi only.
+
+#### Environment variables
+| Var | Value | Description |
+|-----|-------|-------------|
+| `IPPON_HOST` | `172.17.192.168` | IP of the colleague's VM running the Ippon board app |
+| `IPPON_PORT` | `8080` | Port the board listens on |
+| `OUR_HOST` | `172.17.192.190` | LAN IP of this server as seen by the board — used in the callback URL |
+
+#### Network troubleshooting commands
+If the IP changes (e.g. after a reboot), use these to rediscover it:
+
+**On colleague's Linux VM** — find their IP and confirm the board is running:
+```bash
+ip addr | grep inet          # shows all IPs — look for 172.17.x.x on enp0s3
+netstat -tlnp | grep LISTEN  # confirm Ipponboard is on port 8080 (shows as "Ipponboard")
+```
+
+**On this Windows machine** — find our own IP:
+```
+ipconfig                     # look for IPv4 Address under WiFi adapter
+```
+
+**Test connectivity from this machine:**
+```bash
+curl -X POST http://localhost:5001/api/ippon-test
+# expects: {"status": 201, "body": "Both fighters created", ...}
+```
+
+**Test that colleague can reach this server** (run from colleague's VM):
+```bash
+curl http://172.17.192.190:5001/api/matches
+```
+
+#### Windows Firewall
+The board POSTs callbacks to `OUR_HOST:5001`. Windows blocks inbound TCP by default — ping not working from colleague's VM is normal (ICMP is blocked separately from TCP). Add a firewall rule once:
+```powershell
+# Run in PowerShell as Administrator
+netsh advfirewall firewall add rule name="TOP Judge Port 5001" dir=in action=allow protocol=TCP localport=5001
+```
+
+#### Outbound: sending fighters to the board
+`_send_fighters_to_board(fight_id, session)` in `main.py` is called when a judge sends an `IPPON_START` WebSocket message. It uses `urllib.request` (stdlib, no extra dependency) to POST to `http://<IPPON_HOST>:<IPPON_PORT>/fighters`.
+
+**Request payload (`POST /fighters`):**
+```json
+{
+  "fighter1": { "firstname": "Julia", "lastname": "Schmitt", "gender": "M", "agegroup": "U18", "weightclass": "60kg" },
+  "fighter2": { "firstname": "Anna",  "lastname": "Schmidt", "gender": "M", "agegroup": "U18", "weightclass": "60kg" },
+  "callback": "http://172.17.192.190:5001/api/ippon-score"
+}
+```
+- `gender` + `agegroup` are concatenated by the board into a category string e.g. `"MU18"`
+- The board stores the `callback` URL and uses it for all subsequent score pushes
+- On success (HTTP 201) `_current_ippon_fight_id` is set in memory to track which fight is active on the board
+- `State.ipponBoardMatchId` is set on the frontend to track which fight is waiting for a result
+
+#### Inbound: score callbacks from the board
+`FightDataDispatcher` (C++ `IView` observer) fires `UpdateView()` on every score change. `ApiServer::BroadcastData()` then calls `SendWebhook()`, which POSTs the current fight state to the stored callback URL.
+
+**Callback payload (`POST /api/ippon-score`)** — sent on every score change:
+```json
+{
+  "fighter1": { "name": "J.  Schmitt", "ippon": 0, "wazaari": 1, "yuko": 0, "shido": 0 },
+  "fighter2": { "name": "A.  Schmidt", "ippon": 0, "wazaari": 0, "yuko": 0, "shido": 2 },
+  "time": "3:12",
+  "isGoldenScore": false,
+  "winner": "none | fighter1 | fighter2"
+}
+```
+- `name` is abbreviated by the board: `"J.  Schmitt"` (first initial + double space + last name)
+- `time` is remaining time (countdown) — converted to elapsed duration: `duration = 240 - remaining_seconds`
+- `winner` is `"none"` until an ippon or hansoku-make is scored
+
+`api_ippon_score` in `main.py`:
+1. Always broadcasts `IPPON_UPDATE` to all WebSocket clients
+2. Only acts on `"winner": "fighter1"` or `"fighter2"` — ignored if `_current_ippon_fight_id` is `None` (board button was never pressed)
+3. On winner: sets winner score to 10, stores elapsed duration, marks fight `"finished"`, sets `winner_id`, runs bracket advancement, broadcasts `SCORE_SYNC` + `REFRESH_LIST`, clears `_current_ippon_fight_id`
+
+Frontend (`IPPON_UPDATE` handler in `app.js`):
+- Only fires if `State.ipponBoardMatchId` is set (i.e. IPPON BOARD button was pressed for this fight)
+- Restores `State.currentScoringMatch` even if the scoring modal was closed
+- Calls `winByDecision(1 or 2)` → shows victory popup with the real fighter name
+- Clears `State.ipponBoardMatchId` after winner is handled
+
+#### Test endpoint
+```bash
+curl -X POST http://localhost:5001/api/ippon-test
+```
+Sends hardcoded `Test Eins` / `Test Zwei` fighters to verify network connectivity before using a real fight. Does not set `_current_ippon_fight_id`.
+
+#### C++ board internals (read-only reference)
+| Class | Role |
+|-------|------|
+| `ApiServer` | `QTcpServer` on port 8080; parses raw HTTP, routes `POST /fighters`, manages TCP client list, sends webhooks via `QNetworkAccessManager` |
+| `ApiEndpoints` | Handles `POST /fighters`; parses JSON, creates `Fighter` objects, passes them to `FighterManager`, stores callback URL in `ApiServer::m_callbackUrl` |
+| `FightDataDispatcher` | `IView` observer; called on every score change; builds score JSON and emits `dataUpdated` signal → triggers `ApiServer::BroadcastData` |
+| `Fighter` | Data model: `first_name`, `last_name`, `weight`, `category` (gender+agegroup concatenated) |
 
 ### XLSX Import/Export
 - `backend/xlsx_handler.py`: Parses participant lists from `.xlsx` files, auto-detecting German and English column headers. Groups participants by gender, age class, weight class.
@@ -188,7 +288,8 @@ An external hardware/software scoring board (Ippon) can be integrated:
 | `GET` | `/api/matches` | All fights as match dicts (batch-optimized) |
 | `POST` | `/api/heal` | Manually trigger bracket progression healing |
 | `POST` | `/api/generate-lb` | Pre-create all LB fight shells for double-elim brackets |
-| `POST` | `/api/ippon-score` | Receive live score callback from Ippon board |
+| `POST` | `/api/ippon-score` | Receive live score callback from Ippon board; auto-finishes fight on winner |
+| `POST` | `/api/ippon-test` | Send hardcoded test fighters to board to verify connectivity |
 | `WS` | `/ws` | WebSocket endpoint for all real-time coordination |
 
 ## Code Style

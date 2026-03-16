@@ -15,6 +15,7 @@ const Config = {
 const State = {
     activeMatches: [],
     currentScoringMatch: null,
+    ipponBoardMatchId: null,
     currentBracketCategory: null,
     draggedMatchId: null,
     isTableFilterActive: true,
@@ -79,68 +80,15 @@ const Network = {
                 UI.renderBracketVisualization();
             }
         } else if (data.type === 'IPPON_UPDATE') {
-            const m = State.currentScoringMatch;
-            if (m && m.matchId === data.matchId && data.data) {
-                const d = data.data;
-                console.log('[IPPON] update received:', d);
-
-                // Board sends fighter1/fighter2 objects
-                const s1 = d.fighter1 ?? d.p1 ?? d.blue ?? null;
-                const s2 = d.fighter2 ?? d.p2 ?? d.white ?? null;
-
-                // Convert judo scores to points (0/7/10)
-                // 3 shidos = hansoku-make → opponent gets 10
-                const judoToPoints = (s) => {
-                    if (!s) return 0;
-                    const ippon  = Number(s.ippon   ?? 0);
-                    const waza   = Number(s.wazaari ?? s.waza_ari ?? 0);
-                    const yuko   = Number(s.yuko    ?? 0);
-                    const shido  = Number(s.shido   ?? 0);
-                    if (ippon >= 1 || waza >= 2) return 10;
-                    if (shido >= 3) return -1; // hansoku-make: this fighter loses
-                    if (waza >= 1) return 7;
-                    if (yuko >= 1) return 5;
-                    return 0;
-                };
-
-                let pts1 = s1 ? judoToPoints(s1) : null;
-                let pts2 = s2 ? judoToPoints(s2) : null;
-
-                // Hansoku-make: if one fighter has -1, opponent gets 10
-                if (pts1 === -1) { pts1 = 0; pts2 = 10; }
-                if (pts2 === -1) { pts2 = 0; pts1 = 10; }
-
-                if (pts1 !== null) {
-                    m.p1.score = { points: pts1 };
-                    Network.send({ type: 'SCORE_UPDATE', matchId: m.matchId, playerNum: 1, value: pts1 });
-                }
-                if (pts2 !== null) {
-                    m.p2.score = { points: pts2 };
-                    Network.send({ type: 'SCORE_UPDATE', matchId: m.matchId, playerNum: 2, value: pts2 });
-                }
-
-                // Parse time string "3:45" → seconds
-                if (d.time !== undefined) {
-                    const t = String(d.time);
-                    if (t.includes(':')) {
-                        const [min, sec] = t.split(':').map(Number);
-                        Scoring.setTimerSeconds(min * 60 + sec);
-                    } else {
-                        Scoring.setTimerSeconds(Number(t));
-                    }
-                }
-
-                // Fight decision from the board (winner field set by board when fight ends)
-                // Guard with _ipponWon to avoid triggering multiple times per fight
-                if (d.winner && d.winner !== 'none' && !m._ipponWon) {
-                    m._ipponWon = true;
-                    const winnerPlayerNum = d.winner === 'fighter1' ? 1 : 2;
-                    console.log(`[IPPON] fight decided by board: fighter${winnerPlayerNum} wins`);
-                    winByDecision(winnerPlayerNum);
-                }
-
-                UI.updateScoreDisplay();
+            const winner = data.scores?.winner;
+            if (!State.ipponBoardMatchId || (winner !== 'fighter1' && winner !== 'fighter2')) return;
+            if (!State.currentScoringMatch || State.currentScoringMatch.matchId !== State.ipponBoardMatchId) {
+                const m = State.activeMatches.find(m => m.matchId === State.ipponBoardMatchId);
+                if (m) State.currentScoringMatch = m;
             }
+            State.ipponBoardMatchId = null;
+            if (winner === 'fighter1') winByDecision(1);
+            else if (winner === 'fighter2') winByDecision(2);
         } else if (data.type === 'SIGNAL') {
             Scoring.triggerTimerSignal(data.signalType, false);
         } else if (data.type === 'REFRESH_LIST') {
@@ -1248,8 +1196,6 @@ const Scoring = {
 
         UI.updateScoreDisplay();
         document.getElementById('scoring-modal').style.display = 'flex';
-        console.log('[IPPON] sending IPPON_START, matchId:', m.matchId, '| WS state:', Network.socket?.readyState);
-        Network.send({ type: 'IPPON_START', matchId: m.matchId });
     },
 
     closeModal() {
@@ -1365,6 +1311,12 @@ const Scoring = {
             gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
             osc.start(); osc.stop(ctx.currentTime + 0.2);
         } catch (e) { }
+    },
+
+    sendToIpponBoard() {
+        if (!State.currentScoringMatch) return;
+        State.ipponBoardMatchId = State.currentScoringMatch.matchId;
+        Network.send({ type: 'IPPON_START', matchId: State.currentScoringMatch.matchId });
     },
 
     finishMatch() {
