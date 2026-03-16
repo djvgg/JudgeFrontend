@@ -339,21 +339,39 @@ def _advance_winner(fight: FightModel, session) -> FightModel | None:
             )
             if not sibling:
                 return None  # 3rd-place match — no further advancement
-            next_pos = pos // 2
-            next_slot = "p1" if pos % 2 == 0 else "p2"
-        else:  # reduction round (even)
-            wb_r_upcoming = (lr + 2) // 2
-            wb_count = (
+            # Don't advance into the final LB reduction round — both survivors share 3rd place
+            wb_r0_count = (
                 session.query(FightModel)
                 .filter(
                     FightModel.bracket_id == fight.bracket_id,
                     FightModel.bracket_phase == "wb",
-                    FightModel.round == wb_r_upcoming,
+                    FightModel.round == 0,
                 )
                 .count()
             )
-            if wb_count <= 1:
-                return None  # No WB losers dropping down from the final
+            if wb_r0_count >= 2:
+                lb_rounds_total = 2 * int(_math.log2(wb_r0_count)) - 1
+                if lr + 1 >= lb_rounds_total - 1:
+                    return None  # Both reach 3rd place — no fight needed
+            next_pos = pos // 2
+            next_slot = "p1" if pos % 2 == 0 else "p2"
+        else:  # reduction round (even)
+            wb_r_upcoming = (lr + 2) // 2
+            # Use WB R0 count to structurally determine the WB final round.
+            # The WB final is round log2(wb_r0_count). If wb_r_upcoming reaches
+            # the final, no LB injection round follows (WB final loser = runner-up).
+            wb_r0_count = (
+                session.query(FightModel)
+                .filter(
+                    FightModel.bracket_id == fight.bracket_id,
+                    FightModel.bracket_phase == "wb",
+                    FightModel.round == 0,
+                )
+                .count()
+            )
+            wb_final_round = int(_math.log2(wb_r0_count)) if wb_r0_count >= 2 else 1
+            if wb_r_upcoming >= wb_final_round:
+                return None  # Next WB round is the final — no LB injection follows
             next_pos = pos
             next_slot = "p1"
 
@@ -786,7 +804,7 @@ def generate_lb_fights(bracket_id: int, session) -> int:
     created = 0
     fight_count = n // 2  # LB R0 starts with N/2 fights
 
-    for lb_round in range(lb_rounds_total):
+    for lb_round in range(lb_rounds_total - 1):  # skip last reduction round (both survivors = 3rd place)
         for pos in range(fight_count):
             existing = (
                 session.query(FightModel)

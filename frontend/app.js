@@ -15,6 +15,7 @@ const Config = {
 const State = {
     activeMatches: [],
     currentScoringMatch: null,
+    ipponBoardMatchId: null,
     currentBracketCategory: null,
     draggedMatchId: null,
     isTableFilterActive: true,
@@ -80,7 +81,7 @@ const Network = {
             }
         } else if (data.type === 'IPPON_UPDATE') {
             const m = State.currentScoringMatch;
-            if (m && m.matchId === data.matchId && data.data) {
+            if (m && State.ipponBoardMatchId === data.matchId && data.data) {
                 const d = data.data;
 
                 // Board sends fighter1/fighter2 objects
@@ -614,10 +615,22 @@ const UI = {
                 if (realFightMap.has(key)) {
                     node = resultMap.get(realFightMap.get(key).matchId);
                 } else {
+                    // For the last LB round (3rd-place display): derive participants from
+                    // the previous injection round's winners instead of showing TBD.
+                    let p1 = tbd(), p2 = tbd();
+                    if (dbRound === lbTotalRounds - 1 && roundFights.length > 0) {
+                        const prev = roundFights[roundFights.length - 1];
+                        const getWinner = m => {
+                            if (!m || !m.winnerId) return tbd();
+                            return String(m.winnerId) === String(m.p1.id) ? { ...m.p1 } : { ...m.p2 };
+                        };
+                        p1 = getWinner(prev[2 * pos]);
+                        p2 = getWinner(prev[2 * pos + 1]);
+                    }
                     node = {
                         matchId: virtualId--, bracketId: base.bracketId, category: base.category,
                         round: frontendRound, posInRound: pos, phase: 'lb', fightNr: null,
-                        p1: tbd(), p2: tbd(),
+                        p1, p2,
                         status: 'upcoming', order: 9999,
                         nextMatchId: null, nextMatchPos: null, winnerId: null, poolIndex: null,
                     };
@@ -902,8 +915,9 @@ const UI = {
             const childP1 = nodeData.children.map(cid => matchMap.get(cid)).find(c => c.nextMatchPos === 'p1');
             const childP2 = nodeData.children.map(cid => matchMap.get(cid)).find(c => c.nextMatchPos === 'p2');
 
-            const p1Won = m.status === 'finished' && m.winnerId && String(m.p1.id) === String(m.winnerId);
-            const p2Won = m.status === 'finished' && m.winnerId && String(m.p2.id) === String(m.winnerId);
+            const isThirdPlace = m.phase === 'lb' && !m.nextMatchId;
+            const p1Won = isThirdPlace || (m.status === 'finished' && m.winnerId && String(m.p1.id) === String(m.winnerId));
+            const p2Won = isThirdPlace || (m.status === 'finished' && m.winnerId && String(m.p2.id) === String(m.winnerId));
 
             // Determine label + CSS class for each participant slot.
             // If a child match feeds this slot but the participant is already known
@@ -1262,7 +1276,6 @@ const Scoring = {
 
         UI.updateScoreDisplay();
         document.getElementById('scoring-modal').style.display = 'flex';
-        Network.send({ type: 'IPPON_START', matchId: m.matchId });
     },
 
     closeModal() {
@@ -1355,6 +1368,13 @@ const Scoring = {
 
     updateTimerUI() {
         document.getElementById('match-timer').textContent = UI.formatTime(State.timer.remainingSeconds);
+    },
+
+    sendToIpponBoard() {
+        const m = State.currentScoringMatch;
+        if (!m) return;
+        State.ipponBoardMatchId = m.matchId;
+        Network.send({ type: 'IPPON_START', matchId: m.matchId });
     },
 
     triggerTimerSignal(type, shouldBroadcast = true) {

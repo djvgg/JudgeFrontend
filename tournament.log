@@ -2688,3 +2688,1581 @@ sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) connection to serve
 2026-03-13 14:00:42,210 [INFO] JudoApp: Starting up Judo Real-Time API...
 2026-03-13 14:01:10,024 [INFO] JudoApp: Starting up Judo Real-Time API...
 2026-03-13 14:01:31,950 [INFO] JudoApp: Starting up Judo Real-Time API...
+2026-03-16 09:22:35,932 [INFO] JudoApp: Starting up Judo Real-Time API...
+2026-03-16 09:22:45,929 [INFO] JudoApp: Starting up Judo Real-Time API...
+2026-03-16 09:23:18,032 [INFO] JudoApp: Starting up Judo Real-Time API...
+2026-03-16 09:23:18,405 [INFO] JudoApp: Generating WB shells for Bracket 48
+2026-03-16 09:23:18,410 [INFO] JudoApp: Generating LB fights for Bracket 48
+2026-03-16 09:23:18,412 [INFO] JudoApp: Generating WB shells for Bracket 49
+2026-03-16 09:23:18,415 [INFO] JudoApp: Generating LB fights for Bracket 49
+2026-03-16 09:23:18,417 [INFO] JudoApp: Generating WB shells for Bracket 50
+2026-03-16 09:23:18,419 [INFO] JudoApp: Generating LB fights for Bracket 50
+2026-03-16 09:23:18,422 [INFO] JudoApp: Generating WB shells for Bracket 53
+2026-03-16 09:23:18,424 [INFO] JudoApp: Generating LB fights for Bracket 53
+2026-03-16 09:23:18,427 [INFO] JudoApp: Generating WB shells for Bracket 56
+2026-03-16 09:23:18,429 [INFO] JudoApp: Generating LB fights for Bracket 56
+2026-03-16 09:23:18,432 [INFO] JudoApp: Generating WB shells for Bracket 58
+2026-03-16 09:23:18,434 [INFO] JudoApp: Generating LB fights for Bracket 58
+2026-03-16 09:23:18,437 [INFO] JudoApp: Generating WB shells for Bracket 59
+2026-03-16 09:23:18,439 [INFO] JudoApp: Generating LB fights for Bracket 59
+2026-03-16 09:23:18,441 [INFO] JudoApp: Generating WB shells for Bracket 61
+2026-03-16 09:23:18,444 [INFO] JudoApp: Generating LB fights for Bracket 61
+2026-03-16 09:23:18,446 [INFO] JudoApp: Generating WB shells for Bracket 62
+2026-03-16 09:23:18,449 [INFO] JudoApp: Generating LB fights for Bracket 62
+2026-03-16 09:23:18,451 [INFO] JudoApp: Generating WB shells for Bracket 64
+2026-03-16 09:23:18,454 [INFO] JudoApp: Generating LB fights for Bracket 64
+2026-03-16 09:23:18,456 [INFO] JudoApp: Generating WB shells for Bracket 65
+2026-03-16 09:23:18,458 [INFO] JudoApp: Generating LB fights for Bracket 65
+2026-03-16 09:23:18,460 [INFO] JudoApp: Generating WB shells for Bracket 66
+2026-03-16 09:23:18,462 [INFO] JudoApp: Generating LB fights for Bracket 66
+2026-03-16 09:23:18,465 [INFO] JudoApp: Generating WB shells for Bracket 68
+2026-03-16 09:23:18,467 [INFO] JudoApp: Generating LB fights for Bracket 68
+2026-03-16 09:23:18,469 [INFO] JudoApp: Generating WB shells for Bracket 69
+2026-03-16 09:23:18,471 [INFO] JudoApp: Generating LB fights for Bracket 69
+2026-03-16 09:23:18,474 [INFO] JudoApp: Generating WB shells for Bracket 75
+2026-03-16 09:23:18,476 [INFO] JudoApp: Generating LB fights for Bracket 75
+2026-03-16 09:23:18,479 [INFO] JudoApp: Generating WB shells for Bracket 76
+2026-03-16 09:23:18,482 [INFO] JudoApp: Generating LB fights for Bracket 76
+2026-03-16 09:23:18,484 [INFO] JudoApp: Generating WB shells for Bracket 77
+2026-03-16 09:23:18,486 [INFO] JudoApp: Generating LB fights for Bracket 77
+2026-03-16 09:23:18,488 [INFO] JudoApp: Generating WB shells for Bracket 80
+2026-03-16 09:23:18,490 [INFO] JudoApp: Generating LB fights for Bracket 80
+2026-03-16 09:23:18,493 [INFO] JudoApp: Generating WB shells for Bracket 81
+2026-03-16 09:23:18,495 [INFO] JudoApp: Generating LB fights for Bracket 81
+2026-03-16 09:23:18,497 [INFO] JudoApp: Generating WB shells for Bracket 82
+2026-03-16 09:23:18,499 [INFO] JudoApp: Generating LB fights for Bracket 82
+2026-03-16 09:23:18,501 [INFO] JudoApp: Generating WB shells for Bracket 83
+2026-03-16 09:23:18,504 [INFO] JudoApp: Generating LB fights for Bracket 83
+2026-03-16 09:23:18,506 [INFO] JudoApp: Generating WB shells for Bracket 85
+2026-03-16 09:23:18,508 [INFO] JudoApp: Generating LB fights for Bracket 85
+2026-03-16 09:23:18,511 [INFO] JudoApp: Generating WB shells for Bracket 86
+2026-03-16 09:23:18,513 [INFO] JudoApp: Generating LB fights for Bracket 86
+2026-03-16 09:23:18,515 [INFO] JudoApp: Generating WB shells for Bracket 88
+2026-03-16 09:23:18,518 [INFO] JudoApp: Generating LB fights for Bracket 88
+2026-03-16 09:23:18,521 [INFO] JudoApp: Generating WB shells for Bracket 89
+2026-03-16 09:23:18,523 [INFO] JudoApp: Generating LB fights for Bracket 89
+2026-03-16 09:23:18,525 [INFO] JudoApp: Generating WB shells for Bracket 91
+2026-03-16 09:23:18,527 [INFO] JudoApp: Generating LB fights for Bracket 91
+2026-03-16 09:23:18,529 [INFO] JudoApp: Generating WB shells for Bracket 92
+2026-03-16 09:23:18,532 [INFO] JudoApp: Generating LB fights for Bracket 92
+2026-03-16 09:23:18,534 [INFO] JudoApp: Generating WB shells for Bracket 93
+2026-03-16 09:23:18,536 [INFO] JudoApp: Generating LB fights for Bracket 93
+2026-03-16 09:23:18,539 [INFO] JudoApp: Generating WB shells for Bracket 94
+2026-03-16 09:23:18,541 [INFO] JudoApp: Generating LB fights for Bracket 94
+2026-03-16 09:23:18,543 [INFO] JudoApp: Generating WB shells for Bracket 96
+2026-03-16 09:23:18,545 [INFO] JudoApp: Generating LB fights for Bracket 96
+2026-03-16 09:23:18,547 [INFO] JudoApp: Generating WB shells for Bracket 98
+2026-03-16 09:23:18,549 [INFO] JudoApp: Generating LB fights for Bracket 98
+2026-03-16 09:23:18,551 [INFO] JudoApp: Generating WB shells for Bracket 100
+2026-03-16 09:23:18,554 [INFO] JudoApp: Generating LB fights for Bracket 100
+2026-03-16 09:23:18,555 [INFO] JudoApp: Generating WB shells for Bracket 102
+2026-03-16 09:23:18,558 [INFO] JudoApp: Generating LB fights for Bracket 102
+2026-03-16 09:23:18,560 [INFO] JudoApp: Generating WB shells for Bracket 52
+2026-03-16 09:23:18,578 [INFO] JudoApp: Generating LB fights for Bracket 52
+2026-03-16 09:23:18,608 [INFO] JudoApp: Generating WB shells for Bracket 47
+2026-03-16 09:23:18,619 [INFO] JudoApp: Generating LB fights for Bracket 47
+2026-03-16 09:23:18,634 [INFO] JudoApp: Generating WB shells for Bracket 54
+2026-03-16 09:23:18,651 [INFO] JudoApp: Generating LB fights for Bracket 54
+2026-03-16 09:23:18,680 [INFO] JudoApp: Healing bracket progressions...
+2026-03-16 09:23:18,705 [INFO] JudoApp: Advancing Winner 235 from Fight 95 to WB Fight 103 (p1)
+2026-03-16 09:23:18,710 [INFO] JudoApp: Advancing Loser 222 from WB Fight 95 to LB Fight 104 (p1)
+2026-03-16 09:23:18,717 [INFO] JudoApp: Advancing Winner 466 from Fight 62 to WB Fight 64 (p1)
+2026-03-16 09:23:18,721 [INFO] JudoApp: Advancing Winner 220 from Fight 59 to WB Fight 61 (p1)
+2026-03-16 09:23:18,729 [INFO] JudoApp: Advancing Winner 249 from Fight 80 to LB Fight 84 (p1)
+2026-03-16 09:23:18,734 [INFO] JudoApp: Advancing Winner 222 from Fight 104 to LB Fight 113 (p1)
+2026-03-16 09:23:18,739 [INFO] JudoApp: Advancing Winner 331 from Fight 33 to WB Fight 35 (p1)
+2026-03-16 09:23:18,743 [INFO] JudoApp: Advancing Winner 247 from Fight 65 to WB Fight 73 (p1)
+2026-03-16 09:23:18,748 [INFO] JudoApp: Advancing Loser 249 from WB Fight 65 to LB Fight 80 (p1)
+2026-03-16 09:23:18,752 [INFO] JudoApp: Advancing Winner 471 from Fight 63 to WB Fight 64 (p2)
+2026-03-16 09:23:18,756 [INFO] JudoApp: Advancing Winner 214 from Fight 60 to WB Fight 61 (p2)
+2026-03-16 09:23:18,761 [INFO] JudoApp: Advancing Winner 262 from Fight 66 to WB Fight 73 (p2)
+2026-03-16 09:23:18,766 [INFO] JudoApp: Advancing Loser 255 from WB Fight 66 to LB Fight 80 (p2)
+2026-03-16 09:23:18,771 [INFO] JudoApp: Advancing Winner 250 from Fight 81 to LB Fight 85 (p1)
+2026-03-16 09:23:18,775 [INFO] JudoApp: Advancing Winner 234 from Fight 96 to WB Fight 103 (p2)
+2026-03-16 09:23:18,780 [INFO] JudoApp: Advancing Loser 226 from WB Fight 96 to LB Fight 104 (p2)
+2026-03-16 09:23:18,785 [INFO] JudoApp: Advancing Winner 332 from Fight 34 to WB Fight 35 (p2)
+2026-03-16 09:23:18,791 [INFO] JudoApp: Advancing Winner 228 from Fight 110 to LB Fight 114 (p1)
+2026-03-16 09:23:18,796 [INFO] JudoApp: Advancing Winner 229 from Fight 97 to WB Fight 105 (p1)
+2026-03-16 09:23:18,800 [INFO] JudoApp: Advancing Winner 260 from Fight 67 to WB Fight 74 (p1)
+2026-03-16 09:23:18,804 [INFO] JudoApp: Advancing Loser 259 from WB Fight 67 to LB Fight 81 (p1)
+2026-03-16 09:23:18,809 [INFO] JudoApp: Advancing Winner 232 from Fight 111 to LB Fight 115 (p1)
+2026-03-16 09:23:18,814 [INFO] JudoApp: Advancing Winner 253 from Fight 82 to LB Fight 86 (p1)
+2026-03-16 09:23:18,819 [INFO] JudoApp: Advancing Winner 231 from Fight 112 to LB Fight 116 (p1)
+2026-03-16 09:23:18,824 [INFO] JudoApp: Advancing Winner 248 from Fight 83 to LB Fight 87 (p1)
+2026-03-16 09:23:18,828 [INFO] JudoApp: Advancing Winner 224 from Fight 98 to WB Fight 105 (p2)
+2026-03-16 09:23:18,837 [INFO] JudoApp: Advancing Winner 228 from Fight 110 to LB Fight 114 (p1)
+2026-03-16 09:23:18,838 [INFO] JudoApp: Advancing Loser 228 from WB Fight 98 to LB Fight 110 (p2)
+2026-03-16 09:23:18,842 [INFO] JudoApp: Advancing Winner 256 from Fight 68 to WB Fight 74 (p2)
+2026-03-16 09:23:18,847 [INFO] JudoApp: Advancing Loser 250 from WB Fight 68 to LB Fight 81 (p2)
+2026-03-16 09:23:18,852 [INFO] JudoApp: Advancing Winner 225 from Fight 99 to WB Fight 106 (p1)
+2026-03-16 09:23:18,861 [INFO] JudoApp: Advancing Winner 232 from Fight 111 to LB Fight 115 (p1)
+2026-03-16 09:23:18,861 [INFO] JudoApp: Advancing Loser 232 from WB Fight 99 to LB Fight 111 (p1)
+2026-03-16 09:23:18,866 [INFO] JudoApp: Advancing Winner 252 from Fight 69 to WB Fight 75 (p1)
+2026-03-16 09:23:18,870 [INFO] JudoApp: Advancing Loser 257 from WB Fight 69 to LB Fight 82 (p1)
+2026-03-16 09:23:18,874 [INFO] JudoApp: Advancing Winner 230 from Fight 100 to WB Fight 106 (p2)
+2026-03-16 09:23:18,879 [INFO] JudoApp: Advancing Winner 261 from Fight 70 to WB Fight 75 (p2)
+2026-03-16 09:23:18,883 [INFO] JudoApp: Advancing Loser 253 from WB Fight 70 to LB Fight 82 (p2)
+2026-03-16 09:23:18,888 [INFO] JudoApp: Advancing Winner 258 from Fight 71 to WB Fight 76 (p1)
+2026-03-16 09:23:18,894 [INFO] JudoApp: Advancing Loser 254 from WB Fight 71 to LB Fight 83 (p1)
+2026-03-16 09:23:18,898 [INFO] JudoApp: Advancing Winner 227 from Fight 101 to WB Fight 107 (p1)
+2026-03-16 09:23:18,902 [INFO] JudoApp: Advancing Loser 233 from WB Fight 101 to LB Fight 112 (p1)
+2026-03-16 09:23:18,907 [INFO] JudoApp: Advancing Winner 223 from Fight 102 to WB Fight 107 (p2)
+2026-03-16 09:23:18,912 [INFO] JudoApp: Advancing Loser 231 from WB Fight 102 to LB Fight 112 (p2)
+2026-03-16 09:23:18,916 [INFO] JudoApp: Advancing Winner 251 from Fight 72 to WB Fight 76 (p2)
+2026-03-16 09:23:18,921 [INFO] JudoApp: Advancing Loser 248 from WB Fight 72 to LB Fight 83 (p2)
+2026-03-16 09:23:18,925 [INFO] JudoApp: Advancing Winner 235 from Fight 113 to LB Fight 117 (p1)
+2026-03-16 09:23:18,936 [INFO] JudoApp: Advancing Winner 262 from Fight 73 to WB Fight 77 (p1)
+2026-03-16 09:23:18,940 [INFO] JudoApp: Advancing Loser 247 from WB Fight 73 to LB Fight 84 (p2)
+2026-03-16 09:23:18,944 [INFO] JudoApp: Advancing Winner 247 from Fight 84 to LB Fight 88 (p1)
+2026-03-16 09:23:18,949 [INFO] JudoApp: Advancing Winner 234 from Fight 103 to WB Fight 108 (p1)
+2026-03-16 09:23:18,954 [INFO] JudoApp: Advancing Loser 235 from WB Fight 103 to LB Fight 113 (p2)
+2026-03-16 09:23:18,959 [INFO] JudoApp: Advancing Winner 256 from Fight 74 to WB Fight 77 (p2)
+2026-03-16 09:23:18,964 [INFO] JudoApp: Advancing Loser 260 from WB Fight 74 to LB Fight 85 (p2)
+2026-03-16 09:23:18,969 [INFO] JudoApp: Advancing Winner 229 from Fight 105 to WB Fight 108 (p2)
+2026-03-16 09:23:18,973 [INFO] JudoApp: Advancing Loser 224 from WB Fight 105 to LB Fight 114 (p2)
+2026-03-16 09:23:18,977 [INFO] JudoApp: Advancing Winner 260 from Fight 85 to LB Fight 88 (p2)
+2026-03-16 09:23:18,982 [INFO] JudoApp: Advancing Winner 228 from Fight 114 to LB Fight 117 (p2)
+2026-03-16 09:23:18,986 [INFO] JudoApp: Advancing Winner 230 from Fight 115 to LB Fight 118 (p1)
+2026-03-16 09:23:18,990 [INFO] JudoApp: Advancing Winner 253 from Fight 86 to LB Fight 89 (p1)
+2026-03-16 09:23:18,995 [INFO] JudoApp: Advancing Winner 225 from Fight 106 to WB Fight 109 (p1)
+2026-03-16 09:23:19,000 [INFO] JudoApp: Advancing Loser 230 from WB Fight 106 to LB Fight 115 (p2)
+2026-03-16 09:23:19,004 [INFO] JudoApp: Advancing Winner 261 from Fight 75 to WB Fight 78 (p1)
+2026-03-16 09:23:19,008 [INFO] JudoApp: Advancing Loser 252 from WB Fight 75 to LB Fight 86 (p2)
+2026-03-16 09:23:19,013 [INFO] JudoApp: Advancing Winner 258 from Fight 87 to LB Fight 89 (p2)
+2026-03-16 09:23:19,017 [INFO] JudoApp: Advancing Winner 227 from Fight 107 to WB Fight 109 (p2)
+2026-03-16 09:23:19,022 [INFO] JudoApp: Advancing Loser 223 from WB Fight 107 to LB Fight 116 (p2)
+2026-03-16 09:23:19,026 [INFO] JudoApp: Advancing Winner 251 from Fight 76 to WB Fight 78 (p2)
+2026-03-16 09:23:19,031 [INFO] JudoApp: Advancing Loser 258 from WB Fight 76 to LB Fight 87 (p2)
+2026-03-16 09:23:19,036 [INFO] JudoApp: Advancing Winner 256 from Fight 77 to WB Fight 79 (p1)
+2026-03-16 09:23:19,040 [INFO] JudoApp: Advancing Loser 262 from WB Fight 77 to LB Fight 90 (p2)
+2026-03-16 09:23:19,044 [INFO] JudoApp: Advancing Winner 229 from Fight 108 to WB Fight 122 (p1)
+2026-03-16 09:23:19,049 [INFO] JudoApp: Advancing Loser 234 from WB Fight 108 to LB Fight 119 (p2)
+2026-03-16 09:23:19,053 [INFO] JudoApp: Advancing Winner 247 from Fight 88 to LB Fight 90 (p1)
+2026-03-16 09:23:19,057 [INFO] JudoApp: Advancing Winner 258 from Fight 89 to LB Fight 91 (p1)
+2026-03-16 09:23:19,061 [INFO] JudoApp: Advancing Winner 251 from Fight 78 to WB Fight 79 (p2)
+2026-03-16 09:23:19,066 [INFO] JudoApp: Advancing Loser 261 from WB Fight 78 to LB Fight 91 (p2)
+2026-03-16 09:23:19,071 [INFO] JudoApp: Advancing Winner 225 from Fight 109 to WB Fight 122 (p2)
+2026-03-16 09:23:19,075 [INFO] JudoApp: Advancing Loser 227 from WB Fight 109 to LB Fight 120 (p2)
+2026-03-16 09:23:19,083 [INFO] JudoApp: Advancing Winner 262 from Fight 90 to LB Fight 92 (p1)
+2026-03-16 09:23:19,093 [INFO] JudoApp: Advancing Winner 261 from Fight 91 to LB Fight 92 (p2)
+2026-03-16 09:23:19,108 [INFO] JudoApp: Generating Double-Pool KO phase for Bracket 51
+2026-03-16 09:23:19,114 [INFO] JudoApp: Generating Double-Pool KO phase for Bracket 60
+2026-03-16 09:23:19,119 [INFO] JudoApp: Generating Double-Pool KO phase for Bracket 78
+2026-03-16 09:23:28,256 [INFO] JudoApp: API GET / - Status: 200 - 0.093s
+2026-03-16 09:23:28,347 [INFO] JudoApp: API GET /style.css - Status: 200 - 0.002s
+2026-03-16 09:23:28,376 [INFO] JudoApp: API GET /app.js - Status: 200 - 0.003s
+2026-03-16 09:23:28,635 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.198s
+2026-03-16 09:23:28,748 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-16 09:23:28,750 [INFO] JudoApp: API GET /manifest.json - Status: 200 - 0.005s
+2026-03-16 09:24:32,518 [INFO] JudoApp: IPPON START requested for Match 26
+2026-03-16 09:24:32,995 [ERROR] asyncio: Task exception was never retrieved
+future: <Task finished name='Task-19' coro=<_ippon_start() done, defined at C:\Users\Admin\Desktop\Top\judgeFrontend\main.py:1273> exception=ModuleNotFoundError("No module named 'requests'")>
+Traceback (most recent call last):
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1298, in _ippon_start
+    await _asyncio.to_thread(
+    ...<6 lines>...
+    )
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\asyncio\threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1265, in _post_fighter_sync
+    import requests as _requests
+ModuleNotFoundError: No module named 'requests'
+2026-03-16 09:24:33,659 [INFO] JudoApp: Score Update: Match 26, P1 -> 10
+2026-03-16 09:24:34,528 [INFO] JudoApp: Status Update: Match 26 -> finished
+2026-03-16 09:24:34,528 [INFO] JudoApp: MATCH_FINISHED: Fight 26, Winner: 161, Duration: 0s
+2026-03-16 09:24:34,550 [INFO] JudoApp: Advancing Winner 161 from Fight 26 to WB Fight 36 (p1)
+2026-03-16 09:24:34,582 [INFO] JudoApp: Advancing Loser 163 from WB Fight 26 to LB Fight 40 (p1)
+2026-03-16 09:24:34,969 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.027s
+2026-03-16 09:24:36,924 [INFO] JudoApp: IPPON START requested for Match 27
+2026-03-16 09:24:37,373 [ERROR] asyncio: Task exception was never retrieved
+future: <Task finished name='Task-23' coro=<_ippon_start() done, defined at C:\Users\Admin\Desktop\Top\judgeFrontend\main.py:1273> exception=ModuleNotFoundError("No module named 'requests'")>
+Traceback (most recent call last):
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1298, in _ippon_start
+    await _asyncio.to_thread(
+    ...<6 lines>...
+    )
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\asyncio\threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1265, in _post_fighter_sync
+    import requests as _requests
+ModuleNotFoundError: No module named 'requests'
+2026-03-16 09:24:38,219 [INFO] JudoApp: Score Update: Match 27, P2 -> 10
+2026-03-16 09:24:38,515 [INFO] JudoApp: Status Update: Match 27 -> finished
+2026-03-16 09:24:38,515 [INFO] JudoApp: MATCH_FINISHED: Fight 27, Winner: 166, Duration: 0s
+2026-03-16 09:24:38,530 [INFO] JudoApp: Advancing Winner 166 from Fight 27 to WB Fight 36 (p2)
+2026-03-16 09:24:38,557 [INFO] JudoApp: Advancing Loser 172 from WB Fight 27 to LB Fight 40 (p2)
+2026-03-16 09:24:38,635 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.029s
+2026-03-16 09:25:00,080 [INFO] JudoApp: IPPON START requested for Match 29
+2026-03-16 09:25:00,524 [ERROR] asyncio: Task exception was never retrieved
+future: <Task finished name='Task-25' coro=<_ippon_start() done, defined at C:\Users\Admin\Desktop\Top\judgeFrontend\main.py:1273> exception=ModuleNotFoundError("No module named 'requests'")>
+Traceback (most recent call last):
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1298, in _ippon_start
+    await _asyncio.to_thread(
+    ...<6 lines>...
+    )
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\asyncio\threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1265, in _post_fighter_sync
+    import requests as _requests
+ModuleNotFoundError: No module named 'requests'
+2026-03-16 09:25:01,327 [INFO] JudoApp: Score Update: Match 29, P1 -> 10
+2026-03-16 09:25:01,455 [INFO] JudoApp: Status Update: Match 29 -> finished
+2026-03-16 09:25:01,456 [INFO] JudoApp: MATCH_FINISHED: Fight 29, Winner: 167, Duration: 0s
+2026-03-16 09:25:01,469 [INFO] JudoApp: Advancing Winner 167 from Fight 29 to WB Fight 37 (p2)
+2026-03-16 09:25:01,495 [INFO] JudoApp: Advancing Loser 170 from WB Fight 29 to LB Fight 41 (p2)
+2026-03-16 09:25:01,503 [INFO] JudoApp: Advancing Winner 170 from Fight 41 to LB Fight 44 (p1)
+2026-03-16 09:25:01,986 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.027s
+2026-03-16 09:25:02,376 [INFO] JudoApp: IPPON START requested for Match 30
+2026-03-16 09:25:02,391 [ERROR] asyncio: Task exception was never retrieved
+future: <Task finished name='Task-27' coro=<_ippon_start() done, defined at C:\Users\Admin\Desktop\Top\judgeFrontend\main.py:1273> exception=ModuleNotFoundError("No module named 'requests'")>
+Traceback (most recent call last):
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1298, in _ippon_start
+    await _asyncio.to_thread(
+    ...<6 lines>...
+    )
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\asyncio\threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1265, in _post_fighter_sync
+    import requests as _requests
+ModuleNotFoundError: No module named 'requests'
+2026-03-16 09:25:03,670 [INFO] JudoApp: Score Update: Match 30, P2 -> 10
+2026-03-16 09:25:03,995 [INFO] JudoApp: Status Update: Match 30 -> finished
+2026-03-16 09:25:03,995 [INFO] JudoApp: MATCH_FINISHED: Fight 30, Winner: 173, Duration: 0s
+2026-03-16 09:25:04,013 [INFO] JudoApp: Advancing Winner 173 from Fight 30 to WB Fight 38 (p1)
+2026-03-16 09:25:04,040 [INFO] JudoApp: Advancing Loser 162 from WB Fight 30 to LB Fight 42 (p1)
+2026-03-16 09:25:04,047 [INFO] JudoApp: Advancing Winner 162 from Fight 42 to LB Fight 45 (p1)
+2026-03-16 09:25:04,124 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.030s
+2026-03-16 09:25:05,412 [INFO] JudoApp: IPPON START requested for Match 32
+2026-03-16 09:25:05,432 [ERROR] asyncio: Task exception was never retrieved
+future: <Task finished name='Task-29' coro=<_ippon_start() done, defined at C:\Users\Admin\Desktop\Top\judgeFrontend\main.py:1273> exception=ModuleNotFoundError("No module named 'requests'")>
+Traceback (most recent call last):
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1298, in _ippon_start
+    await _asyncio.to_thread(
+    ...<6 lines>...
+    )
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\asyncio\threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1265, in _post_fighter_sync
+    import requests as _requests
+ModuleNotFoundError: No module named 'requests'
+2026-03-16 09:25:06,719 [INFO] JudoApp: Score Update: Match 32, P1 -> 10
+2026-03-16 09:25:06,977 [INFO] JudoApp: Status Update: Match 32 -> finished
+2026-03-16 09:25:06,977 [INFO] JudoApp: MATCH_FINISHED: Fight 32, Winner: 169, Duration: 0s
+2026-03-16 09:25:07,045 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.029s
+2026-03-16 09:25:08,253 [INFO] JudoApp: IPPON START requested for Match 36
+2026-03-16 09:25:08,698 [ERROR] asyncio: Task exception was never retrieved
+future: <Task finished name='Task-31' coro=<_ippon_start() done, defined at C:\Users\Admin\Desktop\Top\judgeFrontend\main.py:1273> exception=ModuleNotFoundError("No module named 'requests'")>
+Traceback (most recent call last):
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1298, in _ippon_start
+    await _asyncio.to_thread(
+    ...<6 lines>...
+    )
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\asyncio\threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1265, in _post_fighter_sync
+    import requests as _requests
+ModuleNotFoundError: No module named 'requests'
+2026-03-16 09:25:09,599 [INFO] JudoApp: Score Update: Match 36, P1 -> 10
+2026-03-16 09:25:09,671 [INFO] JudoApp: Status Update: Match 36 -> finished
+2026-03-16 09:25:09,671 [INFO] JudoApp: MATCH_FINISHED: Fight 36, Winner: 161, Duration: 0s
+2026-03-16 09:25:10,110 [INFO] JudoApp: Advancing Winner 161 from Fight 36 to WB Fight 39 (p1)
+2026-03-16 09:25:10,139 [INFO] JudoApp: Advancing Loser 166 from WB Fight 36 to LB Fight 43 (p2)
+2026-03-16 09:25:10,217 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.032s
+2026-03-16 09:25:11,465 [INFO] JudoApp: IPPON START requested for Match 37
+2026-03-16 09:25:11,907 [ERROR] asyncio: Task exception was never retrieved
+future: <Task finished name='Task-33' coro=<_ippon_start() done, defined at C:\Users\Admin\Desktop\Top\judgeFrontend\main.py:1273> exception=ModuleNotFoundError("No module named 'requests'")>
+Traceback (most recent call last):
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1298, in _ippon_start
+    await _asyncio.to_thread(
+    ...<6 lines>...
+    )
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\asyncio\threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1265, in _post_fighter_sync
+    import requests as _requests
+ModuleNotFoundError: No module named 'requests'
+2026-03-16 09:25:12,420 [INFO] JudoApp: Score Update: Match 37, P2 -> 10
+2026-03-16 09:25:12,979 [INFO] JudoApp: Status Update: Match 37 -> finished
+2026-03-16 09:25:12,980 [INFO] JudoApp: MATCH_FINISHED: Fight 37, Winner: 167, Duration: 0s
+2026-03-16 09:25:13,430 [INFO] JudoApp: Advancing Winner 167 from Fight 37 to WB Fight 39 (p2)
+2026-03-16 09:25:13,455 [INFO] JudoApp: Advancing Loser 164 from WB Fight 37 to LB Fight 44 (p2)
+2026-03-16 09:25:13,541 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.038s
+2026-03-16 09:25:13,676 [INFO] JudoApp: IPPON START requested for Match 38
+2026-03-16 09:25:13,690 [ERROR] asyncio: Task exception was never retrieved
+future: <Task finished name='Task-35' coro=<_ippon_start() done, defined at C:\Users\Admin\Desktop\Top\judgeFrontend\main.py:1273> exception=ModuleNotFoundError("No module named 'requests'")>
+Traceback (most recent call last):
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1298, in _ippon_start
+    await _asyncio.to_thread(
+    ...<6 lines>...
+    )
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\asyncio\threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1265, in _post_fighter_sync
+    import requests as _requests
+ModuleNotFoundError: No module named 'requests'
+2026-03-16 09:25:14,435 [INFO] JudoApp: Score Update: Match 38, P1 -> 10
+2026-03-16 09:25:15,584 [INFO] JudoApp: Status Update: Match 38 -> finished
+2026-03-16 09:25:15,584 [INFO] JudoApp: MATCH_FINISHED: Fight 38, Winner: 173, Duration: 0s
+2026-03-16 09:25:15,685 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.030s
+2026-03-16 09:25:16,425 [INFO] JudoApp: IPPON START requested for Match 39
+2026-03-16 09:25:16,446 [ERROR] asyncio: Task exception was never retrieved
+future: <Task finished name='Task-37' coro=<_ippon_start() done, defined at C:\Users\Admin\Desktop\Top\judgeFrontend\main.py:1273> exception=ModuleNotFoundError("No module named 'requests'")>
+Traceback (most recent call last):
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1298, in _ippon_start
+    await _asyncio.to_thread(
+    ...<6 lines>...
+    )
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\asyncio\threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1265, in _post_fighter_sync
+    import requests as _requests
+ModuleNotFoundError: No module named 'requests'
+2026-03-16 09:25:17,247 [INFO] JudoApp: Score Update: Match 39, P2 -> 10
+2026-03-16 09:25:18,984 [INFO] JudoApp: Status Update: Match 39 -> finished
+2026-03-16 09:25:18,985 [INFO] JudoApp: MATCH_FINISHED: Fight 39, Winner: 167, Duration: 0s
+2026-03-16 09:25:19,061 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.032s
+2026-03-16 09:35:27,995 [INFO] JudoApp: API GET / - Status: 200 - 0.003s
+2026-03-16 09:35:28,003 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-16 09:35:28,037 [INFO] JudoApp: API GET /style.css - Status: 304 - 0.004s
+2026-03-16 09:35:28,038 [INFO] JudoApp: API GET /app.js - Status: 304 - 0.005s
+2026-03-16 09:35:28,115 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.021s
+2026-03-16 09:35:28,399 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-16 09:35:28,447 [INFO] JudoApp: API GET /manifest.json - Status: 304 - 0.002s
+2026-03-16 09:35:47,985 [INFO] JudoApp: IPPON START requested for Match 1
+2026-03-16 09:35:48,429 [ERROR] asyncio: Task exception was never retrieved
+future: <Task finished name='Task-55' coro=<_ippon_start() done, defined at C:\Users\Admin\Desktop\Top\judgeFrontend\main.py:1273> exception=ModuleNotFoundError("No module named 'requests'")>
+Traceback (most recent call last):
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1298, in _ippon_start
+    await _asyncio.to_thread(
+    ...<6 lines>...
+    )
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\asyncio\threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1265, in _post_fighter_sync
+    import requests as _requests
+ModuleNotFoundError: No module named 'requests'
+2026-03-16 09:35:49,029 [INFO] JudoApp: Score Update: Match 1, P1 -> 10
+2026-03-16 09:35:49,749 [INFO] JudoApp: Status Update: Match 1 -> finished
+2026-03-16 09:35:49,750 [INFO] JudoApp: MATCH_FINISHED: Fight 1, Winner: 269, Duration: 0s
+2026-03-16 09:35:49,771 [INFO] JudoApp: Advancing Winner 269 from Fight 1 to WB Fight 9 (p1)
+2026-03-16 09:35:49,799 [INFO] JudoApp: Advancing Loser 276 from WB Fight 1 to LB Fight 10 (p1)
+2026-03-16 09:35:49,857 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.013s
+2026-03-16 09:36:59,947 [INFO] JudoApp: IPPON START requested for Match 4
+2026-03-16 09:37:00,403 [ERROR] asyncio: Task exception was never retrieved
+future: <Task finished name='Task-57' coro=<_ippon_start() done, defined at C:\Users\Admin\Desktop\Top\judgeFrontend\main.py:1273> exception=ModuleNotFoundError("No module named 'requests'")>
+Traceback (most recent call last):
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1298, in _ippon_start
+    await _asyncio.to_thread(
+    ...<6 lines>...
+    )
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\asyncio\threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1265, in _post_fighter_sync
+    import requests as _requests
+ModuleNotFoundError: No module named 'requests'
+2026-03-16 09:37:00,720 [INFO] JudoApp: Score Update: Match 4, P2 -> 10
+2026-03-16 09:37:01,526 [INFO] JudoApp: Status Update: Match 4 -> finished
+2026-03-16 09:37:01,527 [INFO] JudoApp: MATCH_FINISHED: Fight 4, Winner: 272, Duration: 0s
+2026-03-16 09:37:01,546 [INFO] JudoApp: Advancing Winner 272 from Fight 4 to WB Fight 11 (p2)
+2026-03-16 09:37:01,572 [INFO] JudoApp: Advancing Loser 278 from WB Fight 4 to LB Fight 12 (p2)
+2026-03-16 09:37:01,580 [INFO] JudoApp: Advancing Winner 278 from Fight 12 to LB Fight 13 (p1)
+2026-03-16 09:37:02,365 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.442s
+2026-03-16 09:37:03,251 [INFO] JudoApp: IPPON START requested for Match 5
+2026-03-16 09:37:03,267 [ERROR] asyncio: Task exception was never retrieved
+future: <Task finished name='Task-61' coro=<_ippon_start() done, defined at C:\Users\Admin\Desktop\Top\judgeFrontend\main.py:1273> exception=ModuleNotFoundError("No module named 'requests'")>
+Traceback (most recent call last):
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1298, in _ippon_start
+    await _asyncio.to_thread(
+    ...<6 lines>...
+    )
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\asyncio\threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1265, in _post_fighter_sync
+    import requests as _requests
+ModuleNotFoundError: No module named 'requests'
+2026-03-16 09:37:04,495 [INFO] JudoApp: Score Update: Match 5, P2 -> 10
+2026-03-16 09:37:04,728 [INFO] JudoApp: Status Update: Match 5 -> finished
+2026-03-16 09:37:04,729 [INFO] JudoApp: MATCH_FINISHED: Fight 5, Winner: 280, Duration: 0s
+2026-03-16 09:37:04,752 [INFO] JudoApp: Advancing Winner 280 from Fight 5 to WB Fight 14 (p1)
+2026-03-16 09:37:04,786 [INFO] JudoApp: Advancing Loser 273 from WB Fight 5 to LB Fight 15 (p1)
+2026-03-16 09:37:04,797 [INFO] JudoApp: Advancing Winner 273 from Fight 15 to LB Fight 16 (p1)
+2026-03-16 09:37:04,856 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.014s
+2026-03-16 09:37:05,684 [INFO] JudoApp: IPPON START requested for Match 8
+2026-03-16 09:37:06,131 [ERROR] asyncio: Task exception was never retrieved
+future: <Task finished name='Task-63' coro=<_ippon_start() done, defined at C:\Users\Admin\Desktop\Top\judgeFrontend\main.py:1273> exception=ModuleNotFoundError("No module named 'requests'")>
+Traceback (most recent call last):
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1298, in _ippon_start
+    await _asyncio.to_thread(
+    ...<6 lines>...
+    )
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\asyncio\threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1265, in _post_fighter_sync
+    import requests as _requests
+ModuleNotFoundError: No module named 'requests'
+2026-03-16 09:37:06,880 [INFO] JudoApp: Score Update: Match 8, P1 -> 10
+2026-03-16 09:37:06,993 [INFO] JudoApp: Status Update: Match 8 -> finished
+2026-03-16 09:37:06,993 [INFO] JudoApp: MATCH_FINISHED: Fight 8, Winner: 277, Duration: 0s
+2026-03-16 09:37:07,012 [INFO] JudoApp: Advancing Winner 277 from Fight 8 to WB Fight 17 (p2)
+2026-03-16 09:37:07,041 [INFO] JudoApp: Advancing Loser 270 from WB Fight 8 to LB Fight 18 (p2)
+2026-03-16 09:37:07,051 [INFO] JudoApp: Advancing Winner 270 from Fight 18 to LB Fight 19 (p1)
+2026-03-16 09:37:07,110 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.016s
+2026-03-16 09:45:45,335 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-16 09:45:47,011 [INFO] JudoApp: Starting up Judo Real-Time API...
+2026-03-16 09:45:48,091 [INFO] JudoApp: Generating WB shells for Bracket 48
+2026-03-16 09:45:48,096 [INFO] JudoApp: Generating LB fights for Bracket 48
+2026-03-16 09:45:48,099 [INFO] JudoApp: Generating WB shells for Bracket 49
+2026-03-16 09:45:48,101 [INFO] JudoApp: Generating LB fights for Bracket 49
+2026-03-16 09:45:48,104 [INFO] JudoApp: Generating WB shells for Bracket 50
+2026-03-16 09:45:48,106 [INFO] JudoApp: Generating LB fights for Bracket 50
+2026-03-16 09:45:48,109 [INFO] JudoApp: Generating WB shells for Bracket 51
+2026-03-16 09:45:48,111 [INFO] JudoApp: Generating LB fights for Bracket 51
+2026-03-16 09:45:48,113 [INFO] JudoApp: Generating WB shells for Bracket 52
+2026-03-16 09:45:48,116 [INFO] JudoApp: Generating LB fights for Bracket 52
+2026-03-16 09:45:48,119 [INFO] JudoApp: Generating WB shells for Bracket 53
+2026-03-16 09:45:48,122 [INFO] JudoApp: Generating LB fights for Bracket 53
+2026-03-16 09:45:48,125 [INFO] JudoApp: Generating WB shells for Bracket 54
+2026-03-16 09:45:48,128 [INFO] JudoApp: Generating LB fights for Bracket 54
+2026-03-16 09:45:48,130 [INFO] JudoApp: Generating WB shells for Bracket 55
+2026-03-16 09:45:48,133 [INFO] JudoApp: Generating LB fights for Bracket 55
+2026-03-16 09:45:48,136 [INFO] JudoApp: Generating WB shells for Bracket 59
+2026-03-16 09:45:48,139 [INFO] JudoApp: Generating LB fights for Bracket 59
+2026-03-16 09:45:48,141 [INFO] JudoApp: Generating WB shells for Bracket 60
+2026-03-16 09:45:48,143 [INFO] JudoApp: Generating LB fights for Bracket 60
+2026-03-16 09:45:48,146 [INFO] JudoApp: Generating WB shells for Bracket 61
+2026-03-16 09:45:48,148 [INFO] JudoApp: Generating LB fights for Bracket 61
+2026-03-16 09:45:48,150 [INFO] JudoApp: Generating WB shells for Bracket 62
+2026-03-16 09:45:48,152 [INFO] JudoApp: Generating LB fights for Bracket 62
+2026-03-16 09:45:48,155 [INFO] JudoApp: Generating WB shells for Bracket 63
+2026-03-16 09:45:48,157 [INFO] JudoApp: Generating LB fights for Bracket 63
+2026-03-16 09:45:48,159 [INFO] JudoApp: Generating WB shells for Bracket 65
+2026-03-16 09:45:48,161 [INFO] JudoApp: Generating LB fights for Bracket 65
+2026-03-16 09:45:48,163 [INFO] JudoApp: Generating WB shells for Bracket 66
+2026-03-16 09:45:48,166 [INFO] JudoApp: Generating LB fights for Bracket 66
+2026-03-16 09:45:48,169 [INFO] JudoApp: Generating WB shells for Bracket 67
+2026-03-16 09:45:48,171 [INFO] JudoApp: Generating LB fights for Bracket 67
+2026-03-16 09:45:48,173 [INFO] JudoApp: Generating WB shells for Bracket 69
+2026-03-16 09:45:48,175 [INFO] JudoApp: Generating LB fights for Bracket 69
+2026-03-16 09:45:48,178 [INFO] JudoApp: Generating WB shells for Bracket 70
+2026-03-16 09:45:48,180 [INFO] JudoApp: Generating LB fights for Bracket 70
+2026-03-16 09:45:48,182 [INFO] JudoApp: Generating WB shells for Bracket 76
+2026-03-16 09:45:48,185 [INFO] JudoApp: Generating LB fights for Bracket 76
+2026-03-16 09:45:48,188 [INFO] JudoApp: Generating WB shells for Bracket 77
+2026-03-16 09:45:48,191 [INFO] JudoApp: Generating LB fights for Bracket 77
+2026-03-16 09:45:48,194 [INFO] JudoApp: Generating WB shells for Bracket 78
+2026-03-16 09:45:48,197 [INFO] JudoApp: Generating LB fights for Bracket 78
+2026-03-16 09:45:48,199 [INFO] JudoApp: Generating WB shells for Bracket 79
+2026-03-16 09:45:48,202 [INFO] JudoApp: Generating LB fights for Bracket 79
+2026-03-16 09:45:48,204 [INFO] JudoApp: Generating WB shells for Bracket 81
+2026-03-16 09:45:48,207 [INFO] JudoApp: Generating LB fights for Bracket 81
+2026-03-16 09:45:48,209 [INFO] JudoApp: Generating WB shells for Bracket 82
+2026-03-16 09:45:48,211 [INFO] JudoApp: Generating LB fights for Bracket 82
+2026-03-16 09:45:48,214 [INFO] JudoApp: Generating WB shells for Bracket 83
+2026-03-16 09:45:48,216 [INFO] JudoApp: Generating LB fights for Bracket 83
+2026-03-16 09:45:48,220 [INFO] JudoApp: Generating WB shells for Bracket 84
+2026-03-16 09:45:48,222 [INFO] JudoApp: Generating LB fights for Bracket 84
+2026-03-16 09:45:48,224 [INFO] JudoApp: Generating WB shells for Bracket 86
+2026-03-16 09:45:48,226 [INFO] JudoApp: Generating LB fights for Bracket 86
+2026-03-16 09:45:48,228 [INFO] JudoApp: Generating WB shells for Bracket 87
+2026-03-16 09:45:48,231 [INFO] JudoApp: Generating LB fights for Bracket 87
+2026-03-16 09:45:48,234 [INFO] JudoApp: Generating WB shells for Bracket 89
+2026-03-16 09:45:48,236 [INFO] JudoApp: Generating LB fights for Bracket 89
+2026-03-16 09:45:48,238 [INFO] JudoApp: Generating WB shells for Bracket 90
+2026-03-16 09:45:48,241 [INFO] JudoApp: Generating LB fights for Bracket 90
+2026-03-16 09:45:48,243 [INFO] JudoApp: Generating WB shells for Bracket 92
+2026-03-16 09:45:48,245 [INFO] JudoApp: Generating LB fights for Bracket 92
+2026-03-16 09:45:48,248 [INFO] JudoApp: Generating WB shells for Bracket 93
+2026-03-16 09:45:48,251 [INFO] JudoApp: Generating LB fights for Bracket 93
+2026-03-16 09:45:48,254 [INFO] JudoApp: Generating WB shells for Bracket 94
+2026-03-16 09:45:48,257 [INFO] JudoApp: Generating LB fights for Bracket 94
+2026-03-16 09:45:48,259 [INFO] JudoApp: Generating WB shells for Bracket 95
+2026-03-16 09:45:48,262 [INFO] JudoApp: Generating LB fights for Bracket 95
+2026-03-16 09:45:48,264 [INFO] JudoApp: Generating WB shells for Bracket 97
+2026-03-16 09:45:48,267 [INFO] JudoApp: Generating LB fights for Bracket 97
+2026-03-16 09:45:48,269 [INFO] JudoApp: Generating WB shells for Bracket 99
+2026-03-16 09:45:48,271 [INFO] JudoApp: Generating LB fights for Bracket 99
+2026-03-16 09:45:48,274 [INFO] JudoApp: Generating WB shells for Bracket 101
+2026-03-16 09:45:48,277 [INFO] JudoApp: Generating LB fights for Bracket 101
+2026-03-16 09:45:48,279 [INFO] JudoApp: Generating WB shells for Bracket 103
+2026-03-16 09:45:48,282 [INFO] JudoApp: Generating LB fights for Bracket 103
+2026-03-16 09:45:48,285 [INFO] JudoApp: Generating WB shells for Bracket 57
+2026-03-16 09:45:48,319 [INFO] JudoApp: Generating LB fights for Bracket 57
+2026-03-16 09:45:48,360 [INFO] JudoApp: Healing bracket progressions...
+2026-03-16 09:45:48,378 [INFO] JudoApp: Advancing Winner 269 from Fight 1 to WB Fight 9 (p1)
+2026-03-16 09:45:48,388 [INFO] JudoApp: Advancing Winner 276 from Fight 10 to LB Fight 23 (p1)
+2026-03-16 09:45:48,389 [INFO] JudoApp: Advancing Loser 276 from WB Fight 1 to LB Fight 10 (p1)
+2026-03-16 09:45:48,393 [INFO] JudoApp: Advancing Winner 276 from Fight 10 to LB Fight 23 (p1)
+2026-03-16 09:45:48,398 [INFO] JudoApp: Advancing Winner 278 from Fight 12 to LB Fight 13 (p1)
+2026-03-16 09:45:48,402 [INFO] JudoApp: Advancing Winner 274 from Fight 2 to WB Fight 9 (p2)
+2026-03-16 09:45:48,406 [INFO] JudoApp: Advancing Winner 279 from Fight 3 to WB Fight 11 (p1)
+2026-03-16 09:45:48,411 [INFO] JudoApp: Advancing Winner 273 from Fight 15 to LB Fight 16 (p1)
+2026-03-16 09:45:48,415 [INFO] JudoApp: Advancing Winner 270 from Fight 18 to LB Fight 19 (p1)
+2026-03-16 09:45:48,418 [INFO] JudoApp: Advancing Winner 272 from Fight 4 to WB Fight 11 (p2)
+2026-03-16 09:45:48,436 [INFO] JudoApp: Advancing Winner 278 from Fight 12 to LB Fight 13 (p1)
+2026-03-16 09:45:48,436 [INFO] JudoApp: Advancing Loser 278 from WB Fight 4 to LB Fight 12 (p2)
+2026-03-16 09:45:48,440 [INFO] JudoApp: Advancing Winner 280 from Fight 5 to WB Fight 14 (p1)
+2026-03-16 09:45:48,449 [INFO] JudoApp: Advancing Winner 273 from Fight 15 to LB Fight 16 (p1)
+2026-03-16 09:45:48,450 [INFO] JudoApp: Advancing Loser 273 from WB Fight 5 to LB Fight 15 (p1)
+2026-03-16 09:45:48,454 [INFO] JudoApp: Advancing Winner 271 from Fight 6 to WB Fight 14 (p2)
+2026-03-16 09:45:48,457 [INFO] JudoApp: Advancing Winner 275 from Fight 7 to WB Fight 17 (p1)
+2026-03-16 09:45:48,461 [INFO] JudoApp: Advancing Winner 277 from Fight 8 to WB Fight 17 (p2)
+2026-03-16 09:45:48,474 [INFO] JudoApp: Advancing Winner 270 from Fight 18 to LB Fight 19 (p1)
+2026-03-16 09:45:48,475 [INFO] JudoApp: Advancing Loser 270 from WB Fight 8 to LB Fight 18 (p2)
+2026-03-16 09:45:51,369 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-16 09:50:01,966 [INFO] JudoApp: API GET / - Status: 304 - 0.130s
+2026-03-16 09:50:01,973 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-16 09:50:02,039 [INFO] JudoApp: API GET /style.css - Status: 304 - 0.003s
+2026-03-16 09:50:02,059 [INFO] JudoApp: API GET /app.js - Status: 304 - 0.003s
+2026-03-16 09:50:02,120 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.038s
+2026-03-16 09:50:02,381 [INFO] JudoApp: API GET /manifest.json - Status: 304 - 0.001s
+2026-03-16 09:50:02,384 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-16 09:50:53,519 [INFO] JudoApp: IPPON START requested for Match 9
+2026-03-16 09:50:53,972 [ERROR] asyncio: Task exception was never retrieved
+future: <Task finished name='Task-25' coro=<_ippon_start() done, defined at C:\Users\Admin\Desktop\Top\judgeFrontend\main.py:1277> exception=ModuleNotFoundError("No module named 'requests'")>
+Traceback (most recent call last):
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1302, in _ippon_start
+    await _asyncio.to_thread(
+    ...<6 lines>...
+    )
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\asyncio\threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1269, in _post_fighter_sync
+    import requests as _requests
+ModuleNotFoundError: No module named 'requests'
+2026-03-16 09:50:54,355 [INFO] JudoApp: Score Update: Match 9, P2 -> 10
+2026-03-16 09:50:55,291 [INFO] JudoApp: Status Update: Match 9 -> finished
+2026-03-16 09:50:55,292 [INFO] JudoApp: MATCH_FINISHED: Fight 9, Winner: 274, Duration: 0s
+2026-03-16 09:50:55,313 [INFO] JudoApp: Advancing Winner 274 from Fight 9 to WB Fight 20 (p1)
+2026-03-16 09:50:55,345 [INFO] JudoApp: Advancing Loser 269 from WB Fight 9 to LB Fight 23 (p2)
+2026-03-16 09:50:55,419 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.017s
+2026-03-16 09:50:56,464 [INFO] JudoApp: IPPON START requested for Match 11
+2026-03-16 09:50:56,481 [ERROR] asyncio: Task exception was never retrieved
+future: <Task finished name='Task-27' coro=<_ippon_start() done, defined at C:\Users\Admin\Desktop\Top\judgeFrontend\main.py:1277> exception=ModuleNotFoundError("No module named 'requests'")>
+Traceback (most recent call last):
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1302, in _ippon_start
+    await _asyncio.to_thread(
+    ...<6 lines>...
+    )
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\asyncio\threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1269, in _post_fighter_sync
+    import requests as _requests
+ModuleNotFoundError: No module named 'requests'
+2026-03-16 09:50:57,308 [INFO] JudoApp: Score Update: Match 11, P1 -> 10
+2026-03-16 09:50:58,035 [INFO] JudoApp: Status Update: Match 11 -> finished
+2026-03-16 09:50:58,036 [INFO] JudoApp: MATCH_FINISHED: Fight 11, Winner: 279, Duration: 0s
+2026-03-16 09:50:58,053 [INFO] JudoApp: Advancing Winner 279 from Fight 11 to WB Fight 20 (p2)
+2026-03-16 09:50:58,080 [INFO] JudoApp: Advancing Loser 272 from WB Fight 11 to LB Fight 13 (p2)
+2026-03-16 09:50:58,419 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.016s
+2026-03-16 09:51:11,817 [INFO] JudoApp: IPPON START requested for Match 20
+2026-03-16 09:51:11,836 [ERROR] asyncio: Task exception was never retrieved
+future: <Task finished name='Task-29' coro=<_ippon_start() done, defined at C:\Users\Admin\Desktop\Top\judgeFrontend\main.py:1277> exception=ModuleNotFoundError("No module named 'requests'")>
+Traceback (most recent call last):
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1302, in _ippon_start
+    await _asyncio.to_thread(
+    ...<6 lines>...
+    )
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\asyncio\threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1269, in _post_fighter_sync
+    import requests as _requests
+ModuleNotFoundError: No module named 'requests'
+2026-03-16 09:51:12,669 [INFO] JudoApp: Score Update: Match 20, P2 -> 10
+2026-03-16 09:51:13,784 [INFO] JudoApp: Status Update: Match 20 -> finished
+2026-03-16 09:51:13,784 [INFO] JudoApp: MATCH_FINISHED: Fight 20, Winner: 279, Duration: 0s
+2026-03-16 09:51:13,798 [INFO] JudoApp: Advancing Winner 279 from Fight 20 to WB Fight 22 (p1)
+2026-03-16 09:51:13,850 [INFO] JudoApp: Advancing Loser 274 from WB Fight 20 to LB Fight 26 (p2)
+2026-03-16 09:51:14,224 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.016s
+2026-03-16 09:51:15,169 [INFO] JudoApp: IPPON START requested for Match 17
+2026-03-16 09:51:15,618 [ERROR] asyncio: Task exception was never retrieved
+future: <Task finished name='Task-33' coro=<_ippon_start() done, defined at C:\Users\Admin\Desktop\Top\judgeFrontend\main.py:1277> exception=ModuleNotFoundError("No module named 'requests'")>
+Traceback (most recent call last):
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1302, in _ippon_start
+    await _asyncio.to_thread(
+    ...<6 lines>...
+    )
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\asyncio\threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1269, in _post_fighter_sync
+    import requests as _requests
+ModuleNotFoundError: No module named 'requests'
+2026-03-16 09:51:16,064 [INFO] JudoApp: Score Update: Match 17, P2 -> 10
+2026-03-16 09:51:17,128 [INFO] JudoApp: Status Update: Match 17 -> finished
+2026-03-16 09:51:17,128 [INFO] JudoApp: MATCH_FINISHED: Fight 17, Winner: 277, Duration: 0s
+2026-03-16 09:51:17,143 [INFO] JudoApp: Advancing Winner 277 from Fight 17 to WB Fight 21 (p2)
+2026-03-16 09:51:17,172 [INFO] JudoApp: Advancing Loser 275 from WB Fight 17 to LB Fight 19 (p2)
+2026-03-16 09:51:17,245 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.018s
+2026-03-16 09:51:29,827 [INFO] JudoApp: IPPON START requested for Match 13
+2026-03-16 09:51:30,278 [ERROR] asyncio: Task exception was never retrieved
+future: <Task finished name='Task-35' coro=<_ippon_start() done, defined at C:\Users\Admin\Desktop\Top\judgeFrontend\main.py:1277> exception=ModuleNotFoundError("No module named 'requests'")>
+Traceback (most recent call last):
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1302, in _ippon_start
+    await _asyncio.to_thread(
+    ...<6 lines>...
+    )
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\asyncio\threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1269, in _post_fighter_sync
+    import requests as _requests
+ModuleNotFoundError: No module named 'requests'
+2026-03-16 09:51:31,096 [INFO] JudoApp: Score Update: Match 13, P1 -> 10
+2026-03-16 09:51:31,548 [INFO] JudoApp: Status Update: Match 13 -> finished
+2026-03-16 09:51:31,549 [INFO] JudoApp: MATCH_FINISHED: Fight 13, Winner: 278, Duration: 0s
+2026-03-16 09:51:31,569 [INFO] JudoApp: Advancing Winner 278 from Fight 13 to LB Fight 24 (p2)
+2026-03-16 09:51:31,650 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.021s
+2026-03-16 09:51:32,451 [INFO] JudoApp: IPPON START requested for Match 14
+2026-03-16 09:51:32,901 [ERROR] asyncio: Task exception was never retrieved
+future: <Task finished name='Task-37' coro=<_ippon_start() done, defined at C:\Users\Admin\Desktop\Top\judgeFrontend\main.py:1277> exception=ModuleNotFoundError("No module named 'requests'")>
+Traceback (most recent call last):
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1302, in _ippon_start
+    await _asyncio.to_thread(
+    ...<6 lines>...
+    )
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\asyncio\threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1269, in _post_fighter_sync
+    import requests as _requests
+ModuleNotFoundError: No module named 'requests'
+2026-03-16 09:51:33,288 [INFO] JudoApp: Score Update: Match 14, P2 -> 10
+2026-03-16 09:51:33,839 [INFO] JudoApp: Status Update: Match 14 -> finished
+2026-03-16 09:51:33,840 [INFO] JudoApp: MATCH_FINISHED: Fight 14, Winner: 271, Duration: 0s
+2026-03-16 09:51:33,857 [INFO] JudoApp: Advancing Winner 271 from Fight 14 to WB Fight 21 (p1)
+2026-03-16 09:51:33,890 [INFO] JudoApp: Advancing Loser 280 from WB Fight 14 to LB Fight 16 (p2)
+2026-03-16 09:51:34,377 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.018s
+2026-03-16 09:51:44,494 [INFO] JudoApp: IPPON START requested for Match 16
+2026-03-16 09:51:44,940 [ERROR] asyncio: Task exception was never retrieved
+future: <Task finished name='Task-39' coro=<_ippon_start() done, defined at C:\Users\Admin\Desktop\Top\judgeFrontend\main.py:1277> exception=ModuleNotFoundError("No module named 'requests'")>
+Traceback (most recent call last):
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1302, in _ippon_start
+    await _asyncio.to_thread(
+    ...<6 lines>...
+    )
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\asyncio\threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1269, in _post_fighter_sync
+    import requests as _requests
+ModuleNotFoundError: No module named 'requests'
+2026-03-16 09:51:45,193 [INFO] JudoApp: Score Update: Match 16, P2 -> 10
+2026-03-16 09:51:45,817 [INFO] JudoApp: Status Update: Match 16 -> finished
+2026-03-16 09:51:45,817 [INFO] JudoApp: MATCH_FINISHED: Fight 16, Winner: 280, Duration: 0s
+2026-03-16 09:51:45,835 [INFO] JudoApp: Advancing Winner 280 from Fight 16 to LB Fight 25 (p1)
+2026-03-16 09:51:46,641 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.451s
+2026-03-16 09:51:46,838 [INFO] JudoApp: IPPON START requested for Match 19
+2026-03-16 09:51:46,854 [ERROR] asyncio: Task exception was never retrieved
+future: <Task finished name='Task-43' coro=<_ippon_start() done, defined at C:\Users\Admin\Desktop\Top\judgeFrontend\main.py:1277> exception=ModuleNotFoundError("No module named 'requests'")>
+Traceback (most recent call last):
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1302, in _ippon_start
+    await _asyncio.to_thread(
+    ...<6 lines>...
+    )
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\asyncio\threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1269, in _post_fighter_sync
+    import requests as _requests
+ModuleNotFoundError: No module named 'requests'
+2026-03-16 09:51:47,610 [INFO] JudoApp: Score Update: Match 19, P1 -> 10
+2026-03-16 09:51:48,217 [INFO] JudoApp: Status Update: Match 19 -> finished
+2026-03-16 09:51:48,218 [INFO] JudoApp: MATCH_FINISHED: Fight 19, Winner: 270, Duration: 0s
+2026-03-16 09:51:48,233 [INFO] JudoApp: Advancing Winner 270 from Fight 19 to LB Fight 25 (p2)
+2026-03-16 09:51:48,297 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.017s
+2026-03-16 09:51:49,373 [INFO] JudoApp: IPPON START requested for Match 21
+2026-03-16 09:51:49,822 [ERROR] asyncio: Task exception was never retrieved
+future: <Task finished name='Task-45' coro=<_ippon_start() done, defined at C:\Users\Admin\Desktop\Top\judgeFrontend\main.py:1277> exception=ModuleNotFoundError("No module named 'requests'")>
+Traceback (most recent call last):
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1302, in _ippon_start
+    await _asyncio.to_thread(
+    ...<6 lines>...
+    )
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\asyncio\threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1269, in _post_fighter_sync
+    import requests as _requests
+ModuleNotFoundError: No module named 'requests'
+2026-03-16 09:51:50,363 [INFO] JudoApp: Score Update: Match 21, P2 -> 10
+2026-03-16 09:51:50,938 [INFO] JudoApp: Status Update: Match 21 -> finished
+2026-03-16 09:51:50,938 [INFO] JudoApp: MATCH_FINISHED: Fight 21, Winner: 277, Duration: 0s
+2026-03-16 09:51:50,959 [INFO] JudoApp: Advancing Winner 277 from Fight 21 to WB Fight 22 (p2)
+2026-03-16 09:51:50,988 [INFO] JudoApp: Advancing Loser 271 from WB Fight 21 to LB Fight 27 (p2)
+2026-03-16 09:51:51,054 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.016s
+2026-03-16 09:51:51,918 [INFO] JudoApp: IPPON START requested for Match 22
+2026-03-16 09:51:51,938 [ERROR] asyncio: Task exception was never retrieved
+future: <Task finished name='Task-47' coro=<_ippon_start() done, defined at C:\Users\Admin\Desktop\Top\judgeFrontend\main.py:1277> exception=ModuleNotFoundError("No module named 'requests'")>
+Traceback (most recent call last):
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1302, in _ippon_start
+    await _asyncio.to_thread(
+    ...<6 lines>...
+    )
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\asyncio\threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1269, in _post_fighter_sync
+    import requests as _requests
+ModuleNotFoundError: No module named 'requests'
+2026-03-16 09:51:52,986 [INFO] JudoApp: Score Update: Match 22, P1 -> 10
+2026-03-16 09:51:53,114 [INFO] JudoApp: Status Update: Match 22 -> finished
+2026-03-16 09:51:53,115 [INFO] JudoApp: MATCH_FINISHED: Fight 22, Winner: 279, Duration: 0s
+2026-03-16 09:51:53,186 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.019s
+2026-03-16 09:51:59,255 [INFO] JudoApp: IPPON START requested for Match 23
+2026-03-16 09:51:59,271 [ERROR] asyncio: Task exception was never retrieved
+future: <Task finished name='Task-49' coro=<_ippon_start() done, defined at C:\Users\Admin\Desktop\Top\judgeFrontend\main.py:1277> exception=ModuleNotFoundError("No module named 'requests'")>
+Traceback (most recent call last):
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1302, in _ippon_start
+    await _asyncio.to_thread(
+    ...<6 lines>...
+    )
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\asyncio\threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1269, in _post_fighter_sync
+    import requests as _requests
+ModuleNotFoundError: No module named 'requests'
+2026-03-16 09:51:59,995 [INFO] JudoApp: Score Update: Match 23, P2 -> 10
+2026-03-16 09:52:00,442 [INFO] JudoApp: Status Update: Match 23 -> finished
+2026-03-16 09:52:00,442 [INFO] JudoApp: MATCH_FINISHED: Fight 23, Winner: 269, Duration: 0s
+2026-03-16 09:52:00,460 [INFO] JudoApp: Advancing Winner 269 from Fight 23 to LB Fight 24 (p1)
+2026-03-16 09:52:00,528 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.018s
+2026-03-16 09:52:01,303 [INFO] JudoApp: IPPON START requested for Match 24
+2026-03-16 09:52:01,756 [ERROR] asyncio: Task exception was never retrieved
+future: <Task finished name='Task-51' coro=<_ippon_start() done, defined at C:\Users\Admin\Desktop\Top\judgeFrontend\main.py:1277> exception=ModuleNotFoundError("No module named 'requests'")>
+Traceback (most recent call last):
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1302, in _ippon_start
+    await _asyncio.to_thread(
+    ...<6 lines>...
+    )
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\asyncio\threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1269, in _post_fighter_sync
+    import requests as _requests
+ModuleNotFoundError: No module named 'requests'
+2026-03-16 09:52:02,020 [INFO] JudoApp: Score Update: Match 24, P1 -> 10
+2026-03-16 09:52:02,604 [INFO] JudoApp: Status Update: Match 24 -> finished
+2026-03-16 09:52:02,604 [INFO] JudoApp: MATCH_FINISHED: Fight 24, Winner: 269, Duration: 0s
+2026-03-16 09:52:02,621 [INFO] JudoApp: Advancing Winner 269 from Fight 24 to LB Fight 26 (p1)
+2026-03-16 09:52:02,679 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.016s
+2026-03-16 09:52:03,295 [INFO] JudoApp: IPPON START requested for Match 25
+2026-03-16 09:52:03,310 [ERROR] asyncio: Task exception was never retrieved
+future: <Task finished name='Task-53' coro=<_ippon_start() done, defined at C:\Users\Admin\Desktop\Top\judgeFrontend\main.py:1277> exception=ModuleNotFoundError("No module named 'requests'")>
+Traceback (most recent call last):
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1302, in _ippon_start
+    await _asyncio.to_thread(
+    ...<6 lines>...
+    )
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\asyncio\threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1269, in _post_fighter_sync
+    import requests as _requests
+ModuleNotFoundError: No module named 'requests'
+2026-03-16 09:52:04,619 [INFO] JudoApp: Score Update: Match 25, P2 -> 10
+2026-03-16 09:52:04,780 [INFO] JudoApp: Status Update: Match 25 -> finished
+2026-03-16 09:52:04,781 [INFO] JudoApp: MATCH_FINISHED: Fight 25, Winner: 270, Duration: 0s
+2026-03-16 09:52:04,797 [INFO] JudoApp: Advancing Winner 270 from Fight 25 to LB Fight 27 (p1)
+2026-03-16 09:52:04,854 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.016s
+2026-03-16 09:52:06,240 [INFO] JudoApp: IPPON START requested for Match 26
+2026-03-16 09:52:06,255 [ERROR] asyncio: Task exception was never retrieved
+future: <Task finished name='Task-55' coro=<_ippon_start() done, defined at C:\Users\Admin\Desktop\Top\judgeFrontend\main.py:1277> exception=ModuleNotFoundError("No module named 'requests'")>
+Traceback (most recent call last):
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1302, in _ippon_start
+    await _asyncio.to_thread(
+    ...<6 lines>...
+    )
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\asyncio\threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1269, in _post_fighter_sync
+    import requests as _requests
+ModuleNotFoundError: No module named 'requests'
+2026-03-16 09:52:06,843 [INFO] JudoApp: Score Update: Match 26, P1 -> 10
+2026-03-16 09:52:07,860 [INFO] JudoApp: Status Update: Match 26 -> finished
+2026-03-16 09:52:07,860 [INFO] JudoApp: MATCH_FINISHED: Fight 26, Winner: 269, Duration: 0s
+2026-03-16 09:52:07,877 [INFO] JudoApp: Advancing Winner 269 from Fight 26 to LB Fight 28 (p1)
+2026-03-16 09:52:07,937 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.016s
+2026-03-16 09:52:08,344 [INFO] JudoApp: IPPON START requested for Match 27
+2026-03-16 09:52:08,358 [ERROR] asyncio: Task exception was never retrieved
+future: <Task finished name='Task-57' coro=<_ippon_start() done, defined at C:\Users\Admin\Desktop\Top\judgeFrontend\main.py:1277> exception=ModuleNotFoundError("No module named 'requests'")>
+Traceback (most recent call last):
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1302, in _ippon_start
+    await _asyncio.to_thread(
+    ...<6 lines>...
+    )
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\asyncio\threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1269, in _post_fighter_sync
+    import requests as _requests
+ModuleNotFoundError: No module named 'requests'
+2026-03-16 09:52:09,564 [INFO] JudoApp: Score Update: Match 27, P2 -> 10
+2026-03-16 09:52:09,708 [INFO] JudoApp: Status Update: Match 27 -> finished
+2026-03-16 09:52:09,708 [INFO] JudoApp: MATCH_FINISHED: Fight 27, Winner: 271, Duration: 0s
+2026-03-16 09:52:09,726 [INFO] JudoApp: Advancing Winner 271 from Fight 27 to LB Fight 28 (p2)
+2026-03-16 09:52:09,787 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.018s
+2026-03-16 09:53:52,933 [INFO] JudoApp: IPPON START requested for Match 28
+2026-03-16 09:53:53,380 [ERROR] asyncio: Task exception was never retrieved
+future: <Task finished name='Task-59' coro=<_ippon_start() done, defined at C:\Users\Admin\Desktop\Top\judgeFrontend\main.py:1277> exception=ModuleNotFoundError("No module named 'requests'")>
+Traceback (most recent call last):
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1302, in _ippon_start
+    await _asyncio.to_thread(
+    ...<6 lines>...
+    )
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\asyncio\threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3312.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\Admin\Desktop\Top\judgeFrontend\main.py", line 1269, in _post_fighter_sync
+    import requests as _requests
+ModuleNotFoundError: No module named 'requests'
+2026-03-16 09:54:41,067 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-16 09:54:42,931 [INFO] JudoApp: Starting up Judo Real-Time API...
+2026-03-16 09:54:43,018 [INFO] JudoApp: Generating WB shells for Bracket 48
+2026-03-16 09:54:43,023 [INFO] JudoApp: Generating LB fights for Bracket 48
+2026-03-16 09:54:43,025 [INFO] JudoApp: Generating WB shells for Bracket 49
+2026-03-16 09:54:43,027 [INFO] JudoApp: Generating LB fights for Bracket 49
+2026-03-16 09:54:43,029 [INFO] JudoApp: Generating WB shells for Bracket 50
+2026-03-16 09:54:43,031 [INFO] JudoApp: Generating LB fights for Bracket 50
+2026-03-16 09:54:43,034 [INFO] JudoApp: Generating WB shells for Bracket 51
+2026-03-16 09:54:43,037 [INFO] JudoApp: Generating LB fights for Bracket 51
+2026-03-16 09:54:43,039 [INFO] JudoApp: Generating WB shells for Bracket 52
+2026-03-16 09:54:43,042 [INFO] JudoApp: Generating LB fights for Bracket 52
+2026-03-16 09:54:43,044 [INFO] JudoApp: Generating WB shells for Bracket 53
+2026-03-16 09:54:43,047 [INFO] JudoApp: Generating LB fights for Bracket 53
+2026-03-16 09:54:43,049 [INFO] JudoApp: Generating WB shells for Bracket 54
+2026-03-16 09:54:43,052 [INFO] JudoApp: Generating LB fights for Bracket 54
+2026-03-16 09:54:43,055 [INFO] JudoApp: Generating WB shells for Bracket 55
+2026-03-16 09:54:43,057 [INFO] JudoApp: Generating LB fights for Bracket 55
+2026-03-16 09:54:43,060 [INFO] JudoApp: Generating WB shells for Bracket 59
+2026-03-16 09:54:43,062 [INFO] JudoApp: Generating LB fights for Bracket 59
+2026-03-16 09:54:43,065 [INFO] JudoApp: Generating WB shells for Bracket 60
+2026-03-16 09:54:43,068 [INFO] JudoApp: Generating LB fights for Bracket 60
+2026-03-16 09:54:43,071 [INFO] JudoApp: Generating WB shells for Bracket 61
+2026-03-16 09:54:43,074 [INFO] JudoApp: Generating LB fights for Bracket 61
+2026-03-16 09:54:43,077 [INFO] JudoApp: Generating WB shells for Bracket 62
+2026-03-16 09:54:43,079 [INFO] JudoApp: Generating LB fights for Bracket 62
+2026-03-16 09:54:43,082 [INFO] JudoApp: Generating WB shells for Bracket 63
+2026-03-16 09:54:43,085 [INFO] JudoApp: Generating LB fights for Bracket 63
+2026-03-16 09:54:43,088 [INFO] JudoApp: Generating WB shells for Bracket 65
+2026-03-16 09:54:43,091 [INFO] JudoApp: Generating LB fights for Bracket 65
+2026-03-16 09:54:43,094 [INFO] JudoApp: Generating WB shells for Bracket 66
+2026-03-16 09:54:43,097 [INFO] JudoApp: Generating LB fights for Bracket 66
+2026-03-16 09:54:43,099 [INFO] JudoApp: Generating WB shells for Bracket 67
+2026-03-16 09:54:43,102 [INFO] JudoApp: Generating LB fights for Bracket 67
+2026-03-16 09:54:43,104 [INFO] JudoApp: Generating WB shells for Bracket 69
+2026-03-16 09:54:43,107 [INFO] JudoApp: Generating LB fights for Bracket 69
+2026-03-16 09:54:43,111 [INFO] JudoApp: Generating WB shells for Bracket 70
+2026-03-16 09:54:43,114 [INFO] JudoApp: Generating LB fights for Bracket 70
+2026-03-16 09:54:43,116 [INFO] JudoApp: Generating WB shells for Bracket 76
+2026-03-16 09:54:43,119 [INFO] JudoApp: Generating LB fights for Bracket 76
+2026-03-16 09:54:43,122 [INFO] JudoApp: Generating WB shells for Bracket 77
+2026-03-16 09:54:43,125 [INFO] JudoApp: Generating LB fights for Bracket 77
+2026-03-16 09:54:43,128 [INFO] JudoApp: Generating WB shells for Bracket 78
+2026-03-16 09:54:43,130 [INFO] JudoApp: Generating LB fights for Bracket 78
+2026-03-16 09:54:43,133 [INFO] JudoApp: Generating WB shells for Bracket 79
+2026-03-16 09:54:43,136 [INFO] JudoApp: Generating LB fights for Bracket 79
+2026-03-16 09:54:43,139 [INFO] JudoApp: Generating WB shells for Bracket 81
+2026-03-16 09:54:43,142 [INFO] JudoApp: Generating LB fights for Bracket 81
+2026-03-16 09:54:43,145 [INFO] JudoApp: Generating WB shells for Bracket 82
+2026-03-16 09:54:43,147 [INFO] JudoApp: Generating LB fights for Bracket 82
+2026-03-16 09:54:43,150 [INFO] JudoApp: Generating WB shells for Bracket 83
+2026-03-16 09:54:43,153 [INFO] JudoApp: Generating LB fights for Bracket 83
+2026-03-16 09:54:43,156 [INFO] JudoApp: Generating WB shells for Bracket 84
+2026-03-16 09:54:43,159 [INFO] JudoApp: Generating LB fights for Bracket 84
+2026-03-16 09:54:43,162 [INFO] JudoApp: Generating WB shells for Bracket 86
+2026-03-16 09:54:43,164 [INFO] JudoApp: Generating LB fights for Bracket 86
+2026-03-16 09:54:43,167 [INFO] JudoApp: Generating WB shells for Bracket 87
+2026-03-16 09:54:43,170 [INFO] JudoApp: Generating LB fights for Bracket 87
+2026-03-16 09:54:43,173 [INFO] JudoApp: Generating WB shells for Bracket 89
+2026-03-16 09:54:43,176 [INFO] JudoApp: Generating LB fights for Bracket 89
+2026-03-16 09:54:43,178 [INFO] JudoApp: Generating WB shells for Bracket 90
+2026-03-16 09:54:43,180 [INFO] JudoApp: Generating LB fights for Bracket 90
+2026-03-16 09:54:43,183 [INFO] JudoApp: Generating WB shells for Bracket 92
+2026-03-16 09:54:43,185 [INFO] JudoApp: Generating LB fights for Bracket 92
+2026-03-16 09:54:43,188 [INFO] JudoApp: Generating WB shells for Bracket 93
+2026-03-16 09:54:43,191 [INFO] JudoApp: Generating LB fights for Bracket 93
+2026-03-16 09:54:43,194 [INFO] JudoApp: Generating WB shells for Bracket 94
+2026-03-16 09:54:43,196 [INFO] JudoApp: Generating LB fights for Bracket 94
+2026-03-16 09:54:43,199 [INFO] JudoApp: Generating WB shells for Bracket 95
+2026-03-16 09:54:43,201 [INFO] JudoApp: Generating LB fights for Bracket 95
+2026-03-16 09:54:43,204 [INFO] JudoApp: Generating WB shells for Bracket 97
+2026-03-16 09:54:43,206 [INFO] JudoApp: Generating LB fights for Bracket 97
+2026-03-16 09:54:43,209 [INFO] JudoApp: Generating WB shells for Bracket 99
+2026-03-16 09:54:43,211 [INFO] JudoApp: Generating LB fights for Bracket 99
+2026-03-16 09:54:43,214 [INFO] JudoApp: Generating WB shells for Bracket 101
+2026-03-16 09:54:43,217 [INFO] JudoApp: Generating LB fights for Bracket 101
+2026-03-16 09:54:43,219 [INFO] JudoApp: Generating WB shells for Bracket 103
+2026-03-16 09:54:43,222 [INFO] JudoApp: Generating LB fights for Bracket 103
+2026-03-16 09:54:43,224 [INFO] JudoApp: Generating WB shells for Bracket 57
+2026-03-16 09:54:43,245 [INFO] JudoApp: Generating LB fights for Bracket 57
+2026-03-16 09:54:43,644 [INFO] JudoApp: Healing bracket progressions...
+2026-03-16 09:54:43,667 [INFO] JudoApp: Advancing Winner 269 from Fight 1 to WB Fight 9 (p1)
+2026-03-16 09:54:43,681 [INFO] JudoApp: Advancing Winner 276 from Fight 10 to LB Fight 23 (p1)
+2026-03-16 09:54:43,681 [INFO] JudoApp: Advancing Loser 276 from WB Fight 1 to LB Fight 10 (p1)
+2026-03-16 09:54:43,686 [INFO] JudoApp: Advancing Winner 276 from Fight 10 to LB Fight 23 (p1)
+2026-03-16 09:54:43,691 [INFO] JudoApp: Advancing Winner 274 from Fight 2 to WB Fight 9 (p2)
+2026-03-16 09:54:43,696 [INFO] JudoApp: Advancing Winner 278 from Fight 12 to LB Fight 13 (p1)
+2026-03-16 09:54:43,701 [INFO] JudoApp: Advancing Winner 273 from Fight 15 to LB Fight 16 (p1)
+2026-03-16 09:54:43,705 [INFO] JudoApp: Advancing Winner 279 from Fight 3 to WB Fight 11 (p1)
+2026-03-16 09:54:43,711 [INFO] JudoApp: Advancing Winner 272 from Fight 4 to WB Fight 11 (p2)
+2026-03-16 09:54:43,720 [INFO] JudoApp: Advancing Winner 278 from Fight 12 to LB Fight 13 (p1)
+2026-03-16 09:54:43,721 [INFO] JudoApp: Advancing Loser 278 from WB Fight 4 to LB Fight 12 (p2)
+2026-03-16 09:54:43,726 [INFO] JudoApp: Advancing Winner 270 from Fight 18 to LB Fight 19 (p1)
+2026-03-16 09:54:43,730 [INFO] JudoApp: Advancing Winner 280 from Fight 5 to WB Fight 14 (p1)
+2026-03-16 09:54:43,740 [INFO] JudoApp: Advancing Winner 273 from Fight 15 to LB Fight 16 (p1)
+2026-03-16 09:54:43,741 [INFO] JudoApp: Advancing Loser 273 from WB Fight 5 to LB Fight 15 (p1)
+2026-03-16 09:54:43,744 [INFO] JudoApp: Advancing Winner 271 from Fight 6 to WB Fight 14 (p2)
+2026-03-16 09:54:43,748 [INFO] JudoApp: Advancing Winner 275 from Fight 7 to WB Fight 17 (p1)
+2026-03-16 09:54:43,752 [INFO] JudoApp: Advancing Winner 277 from Fight 8 to WB Fight 17 (p2)
+2026-03-16 09:54:43,760 [INFO] JudoApp: Advancing Winner 270 from Fight 18 to LB Fight 19 (p1)
+2026-03-16 09:54:43,760 [INFO] JudoApp: Advancing Loser 270 from WB Fight 8 to LB Fight 18 (p2)
+2026-03-16 09:54:43,766 [INFO] JudoApp: Advancing Winner 269 from Fight 23 to LB Fight 24 (p1)
+2026-03-16 09:54:43,770 [INFO] JudoApp: Advancing Winner 274 from Fight 9 to WB Fight 20 (p1)
+2026-03-16 09:54:43,775 [INFO] JudoApp: Advancing Loser 269 from WB Fight 9 to LB Fight 23 (p2)
+2026-03-16 09:54:43,781 [INFO] JudoApp: Advancing Winner 278 from Fight 13 to LB Fight 24 (p2)
+2026-03-16 09:54:43,786 [INFO] JudoApp: Advancing Winner 279 from Fight 11 to WB Fight 20 (p2)
+2026-03-16 09:54:43,790 [INFO] JudoApp: Advancing Loser 272 from WB Fight 11 to LB Fight 13 (p2)
+2026-03-16 09:54:43,795 [INFO] JudoApp: Advancing Winner 271 from Fight 14 to WB Fight 21 (p1)
+2026-03-16 09:54:43,799 [INFO] JudoApp: Advancing Loser 280 from WB Fight 14 to LB Fight 16 (p2)
+2026-03-16 09:54:43,807 [INFO] JudoApp: Advancing Winner 280 from Fight 16 to LB Fight 25 (p1)
+2026-03-16 09:54:43,815 [INFO] JudoApp: Advancing Winner 270 from Fight 19 to LB Fight 25 (p2)
+2026-03-16 09:54:43,820 [INFO] JudoApp: Advancing Winner 277 from Fight 17 to WB Fight 21 (p2)
+2026-03-16 09:54:43,825 [INFO] JudoApp: Advancing Loser 275 from WB Fight 17 to LB Fight 19 (p2)
+2026-03-16 09:54:43,831 [INFO] JudoApp: Advancing Winner 279 from Fight 20 to WB Fight 22 (p1)
+2026-03-16 09:54:43,836 [INFO] JudoApp: Advancing Loser 274 from WB Fight 20 to LB Fight 26 (p2)
+2026-03-16 09:54:43,841 [INFO] JudoApp: Advancing Winner 269 from Fight 24 to LB Fight 26 (p1)
+2026-03-16 09:54:43,845 [INFO] JudoApp: Advancing Winner 277 from Fight 21 to WB Fight 22 (p2)
+2026-03-16 09:54:43,851 [INFO] JudoApp: Advancing Loser 271 from WB Fight 21 to LB Fight 27 (p2)
+2026-03-16 09:54:43,856 [INFO] JudoApp: Advancing Winner 270 from Fight 25 to LB Fight 27 (p1)
+2026-03-16 09:54:46,389 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-16 09:54:58,009 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-16 09:54:59,466 [INFO] JudoApp: Starting up Judo Real-Time API...
+2026-03-16 09:54:59,556 [INFO] JudoApp: Generating WB shells for Bracket 48
+2026-03-16 09:54:59,560 [INFO] JudoApp: Generating LB fights for Bracket 48
+2026-03-16 09:54:59,562 [INFO] JudoApp: Generating WB shells for Bracket 49
+2026-03-16 09:54:59,563 [INFO] JudoApp: Generating LB fights for Bracket 49
+2026-03-16 09:54:59,565 [INFO] JudoApp: Generating WB shells for Bracket 50
+2026-03-16 09:54:59,568 [INFO] JudoApp: Generating LB fights for Bracket 50
+2026-03-16 09:54:59,570 [INFO] JudoApp: Generating WB shells for Bracket 51
+2026-03-16 09:54:59,573 [INFO] JudoApp: Generating LB fights for Bracket 51
+2026-03-16 09:54:59,577 [INFO] JudoApp: Generating WB shells for Bracket 52
+2026-03-16 09:54:59,580 [INFO] JudoApp: Generating LB fights for Bracket 52
+2026-03-16 09:54:59,583 [INFO] JudoApp: Generating WB shells for Bracket 53
+2026-03-16 09:54:59,585 [INFO] JudoApp: Generating LB fights for Bracket 53
+2026-03-16 09:54:59,587 [INFO] JudoApp: Generating WB shells for Bracket 54
+2026-03-16 09:54:59,589 [INFO] JudoApp: Generating LB fights for Bracket 54
+2026-03-16 09:54:59,591 [INFO] JudoApp: Generating WB shells for Bracket 55
+2026-03-16 09:54:59,593 [INFO] JudoApp: Generating LB fights for Bracket 55
+2026-03-16 09:54:59,595 [INFO] JudoApp: Generating WB shells for Bracket 59
+2026-03-16 09:54:59,597 [INFO] JudoApp: Generating LB fights for Bracket 59
+2026-03-16 09:54:59,601 [INFO] JudoApp: Generating WB shells for Bracket 60
+2026-03-16 09:54:59,603 [INFO] JudoApp: Generating LB fights for Bracket 60
+2026-03-16 09:54:59,605 [INFO] JudoApp: Generating WB shells for Bracket 61
+2026-03-16 09:54:59,607 [INFO] JudoApp: Generating LB fights for Bracket 61
+2026-03-16 09:54:59,609 [INFO] JudoApp: Generating WB shells for Bracket 62
+2026-03-16 09:54:59,611 [INFO] JudoApp: Generating LB fights for Bracket 62
+2026-03-16 09:54:59,615 [INFO] JudoApp: Generating WB shells for Bracket 63
+2026-03-16 09:54:59,617 [INFO] JudoApp: Generating LB fights for Bracket 63
+2026-03-16 09:54:59,620 [INFO] JudoApp: Generating WB shells for Bracket 65
+2026-03-16 09:54:59,622 [INFO] JudoApp: Generating LB fights for Bracket 65
+2026-03-16 09:54:59,624 [INFO] JudoApp: Generating WB shells for Bracket 66
+2026-03-16 09:54:59,626 [INFO] JudoApp: Generating LB fights for Bracket 66
+2026-03-16 09:54:59,628 [INFO] JudoApp: Generating WB shells for Bracket 67
+2026-03-16 09:54:59,630 [INFO] JudoApp: Generating LB fights for Bracket 67
+2026-03-16 09:54:59,632 [INFO] JudoApp: Generating WB shells for Bracket 69
+2026-03-16 09:54:59,634 [INFO] JudoApp: Generating LB fights for Bracket 69
+2026-03-16 09:54:59,636 [INFO] JudoApp: Generating WB shells for Bracket 70
+2026-03-16 09:54:59,638 [INFO] JudoApp: Generating LB fights for Bracket 70
+2026-03-16 09:54:59,640 [INFO] JudoApp: Generating WB shells for Bracket 76
+2026-03-16 09:54:59,642 [INFO] JudoApp: Generating LB fights for Bracket 76
+2026-03-16 09:54:59,644 [INFO] JudoApp: Generating WB shells for Bracket 77
+2026-03-16 09:54:59,646 [INFO] JudoApp: Generating LB fights for Bracket 77
+2026-03-16 09:54:59,648 [INFO] JudoApp: Generating WB shells for Bracket 78
+2026-03-16 09:54:59,651 [INFO] JudoApp: Generating LB fights for Bracket 78
+2026-03-16 09:54:59,653 [INFO] JudoApp: Generating WB shells for Bracket 79
+2026-03-16 09:54:59,656 [INFO] JudoApp: Generating LB fights for Bracket 79
+2026-03-16 09:54:59,658 [INFO] JudoApp: Generating WB shells for Bracket 81
+2026-03-16 09:54:59,660 [INFO] JudoApp: Generating LB fights for Bracket 81
+2026-03-16 09:54:59,662 [INFO] JudoApp: Generating WB shells for Bracket 82
+2026-03-16 09:54:59,664 [INFO] JudoApp: Generating LB fights for Bracket 82
+2026-03-16 09:54:59,666 [INFO] JudoApp: Generating WB shells for Bracket 83
+2026-03-16 09:54:59,668 [INFO] JudoApp: Generating LB fights for Bracket 83
+2026-03-16 09:54:59,671 [INFO] JudoApp: Generating WB shells for Bracket 84
+2026-03-16 09:54:59,673 [INFO] JudoApp: Generating LB fights for Bracket 84
+2026-03-16 09:54:59,676 [INFO] JudoApp: Generating WB shells for Bracket 86
+2026-03-16 09:54:59,678 [INFO] JudoApp: Generating LB fights for Bracket 86
+2026-03-16 09:54:59,680 [INFO] JudoApp: Generating WB shells for Bracket 87
+2026-03-16 09:54:59,682 [INFO] JudoApp: Generating LB fights for Bracket 87
+2026-03-16 09:54:59,685 [INFO] JudoApp: Generating WB shells for Bracket 89
+2026-03-16 09:54:59,687 [INFO] JudoApp: Generating LB fights for Bracket 89
+2026-03-16 09:54:59,689 [INFO] JudoApp: Generating WB shells for Bracket 90
+2026-03-16 09:54:59,691 [INFO] JudoApp: Generating LB fights for Bracket 90
+2026-03-16 09:54:59,693 [INFO] JudoApp: Generating WB shells for Bracket 92
+2026-03-16 09:54:59,695 [INFO] JudoApp: Generating LB fights for Bracket 92
+2026-03-16 09:54:59,697 [INFO] JudoApp: Generating WB shells for Bracket 93
+2026-03-16 09:54:59,699 [INFO] JudoApp: Generating LB fights for Bracket 93
+2026-03-16 09:54:59,701 [INFO] JudoApp: Generating WB shells for Bracket 94
+2026-03-16 09:54:59,704 [INFO] JudoApp: Generating LB fights for Bracket 94
+2026-03-16 09:54:59,706 [INFO] JudoApp: Generating WB shells for Bracket 95
+2026-03-16 09:54:59,708 [INFO] JudoApp: Generating LB fights for Bracket 95
+2026-03-16 09:54:59,759 [INFO] JudoApp: Generating WB shells for Bracket 97
+2026-03-16 09:54:59,763 [INFO] JudoApp: Generating LB fights for Bracket 97
+2026-03-16 09:54:59,766 [INFO] JudoApp: Generating WB shells for Bracket 99
+2026-03-16 09:54:59,769 [INFO] JudoApp: Generating LB fights for Bracket 99
+2026-03-16 09:54:59,771 [INFO] JudoApp: Generating WB shells for Bracket 101
+2026-03-16 09:54:59,773 [INFO] JudoApp: Generating LB fights for Bracket 101
+2026-03-16 09:54:59,776 [INFO] JudoApp: Generating WB shells for Bracket 103
+2026-03-16 09:54:59,778 [INFO] JudoApp: Generating LB fights for Bracket 103
+2026-03-16 09:54:59,780 [INFO] JudoApp: Generating WB shells for Bracket 57
+2026-03-16 09:54:59,801 [INFO] JudoApp: Generating LB fights for Bracket 57
+2026-03-16 09:54:59,830 [INFO] JudoApp: Healing bracket progressions...
+2026-03-16 09:54:59,850 [INFO] JudoApp: Advancing Winner 269 from Fight 1 to WB Fight 9 (p1)
+2026-03-16 09:54:59,860 [INFO] JudoApp: Advancing Winner 276 from Fight 10 to LB Fight 23 (p1)
+2026-03-16 09:54:59,861 [INFO] JudoApp: Advancing Loser 276 from WB Fight 1 to LB Fight 10 (p1)
+2026-03-16 09:54:59,864 [INFO] JudoApp: Advancing Winner 276 from Fight 10 to LB Fight 23 (p1)
+2026-03-16 09:54:59,869 [INFO] JudoApp: Advancing Winner 274 from Fight 2 to WB Fight 9 (p2)
+2026-03-16 09:54:59,876 [INFO] JudoApp: Advancing Winner 278 from Fight 12 to LB Fight 13 (p1)
+2026-03-16 09:54:59,882 [INFO] JudoApp: Advancing Winner 273 from Fight 15 to LB Fight 16 (p1)
+2026-03-16 09:54:59,886 [INFO] JudoApp: Advancing Winner 279 from Fight 3 to WB Fight 11 (p1)
+2026-03-16 09:54:59,889 [INFO] JudoApp: Advancing Winner 272 from Fight 4 to WB Fight 11 (p2)
+2026-03-16 09:54:59,898 [INFO] JudoApp: Advancing Winner 278 from Fight 12 to LB Fight 13 (p1)
+2026-03-16 09:54:59,899 [INFO] JudoApp: Advancing Loser 278 from WB Fight 4 to LB Fight 12 (p2)
+2026-03-16 09:54:59,903 [INFO] JudoApp: Advancing Winner 270 from Fight 18 to LB Fight 19 (p1)
+2026-03-16 09:54:59,908 [INFO] JudoApp: Advancing Winner 280 from Fight 5 to WB Fight 14 (p1)
+2026-03-16 09:54:59,917 [INFO] JudoApp: Advancing Winner 273 from Fight 15 to LB Fight 16 (p1)
+2026-03-16 09:54:59,917 [INFO] JudoApp: Advancing Loser 273 from WB Fight 5 to LB Fight 15 (p1)
+2026-03-16 09:54:59,921 [INFO] JudoApp: Advancing Winner 271 from Fight 6 to WB Fight 14 (p2)
+2026-03-16 09:54:59,926 [INFO] JudoApp: Advancing Winner 275 from Fight 7 to WB Fight 17 (p1)
+2026-03-16 09:54:59,930 [INFO] JudoApp: Advancing Winner 277 from Fight 8 to WB Fight 17 (p2)
+2026-03-16 09:54:59,939 [INFO] JudoApp: Advancing Winner 270 from Fight 18 to LB Fight 19 (p1)
+2026-03-16 09:54:59,939 [INFO] JudoApp: Advancing Loser 270 from WB Fight 8 to LB Fight 18 (p2)
+2026-03-16 09:54:59,946 [INFO] JudoApp: Advancing Winner 269 from Fight 23 to LB Fight 24 (p1)
+2026-03-16 09:54:59,952 [INFO] JudoApp: Advancing Winner 274 from Fight 9 to WB Fight 20 (p1)
+2026-03-16 09:54:59,956 [INFO] JudoApp: Advancing Loser 269 from WB Fight 9 to LB Fight 23 (p2)
+2026-03-16 09:54:59,964 [INFO] JudoApp: Advancing Winner 278 from Fight 13 to LB Fight 24 (p2)
+2026-03-16 09:54:59,971 [INFO] JudoApp: Advancing Winner 279 from Fight 11 to WB Fight 20 (p2)
+2026-03-16 09:54:59,977 [INFO] JudoApp: Advancing Loser 272 from WB Fight 11 to LB Fight 13 (p2)
+2026-03-16 09:54:59,986 [INFO] JudoApp: Advancing Winner 271 from Fight 14 to WB Fight 21 (p1)
+2026-03-16 09:54:59,993 [INFO] JudoApp: Advancing Loser 280 from WB Fight 14 to LB Fight 16 (p2)
+2026-03-16 09:55:00,004 [INFO] JudoApp: Advancing Winner 280 from Fight 16 to LB Fight 25 (p1)
+2026-03-16 09:55:00,067 [INFO] JudoApp: Advancing Winner 270 from Fight 19 to LB Fight 25 (p2)
+2026-03-16 09:55:00,071 [INFO] JudoApp: Advancing Winner 277 from Fight 17 to WB Fight 21 (p2)
+2026-03-16 09:55:00,343 [INFO] JudoApp: Advancing Loser 275 from WB Fight 17 to LB Fight 19 (p2)
+2026-03-16 09:55:00,351 [INFO] JudoApp: Advancing Winner 279 from Fight 20 to WB Fight 22 (p1)
+2026-03-16 09:55:00,360 [INFO] JudoApp: Advancing Loser 274 from WB Fight 20 to LB Fight 26 (p2)
+2026-03-16 09:55:00,369 [INFO] JudoApp: Advancing Winner 269 from Fight 24 to LB Fight 26 (p1)
+2026-03-16 09:55:00,378 [INFO] JudoApp: Advancing Winner 277 from Fight 21 to WB Fight 22 (p2)
+2026-03-16 09:55:00,387 [INFO] JudoApp: Advancing Loser 271 from WB Fight 21 to LB Fight 27 (p2)
+2026-03-16 09:55:00,406 [INFO] JudoApp: Advancing Winner 270 from Fight 25 to LB Fight 27 (p1)
+2026-03-16 09:55:03,335 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-16 09:57:26,472 [INFO] JudoApp: API GET / - Status: 304 - 0.133s
+2026-03-16 09:57:26,480 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-16 09:57:26,516 [INFO] JudoApp: API GET /style.css - Status: 304 - 0.004s
+2026-03-16 09:57:26,518 [INFO] JudoApp: API GET /app.js - Status: 200 - 0.006s
+2026-03-16 09:57:26,615 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.035s
+2026-03-16 09:57:26,890 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-16 09:57:26,893 [INFO] JudoApp: API GET /manifest.json - Status: 304 - 0.003s
+2026-03-16 10:01:30,733 [INFO] JudoApp: API GET / - Status: 304 - 0.003s
+2026-03-16 10:01:30,740 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-16 10:01:30,780 [INFO] JudoApp: API GET /style.css - Status: 304 - 0.004s
+2026-03-16 10:01:30,783 [INFO] JudoApp: API GET /app.js - Status: 200 - 0.006s
+2026-03-16 10:01:30,830 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.029s
+2026-03-16 10:01:31,083 [INFO] JudoApp: API GET /manifest.json - Status: 304 - 0.002s
+2026-03-16 10:01:31,107 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-16 10:11:01,734 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-16 10:11:03,530 [INFO] JudoApp: Starting up Judo Real-Time API...
+2026-03-16 10:11:04,625 [INFO] JudoApp: Generating WB shells for Bracket 48
+2026-03-16 10:11:04,632 [INFO] JudoApp: Generating LB fights for Bracket 48
+2026-03-16 10:11:04,636 [INFO] JudoApp: Generating WB shells for Bracket 49
+2026-03-16 10:11:04,639 [INFO] JudoApp: Generating LB fights for Bracket 49
+2026-03-16 10:11:04,641 [INFO] JudoApp: Generating WB shells for Bracket 50
+2026-03-16 10:11:04,644 [INFO] JudoApp: Generating LB fights for Bracket 50
+2026-03-16 10:11:04,646 [INFO] JudoApp: Generating WB shells for Bracket 51
+2026-03-16 10:11:04,648 [INFO] JudoApp: Generating LB fights for Bracket 51
+2026-03-16 10:11:04,651 [INFO] JudoApp: Generating WB shells for Bracket 52
+2026-03-16 10:11:04,653 [INFO] JudoApp: Generating LB fights for Bracket 52
+2026-03-16 10:11:04,656 [INFO] JudoApp: Generating WB shells for Bracket 53
+2026-03-16 10:11:04,658 [INFO] JudoApp: Generating LB fights for Bracket 53
+2026-03-16 10:11:04,660 [INFO] JudoApp: Generating WB shells for Bracket 54
+2026-03-16 10:11:04,663 [INFO] JudoApp: Generating LB fights for Bracket 54
+2026-03-16 10:11:04,665 [INFO] JudoApp: Generating WB shells for Bracket 55
+2026-03-16 10:11:04,666 [INFO] JudoApp: Generating LB fights for Bracket 55
+2026-03-16 10:11:04,669 [INFO] JudoApp: Generating WB shells for Bracket 59
+2026-03-16 10:11:04,671 [INFO] JudoApp: Generating LB fights for Bracket 59
+2026-03-16 10:11:04,674 [INFO] JudoApp: Generating WB shells for Bracket 60
+2026-03-16 10:11:04,676 [INFO] JudoApp: Generating LB fights for Bracket 60
+2026-03-16 10:11:04,678 [INFO] JudoApp: Generating WB shells for Bracket 61
+2026-03-16 10:11:04,680 [INFO] JudoApp: Generating LB fights for Bracket 61
+2026-03-16 10:11:04,682 [INFO] JudoApp: Generating WB shells for Bracket 62
+2026-03-16 10:11:04,685 [INFO] JudoApp: Generating LB fights for Bracket 62
+2026-03-16 10:11:04,687 [INFO] JudoApp: Generating WB shells for Bracket 63
+2026-03-16 10:11:04,689 [INFO] JudoApp: Generating LB fights for Bracket 63
+2026-03-16 10:11:04,691 [INFO] JudoApp: Generating WB shells for Bracket 65
+2026-03-16 10:11:04,693 [INFO] JudoApp: Generating LB fights for Bracket 65
+2026-03-16 10:11:04,694 [INFO] JudoApp: Generating WB shells for Bracket 66
+2026-03-16 10:11:04,697 [INFO] JudoApp: Generating LB fights for Bracket 66
+2026-03-16 10:11:04,699 [INFO] JudoApp: Generating WB shells for Bracket 67
+2026-03-16 10:11:04,701 [INFO] JudoApp: Generating LB fights for Bracket 67
+2026-03-16 10:11:04,704 [INFO] JudoApp: Generating WB shells for Bracket 69
+2026-03-16 10:11:04,706 [INFO] JudoApp: Generating LB fights for Bracket 69
+2026-03-16 10:11:04,709 [INFO] JudoApp: Generating WB shells for Bracket 70
+2026-03-16 10:11:04,711 [INFO] JudoApp: Generating LB fights for Bracket 70
+2026-03-16 10:11:04,714 [INFO] JudoApp: Generating WB shells for Bracket 76
+2026-03-16 10:11:04,716 [INFO] JudoApp: Generating LB fights for Bracket 76
+2026-03-16 10:11:04,718 [INFO] JudoApp: Generating WB shells for Bracket 77
+2026-03-16 10:11:04,721 [INFO] JudoApp: Generating LB fights for Bracket 77
+2026-03-16 10:11:04,724 [INFO] JudoApp: Generating WB shells for Bracket 78
+2026-03-16 10:11:04,726 [INFO] JudoApp: Generating LB fights for Bracket 78
+2026-03-16 10:11:04,729 [INFO] JudoApp: Generating WB shells for Bracket 79
+2026-03-16 10:11:04,731 [INFO] JudoApp: Generating LB fights for Bracket 79
+2026-03-16 10:11:04,733 [INFO] JudoApp: Generating WB shells for Bracket 81
+2026-03-16 10:11:04,736 [INFO] JudoApp: Generating LB fights for Bracket 81
+2026-03-16 10:11:04,738 [INFO] JudoApp: Generating WB shells for Bracket 82
+2026-03-16 10:11:04,740 [INFO] JudoApp: Generating LB fights for Bracket 82
+2026-03-16 10:11:04,742 [INFO] JudoApp: Generating WB shells for Bracket 83
+2026-03-16 10:11:04,744 [INFO] JudoApp: Generating LB fights for Bracket 83
+2026-03-16 10:11:04,747 [INFO] JudoApp: Generating WB shells for Bracket 84
+2026-03-16 10:11:04,748 [INFO] JudoApp: Generating LB fights for Bracket 84
+2026-03-16 10:11:04,751 [INFO] JudoApp: Generating WB shells for Bracket 86
+2026-03-16 10:11:04,753 [INFO] JudoApp: Generating LB fights for Bracket 86
+2026-03-16 10:11:04,755 [INFO] JudoApp: Generating WB shells for Bracket 87
+2026-03-16 10:11:04,757 [INFO] JudoApp: Generating LB fights for Bracket 87
+2026-03-16 10:11:04,760 [INFO] JudoApp: Generating WB shells for Bracket 89
+2026-03-16 10:11:04,762 [INFO] JudoApp: Generating LB fights for Bracket 89
+2026-03-16 10:11:04,764 [INFO] JudoApp: Generating WB shells for Bracket 90
+2026-03-16 10:11:04,765 [INFO] JudoApp: Generating LB fights for Bracket 90
+2026-03-16 10:11:04,767 [INFO] JudoApp: Generating WB shells for Bracket 92
+2026-03-16 10:11:04,769 [INFO] JudoApp: Generating LB fights for Bracket 92
+2026-03-16 10:11:04,772 [INFO] JudoApp: Generating WB shells for Bracket 93
+2026-03-16 10:11:04,774 [INFO] JudoApp: Generating LB fights for Bracket 93
+2026-03-16 10:11:04,776 [INFO] JudoApp: Generating WB shells for Bracket 94
+2026-03-16 10:11:04,778 [INFO] JudoApp: Generating LB fights for Bracket 94
+2026-03-16 10:11:04,780 [INFO] JudoApp: Generating WB shells for Bracket 95
+2026-03-16 10:11:04,782 [INFO] JudoApp: Generating LB fights for Bracket 95
+2026-03-16 10:11:04,784 [INFO] JudoApp: Generating WB shells for Bracket 97
+2026-03-16 10:11:04,786 [INFO] JudoApp: Generating LB fights for Bracket 97
+2026-03-16 10:11:04,789 [INFO] JudoApp: Generating WB shells for Bracket 99
+2026-03-16 10:11:04,791 [INFO] JudoApp: Generating LB fights for Bracket 99
+2026-03-16 10:11:04,793 [INFO] JudoApp: Generating WB shells for Bracket 101
+2026-03-16 10:11:04,795 [INFO] JudoApp: Generating LB fights for Bracket 101
+2026-03-16 10:11:04,797 [INFO] JudoApp: Generating WB shells for Bracket 103
+2026-03-16 10:11:04,799 [INFO] JudoApp: Generating LB fights for Bracket 103
+2026-03-16 10:11:04,801 [INFO] JudoApp: Generating WB shells for Bracket 57
+2026-03-16 10:11:04,820 [INFO] JudoApp: Generating LB fights for Bracket 57
+2026-03-16 10:11:04,847 [INFO] JudoApp: Healing bracket progressions...
+2026-03-16 10:11:04,868 [INFO] JudoApp: Advancing Winner 276 from Fight 10 to LB Fight 23 (p1)
+2026-03-16 10:11:04,872 [INFO] JudoApp: Advancing Winner 269 from Fight 1 to WB Fight 9 (p1)
+2026-03-16 10:11:04,881 [INFO] JudoApp: Advancing Winner 276 from Fight 10 to LB Fight 23 (p1)
+2026-03-16 10:11:04,882 [INFO] JudoApp: Advancing Loser 276 from WB Fight 1 to LB Fight 10 (p1)
+2026-03-16 10:11:04,888 [INFO] JudoApp: Advancing Winner 278 from Fight 12 to LB Fight 13 (p1)
+2026-03-16 10:11:04,895 [INFO] JudoApp: Advancing Winner 274 from Fight 2 to WB Fight 9 (p2)
+2026-03-16 10:11:04,899 [INFO] JudoApp: Advancing Winner 273 from Fight 15 to LB Fight 16 (p1)
+2026-03-16 10:11:04,906 [INFO] JudoApp: Advancing Winner 279 from Fight 3 to WB Fight 11 (p1)
+2026-03-16 10:11:04,910 [INFO] JudoApp: Advancing Winner 270 from Fight 18 to LB Fight 19 (p1)
+2026-03-16 10:11:04,914 [INFO] JudoApp: Advancing Winner 272 from Fight 4 to WB Fight 11 (p2)
+2026-03-16 10:11:04,924 [INFO] JudoApp: Advancing Winner 278 from Fight 12 to LB Fight 13 (p1)
+2026-03-16 10:11:04,924 [INFO] JudoApp: Advancing Loser 278 from WB Fight 4 to LB Fight 12 (p2)
+2026-03-16 10:11:04,929 [INFO] JudoApp: Advancing Winner 280 from Fight 5 to WB Fight 14 (p1)
+2026-03-16 10:11:04,937 [INFO] JudoApp: Advancing Winner 273 from Fight 15 to LB Fight 16 (p1)
+2026-03-16 10:11:04,937 [INFO] JudoApp: Advancing Loser 273 from WB Fight 5 to LB Fight 15 (p1)
+2026-03-16 10:11:04,941 [INFO] JudoApp: Advancing Winner 271 from Fight 6 to WB Fight 14 (p2)
+2026-03-16 10:11:04,945 [INFO] JudoApp: Advancing Winner 275 from Fight 7 to WB Fight 17 (p1)
+2026-03-16 10:11:04,949 [INFO] JudoApp: Advancing Winner 277 from Fight 8 to WB Fight 17 (p2)
+2026-03-16 10:11:04,957 [INFO] JudoApp: Advancing Winner 270 from Fight 18 to LB Fight 19 (p1)
+2026-03-16 10:11:04,958 [INFO] JudoApp: Advancing Loser 270 from WB Fight 8 to LB Fight 18 (p2)
+2026-03-16 10:11:04,962 [INFO] JudoApp: Advancing Winner 269 from Fight 23 to LB Fight 24 (p1)
+2026-03-16 10:11:04,966 [INFO] JudoApp: Advancing Winner 274 from Fight 9 to WB Fight 20 (p1)
+2026-03-16 10:11:04,970 [INFO] JudoApp: Advancing Loser 269 from WB Fight 9 to LB Fight 23 (p2)
+2026-03-16 10:11:04,975 [INFO] JudoApp: Advancing Winner 279 from Fight 11 to WB Fight 20 (p2)
+2026-03-16 10:11:04,979 [INFO] JudoApp: Advancing Loser 272 from WB Fight 11 to LB Fight 13 (p2)
+2026-03-16 10:11:04,983 [INFO] JudoApp: Advancing Winner 278 from Fight 13 to LB Fight 24 (p2)
+2026-03-16 10:11:04,988 [INFO] JudoApp: Advancing Winner 280 from Fight 16 to LB Fight 25 (p1)
+2026-03-16 10:11:04,992 [INFO] JudoApp: Advancing Winner 271 from Fight 14 to WB Fight 21 (p1)
+2026-03-16 10:11:04,996 [INFO] JudoApp: Advancing Loser 280 from WB Fight 14 to LB Fight 16 (p2)
+2026-03-16 10:11:05,001 [INFO] JudoApp: Advancing Winner 270 from Fight 19 to LB Fight 25 (p2)
+2026-03-16 10:11:05,005 [INFO] JudoApp: Advancing Winner 277 from Fight 17 to WB Fight 21 (p2)
+2026-03-16 10:11:05,009 [INFO] JudoApp: Advancing Loser 275 from WB Fight 17 to LB Fight 19 (p2)
+2026-03-16 10:11:05,013 [INFO] JudoApp: Advancing Winner 279 from Fight 20 to WB Fight 22 (p1)
+2026-03-16 10:11:05,017 [INFO] JudoApp: Advancing Loser 274 from WB Fight 20 to LB Fight 26 (p2)
+2026-03-16 10:11:05,022 [INFO] JudoApp: Advancing Winner 269 from Fight 24 to LB Fight 26 (p1)
+2026-03-16 10:11:05,026 [INFO] JudoApp: Advancing Winner 277 from Fight 21 to WB Fight 22 (p2)
+2026-03-16 10:11:05,030 [INFO] JudoApp: Advancing Loser 271 from WB Fight 21 to LB Fight 27 (p2)
+2026-03-16 10:11:05,035 [INFO] JudoApp: Advancing Winner 270 from Fight 25 to LB Fight 27 (p1)
+2026-03-16 10:11:05,043 [INFO] JudoApp: Advancing Winner 269 from Fight 26 to LB Fight 29 (p1)
+2026-03-16 10:11:05,052 [INFO] JudoApp: Advancing Winner 271 from Fight 27 to LB Fight 29 (p2)
+2026-03-16 10:11:05,072 [INFO] JudoApp: Advancing Winner 276 from Fight 10 to LB Fight 23 (p1)
+2026-03-16 10:11:05,077 [INFO] JudoApp: Advancing Winner 269 from Fight 1 to WB Fight 9 (p1)
+2026-03-16 10:11:05,085 [INFO] JudoApp: Advancing Winner 276 from Fight 10 to LB Fight 23 (p1)
+2026-03-16 10:11:05,085 [INFO] JudoApp: Advancing Loser 276 from WB Fight 1 to LB Fight 10 (p1)
+2026-03-16 10:11:05,090 [INFO] JudoApp: Advancing Winner 278 from Fight 12 to LB Fight 13 (p1)
+2026-03-16 10:11:05,094 [INFO] JudoApp: Advancing Winner 274 from Fight 2 to WB Fight 9 (p2)
+2026-03-16 10:11:05,099 [INFO] JudoApp: Advancing Winner 273 from Fight 15 to LB Fight 16 (p1)
+2026-03-16 10:11:05,103 [INFO] JudoApp: Advancing Winner 279 from Fight 3 to WB Fight 11 (p1)
+2026-03-16 10:11:05,443 [INFO] JudoApp: Advancing Winner 270 from Fight 18 to LB Fight 19 (p1)
+2026-03-16 10:11:05,448 [INFO] JudoApp: Advancing Winner 272 from Fight 4 to WB Fight 11 (p2)
+2026-03-16 10:11:05,457 [INFO] JudoApp: Advancing Winner 278 from Fight 12 to LB Fight 13 (p1)
+2026-03-16 10:11:05,457 [INFO] JudoApp: Advancing Loser 278 from WB Fight 4 to LB Fight 12 (p2)
+2026-03-16 10:11:05,461 [INFO] JudoApp: Advancing Winner 280 from Fight 5 to WB Fight 14 (p1)
+2026-03-16 10:11:05,470 [INFO] JudoApp: Advancing Winner 273 from Fight 15 to LB Fight 16 (p1)
+2026-03-16 10:11:05,471 [INFO] JudoApp: Advancing Loser 273 from WB Fight 5 to LB Fight 15 (p1)
+2026-03-16 10:11:05,475 [INFO] JudoApp: Advancing Winner 271 from Fight 6 to WB Fight 14 (p2)
+2026-03-16 10:11:05,480 [INFO] JudoApp: Advancing Winner 275 from Fight 7 to WB Fight 17 (p1)
+2026-03-16 10:11:05,486 [INFO] JudoApp: Advancing Winner 277 from Fight 8 to WB Fight 17 (p2)
+2026-03-16 10:11:05,497 [INFO] JudoApp: Advancing Winner 270 from Fight 18 to LB Fight 19 (p1)
+2026-03-16 10:11:05,498 [INFO] JudoApp: Advancing Loser 270 from WB Fight 8 to LB Fight 18 (p2)
+2026-03-16 10:11:05,503 [INFO] JudoApp: Advancing Winner 269 from Fight 23 to LB Fight 24 (p1)
+2026-03-16 10:11:05,509 [INFO] JudoApp: Advancing Winner 274 from Fight 9 to WB Fight 20 (p1)
+2026-03-16 10:11:05,515 [INFO] JudoApp: Advancing Loser 269 from WB Fight 9 to LB Fight 23 (p2)
+2026-03-16 10:11:05,521 [INFO] JudoApp: Advancing Winner 279 from Fight 11 to WB Fight 20 (p2)
+2026-03-16 10:11:05,527 [INFO] JudoApp: Advancing Loser 272 from WB Fight 11 to LB Fight 13 (p2)
+2026-03-16 10:11:05,532 [INFO] JudoApp: Advancing Winner 278 from Fight 13 to LB Fight 24 (p2)
+2026-03-16 10:11:05,538 [INFO] JudoApp: Advancing Winner 280 from Fight 16 to LB Fight 25 (p1)
+2026-03-16 10:11:05,545 [INFO] JudoApp: Advancing Winner 271 from Fight 14 to WB Fight 21 (p1)
+2026-03-16 10:11:05,551 [INFO] JudoApp: Advancing Loser 280 from WB Fight 14 to LB Fight 16 (p2)
+2026-03-16 10:11:05,556 [INFO] JudoApp: Advancing Winner 270 from Fight 19 to LB Fight 25 (p2)
+2026-03-16 10:11:05,562 [INFO] JudoApp: Advancing Winner 277 from Fight 17 to WB Fight 21 (p2)
+2026-03-16 10:11:05,567 [INFO] JudoApp: Advancing Loser 275 from WB Fight 17 to LB Fight 19 (p2)
+2026-03-16 10:11:05,572 [INFO] JudoApp: Advancing Winner 279 from Fight 20 to WB Fight 22 (p1)
+2026-03-16 10:11:05,578 [INFO] JudoApp: Advancing Loser 274 from WB Fight 20 to LB Fight 26 (p2)
+2026-03-16 10:11:05,583 [INFO] JudoApp: Advancing Winner 269 from Fight 24 to LB Fight 26 (p1)
+2026-03-16 10:11:05,588 [INFO] JudoApp: Advancing Winner 277 from Fight 21 to WB Fight 22 (p2)
+2026-03-16 10:11:05,593 [INFO] JudoApp: Advancing Loser 271 from WB Fight 21 to LB Fight 27 (p2)
+2026-03-16 10:11:05,599 [INFO] JudoApp: Advancing Winner 270 from Fight 25 to LB Fight 27 (p1)
+2026-03-16 10:11:05,604 [INFO] JudoApp: Advancing Winner 269 from Fight 26 to LB Fight 29 (p1)
+2026-03-16 10:11:05,613 [INFO] JudoApp: Advancing Winner 271 from Fight 27 to LB Fight 29 (p2)
+2026-03-16 10:11:07,063 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-16 10:11:27,500 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-16 10:11:28,962 [INFO] JudoApp: Starting up Judo Real-Time API...
+2026-03-16 10:11:30,028 [INFO] JudoApp: Generating WB shells for Bracket 48
+2026-03-16 10:11:30,032 [INFO] JudoApp: Generating LB fights for Bracket 48
+2026-03-16 10:11:30,034 [INFO] JudoApp: Generating WB shells for Bracket 49
+2026-03-16 10:11:30,036 [INFO] JudoApp: Generating LB fights for Bracket 49
+2026-03-16 10:11:30,037 [INFO] JudoApp: Generating WB shells for Bracket 50
+2026-03-16 10:11:30,039 [INFO] JudoApp: Generating LB fights for Bracket 50
+2026-03-16 10:11:30,041 [INFO] JudoApp: Generating WB shells for Bracket 51
+2026-03-16 10:11:30,042 [INFO] JudoApp: Generating LB fights for Bracket 51
+2026-03-16 10:11:30,044 [INFO] JudoApp: Generating WB shells for Bracket 52
+2026-03-16 10:11:30,046 [INFO] JudoApp: Generating LB fights for Bracket 52
+2026-03-16 10:11:30,048 [INFO] JudoApp: Generating WB shells for Bracket 53
+2026-03-16 10:11:30,049 [INFO] JudoApp: Generating LB fights for Bracket 53
+2026-03-16 10:11:30,051 [INFO] JudoApp: Generating WB shells for Bracket 54
+2026-03-16 10:11:30,053 [INFO] JudoApp: Generating LB fights for Bracket 54
+2026-03-16 10:11:30,055 [INFO] JudoApp: Generating WB shells for Bracket 55
+2026-03-16 10:11:30,057 [INFO] JudoApp: Generating LB fights for Bracket 55
+2026-03-16 10:11:30,059 [INFO] JudoApp: Generating WB shells for Bracket 59
+2026-03-16 10:11:30,060 [INFO] JudoApp: Generating LB fights for Bracket 59
+2026-03-16 10:11:30,062 [INFO] JudoApp: Generating WB shells for Bracket 60
+2026-03-16 10:11:30,064 [INFO] JudoApp: Generating LB fights for Bracket 60
+2026-03-16 10:11:30,066 [INFO] JudoApp: Generating WB shells for Bracket 61
+2026-03-16 10:11:30,068 [INFO] JudoApp: Generating LB fights for Bracket 61
+2026-03-16 10:11:30,070 [INFO] JudoApp: Generating WB shells for Bracket 62
+2026-03-16 10:11:30,072 [INFO] JudoApp: Generating LB fights for Bracket 62
+2026-03-16 10:11:30,074 [INFO] JudoApp: Generating WB shells for Bracket 63
+2026-03-16 10:11:30,076 [INFO] JudoApp: Generating LB fights for Bracket 63
+2026-03-16 10:11:30,078 [INFO] JudoApp: Generating WB shells for Bracket 65
+2026-03-16 10:11:30,080 [INFO] JudoApp: Generating LB fights for Bracket 65
+2026-03-16 10:11:30,082 [INFO] JudoApp: Generating WB shells for Bracket 66
+2026-03-16 10:11:30,084 [INFO] JudoApp: Generating LB fights for Bracket 66
+2026-03-16 10:11:30,086 [INFO] JudoApp: Generating WB shells for Bracket 67
+2026-03-16 10:11:30,088 [INFO] JudoApp: Generating LB fights for Bracket 67
+2026-03-16 10:11:30,090 [INFO] JudoApp: Generating WB shells for Bracket 69
+2026-03-16 10:11:30,092 [INFO] JudoApp: Generating LB fights for Bracket 69
+2026-03-16 10:11:30,094 [INFO] JudoApp: Generating WB shells for Bracket 70
+2026-03-16 10:11:30,096 [INFO] JudoApp: Generating LB fights for Bracket 70
+2026-03-16 10:11:30,098 [INFO] JudoApp: Generating WB shells for Bracket 76
+2026-03-16 10:11:30,100 [INFO] JudoApp: Generating LB fights for Bracket 76
+2026-03-16 10:11:30,102 [INFO] JudoApp: Generating WB shells for Bracket 77
+2026-03-16 10:11:30,104 [INFO] JudoApp: Generating LB fights for Bracket 77
+2026-03-16 10:11:30,106 [INFO] JudoApp: Generating WB shells for Bracket 78
+2026-03-16 10:11:30,108 [INFO] JudoApp: Generating LB fights for Bracket 78
+2026-03-16 10:11:30,110 [INFO] JudoApp: Generating WB shells for Bracket 79
+2026-03-16 10:11:30,111 [INFO] JudoApp: Generating LB fights for Bracket 79
+2026-03-16 10:11:30,113 [INFO] JudoApp: Generating WB shells for Bracket 81
+2026-03-16 10:11:30,116 [INFO] JudoApp: Generating LB fights for Bracket 81
+2026-03-16 10:11:30,118 [INFO] JudoApp: Generating WB shells for Bracket 82
+2026-03-16 10:11:30,120 [INFO] JudoApp: Generating LB fights for Bracket 82
+2026-03-16 10:11:30,122 [INFO] JudoApp: Generating WB shells for Bracket 83
+2026-03-16 10:11:30,124 [INFO] JudoApp: Generating LB fights for Bracket 83
+2026-03-16 10:11:30,126 [INFO] JudoApp: Generating WB shells for Bracket 84
+2026-03-16 10:11:30,136 [INFO] JudoApp: Generating LB fights for Bracket 84
+2026-03-16 10:11:30,138 [INFO] JudoApp: Generating WB shells for Bracket 86
+2026-03-16 10:11:30,140 [INFO] JudoApp: Generating LB fights for Bracket 86
+2026-03-16 10:11:30,142 [INFO] JudoApp: Generating WB shells for Bracket 87
+2026-03-16 10:11:30,144 [INFO] JudoApp: Generating LB fights for Bracket 87
+2026-03-16 10:11:30,146 [INFO] JudoApp: Generating WB shells for Bracket 89
+2026-03-16 10:11:30,148 [INFO] JudoApp: Generating LB fights for Bracket 89
+2026-03-16 10:11:30,150 [INFO] JudoApp: Generating WB shells for Bracket 90
+2026-03-16 10:11:30,152 [INFO] JudoApp: Generating LB fights for Bracket 90
+2026-03-16 10:11:30,175 [INFO] JudoApp: Generating WB shells for Bracket 92
+2026-03-16 10:11:30,178 [INFO] JudoApp: Generating LB fights for Bracket 92
+2026-03-16 10:11:30,180 [INFO] JudoApp: Generating WB shells for Bracket 93
+2026-03-16 10:11:30,182 [INFO] JudoApp: Generating LB fights for Bracket 93
+2026-03-16 10:11:30,184 [INFO] JudoApp: Generating WB shells for Bracket 94
+2026-03-16 10:11:30,186 [INFO] JudoApp: Generating LB fights for Bracket 94
+2026-03-16 10:11:30,188 [INFO] JudoApp: Generating WB shells for Bracket 95
+2026-03-16 10:11:30,190 [INFO] JudoApp: Generating LB fights for Bracket 95
+2026-03-16 10:11:30,192 [INFO] JudoApp: Generating WB shells for Bracket 97
+2026-03-16 10:11:30,194 [INFO] JudoApp: Generating LB fights for Bracket 97
+2026-03-16 10:11:30,196 [INFO] JudoApp: Generating WB shells for Bracket 99
+2026-03-16 10:11:30,199 [INFO] JudoApp: Generating LB fights for Bracket 99
+2026-03-16 10:11:30,201 [INFO] JudoApp: Generating WB shells for Bracket 101
+2026-03-16 10:11:30,203 [INFO] JudoApp: Generating LB fights for Bracket 101
+2026-03-16 10:11:30,205 [INFO] JudoApp: Generating WB shells for Bracket 103
+2026-03-16 10:11:30,207 [INFO] JudoApp: Generating LB fights for Bracket 103
+2026-03-16 10:11:30,209 [INFO] JudoApp: Generating WB shells for Bracket 57
+2026-03-16 10:11:30,227 [INFO] JudoApp: Generating LB fights for Bracket 57
+2026-03-16 10:11:30,256 [INFO] JudoApp: Healing bracket progressions...
+2026-03-16 10:11:30,280 [INFO] JudoApp: Advancing Winner 276 from Fight 10 to LB Fight 23 (p1)
+2026-03-16 10:11:30,285 [INFO] JudoApp: Advancing Winner 269 from Fight 1 to WB Fight 9 (p1)
+2026-03-16 10:11:30,295 [INFO] JudoApp: Advancing Winner 276 from Fight 10 to LB Fight 23 (p1)
+2026-03-16 10:11:30,295 [INFO] JudoApp: Advancing Loser 276 from WB Fight 1 to LB Fight 10 (p1)
+2026-03-16 10:11:30,301 [INFO] JudoApp: Advancing Winner 278 from Fight 12 to LB Fight 13 (p1)
+2026-03-16 10:11:30,306 [INFO] JudoApp: Advancing Winner 274 from Fight 2 to WB Fight 9 (p2)
+2026-03-16 10:11:30,311 [INFO] JudoApp: Advancing Winner 273 from Fight 15 to LB Fight 16 (p1)
+2026-03-16 10:11:30,317 [INFO] JudoApp: Advancing Winner 279 from Fight 3 to WB Fight 11 (p1)
+2026-03-16 10:11:30,322 [INFO] JudoApp: Advancing Winner 270 from Fight 18 to LB Fight 19 (p1)
+2026-03-16 10:11:30,327 [INFO] JudoApp: Advancing Winner 272 from Fight 4 to WB Fight 11 (p2)
+2026-03-16 10:11:30,339 [INFO] JudoApp: Advancing Winner 278 from Fight 12 to LB Fight 13 (p1)
+2026-03-16 10:11:30,340 [INFO] JudoApp: Advancing Loser 278 from WB Fight 4 to LB Fight 12 (p2)
+2026-03-16 10:11:30,346 [INFO] JudoApp: Advancing Winner 280 from Fight 5 to WB Fight 14 (p1)
+2026-03-16 10:11:30,360 [INFO] JudoApp: Advancing Winner 273 from Fight 15 to LB Fight 16 (p1)
+2026-03-16 10:11:30,361 [INFO] JudoApp: Advancing Loser 273 from WB Fight 5 to LB Fight 15 (p1)
+2026-03-16 10:11:30,367 [INFO] JudoApp: Advancing Winner 271 from Fight 6 to WB Fight 14 (p2)
+2026-03-16 10:11:30,375 [INFO] JudoApp: Advancing Winner 275 from Fight 7 to WB Fight 17 (p1)
+2026-03-16 10:11:30,384 [INFO] JudoApp: Advancing Winner 277 from Fight 8 to WB Fight 17 (p2)
+2026-03-16 10:11:30,397 [INFO] JudoApp: Advancing Winner 270 from Fight 18 to LB Fight 19 (p1)
+2026-03-16 10:11:30,397 [INFO] JudoApp: Advancing Loser 270 from WB Fight 8 to LB Fight 18 (p2)
+2026-03-16 10:11:30,404 [INFO] JudoApp: Advancing Winner 269 from Fight 23 to LB Fight 24 (p1)
+2026-03-16 10:11:30,410 [INFO] JudoApp: Advancing Winner 274 from Fight 9 to WB Fight 20 (p1)
+2026-03-16 10:11:30,415 [INFO] JudoApp: Advancing Loser 269 from WB Fight 9 to LB Fight 23 (p2)
+2026-03-16 10:11:30,423 [INFO] JudoApp: Advancing Winner 279 from Fight 11 to WB Fight 20 (p2)
+2026-03-16 10:11:30,430 [INFO] JudoApp: Advancing Loser 272 from WB Fight 11 to LB Fight 13 (p2)
+2026-03-16 10:11:30,437 [INFO] JudoApp: Advancing Winner 278 from Fight 13 to LB Fight 24 (p2)
+2026-03-16 10:11:30,443 [INFO] JudoApp: Advancing Winner 280 from Fight 16 to LB Fight 25 (p1)
+2026-03-16 10:11:30,448 [INFO] JudoApp: Advancing Winner 271 from Fight 14 to WB Fight 21 (p1)
+2026-03-16 10:11:30,455 [INFO] JudoApp: Advancing Loser 280 from WB Fight 14 to LB Fight 16 (p2)
+2026-03-16 10:11:30,460 [INFO] JudoApp: Advancing Winner 270 from Fight 19 to LB Fight 25 (p2)
+2026-03-16 10:11:30,466 [INFO] JudoApp: Advancing Winner 277 from Fight 17 to WB Fight 21 (p2)
+2026-03-16 10:11:30,472 [INFO] JudoApp: Advancing Loser 275 from WB Fight 17 to LB Fight 19 (p2)
+2026-03-16 10:11:30,477 [INFO] JudoApp: Advancing Winner 279 from Fight 20 to WB Fight 22 (p1)
+2026-03-16 10:11:30,483 [INFO] JudoApp: Advancing Loser 274 from WB Fight 20 to LB Fight 26 (p2)
+2026-03-16 10:11:30,490 [INFO] JudoApp: Advancing Winner 269 from Fight 24 to LB Fight 26 (p1)
+2026-03-16 10:11:30,495 [INFO] JudoApp: Advancing Winner 277 from Fight 21 to WB Fight 22 (p2)
+2026-03-16 10:11:30,501 [INFO] JudoApp: Advancing Loser 271 from WB Fight 21 to LB Fight 27 (p2)
+2026-03-16 10:11:30,507 [INFO] JudoApp: Advancing Winner 270 from Fight 25 to LB Fight 27 (p1)
+2026-03-16 10:11:30,513 [INFO] JudoApp: Advancing Winner 269 from Fight 26 to LB Fight 29 (p1)
+2026-03-16 10:11:30,524 [INFO] JudoApp: Advancing Winner 271 from Fight 27 to LB Fight 29 (p2)
+2026-03-16 10:11:32,818 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-16 10:11:43,483 [INFO] JudoApp: API GET / - Status: 304 - 0.097s
+2026-03-16 10:11:43,490 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-16 10:11:43,525 [INFO] JudoApp: API GET /style.css - Status: 304 - 0.003s
+2026-03-16 10:11:43,573 [INFO] JudoApp: API GET /app.js - Status: 200 - 0.003s
+2026-03-16 10:11:43,634 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.041s
+2026-03-16 10:11:43,883 [INFO] JudoApp: API GET /manifest.json - Status: 304 - 0.001s
+2026-03-16 10:11:43,899 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-16 10:12:25,705 [INFO] JudoApp: API GET / - Status: 304 - 0.003s
+2026-03-16 10:12:25,712 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-16 10:12:25,743 [INFO] JudoApp: API GET /app.js - Status: 304 - 0.003s
+2026-03-16 10:12:26,063 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-16 10:12:26,242 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.483s
+2026-03-16 10:12:28,069 [INFO] JudoApp: API GET / - Status: 304 - 0.002s
+2026-03-16 10:12:28,074 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-16 10:12:28,403 [INFO] JudoApp: API GET /api/matches - Status: 200 - 0.230s
+2026-03-16 10:12:28,480 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-16 10:14:37,732 [INFO] JudoApp: Client disconnected. Total connections: 0
+2026-03-16 10:14:39,281 [INFO] JudoApp: Starting up Judo Real-Time API...
+2026-03-16 10:14:39,985 [INFO] JudoApp: Generating WB shells for Bracket 48
+2026-03-16 10:14:40,250 [INFO] JudoApp: Generating LB fights for Bracket 48
+2026-03-16 10:14:40,254 [INFO] JudoApp: Generating WB shells for Bracket 49
+2026-03-16 10:14:40,258 [INFO] JudoApp: Generating LB fights for Bracket 49
+2026-03-16 10:14:40,263 [INFO] JudoApp: Generating WB shells for Bracket 50
+2026-03-16 10:14:40,267 [INFO] JudoApp: Generating LB fights for Bracket 50
+2026-03-16 10:14:40,270 [INFO] JudoApp: Generating WB shells for Bracket 51
+2026-03-16 10:14:40,274 [INFO] JudoApp: Generating LB fights for Bracket 51
+2026-03-16 10:14:40,277 [INFO] JudoApp: Generating WB shells for Bracket 52
+2026-03-16 10:14:40,281 [INFO] JudoApp: Generating LB fights for Bracket 52
+2026-03-16 10:14:40,285 [INFO] JudoApp: Generating WB shells for Bracket 53
+2026-03-16 10:14:40,290 [INFO] JudoApp: Generating LB fights for Bracket 53
+2026-03-16 10:14:40,293 [INFO] JudoApp: Generating WB shells for Bracket 54
+2026-03-16 10:14:40,297 [INFO] JudoApp: Generating LB fights for Bracket 54
+2026-03-16 10:14:40,300 [INFO] JudoApp: Generating WB shells for Bracket 55
+2026-03-16 10:14:40,303 [INFO] JudoApp: Generating LB fights for Bracket 55
+2026-03-16 10:14:40,307 [INFO] JudoApp: Generating WB shells for Bracket 59
+2026-03-16 10:14:40,310 [INFO] JudoApp: Generating LB fights for Bracket 59
+2026-03-16 10:14:40,313 [INFO] JudoApp: Generating WB shells for Bracket 60
+2026-03-16 10:14:40,316 [INFO] JudoApp: Generating LB fights for Bracket 60
+2026-03-16 10:14:40,319 [INFO] JudoApp: Generating WB shells for Bracket 61
+2026-03-16 10:14:40,323 [INFO] JudoApp: Generating LB fights for Bracket 61
+2026-03-16 10:14:40,326 [INFO] JudoApp: Generating WB shells for Bracket 62
+2026-03-16 10:14:40,329 [INFO] JudoApp: Generating LB fights for Bracket 62
+2026-03-16 10:14:40,332 [INFO] JudoApp: Generating WB shells for Bracket 63
+2026-03-16 10:14:40,335 [INFO] JudoApp: Generating LB fights for Bracket 63
+2026-03-16 10:14:40,339 [INFO] JudoApp: Generating WB shells for Bracket 65
+2026-03-16 10:14:40,342 [INFO] JudoApp: Generating LB fights for Bracket 65
+2026-03-16 10:14:40,346 [INFO] JudoApp: Generating WB shells for Bracket 66
+2026-03-16 10:14:40,350 [INFO] JudoApp: Generating LB fights for Bracket 66
+2026-03-16 10:14:40,353 [INFO] JudoApp: Generating WB shells for Bracket 67
+2026-03-16 10:14:40,356 [INFO] JudoApp: Generating LB fights for Bracket 67
+2026-03-16 10:14:40,359 [INFO] JudoApp: Generating WB shells for Bracket 69
+2026-03-16 10:14:40,362 [INFO] JudoApp: Generating LB fights for Bracket 69
+2026-03-16 10:14:40,365 [INFO] JudoApp: Generating WB shells for Bracket 70
+2026-03-16 10:14:40,370 [INFO] JudoApp: Generating LB fights for Bracket 70
+2026-03-16 10:14:40,373 [INFO] JudoApp: Generating WB shells for Bracket 76
+2026-03-16 10:14:40,377 [INFO] JudoApp: Generating LB fights for Bracket 76
+2026-03-16 10:14:40,380 [INFO] JudoApp: Generating WB shells for Bracket 77
+2026-03-16 10:14:40,383 [INFO] JudoApp: Generating LB fights for Bracket 77
+2026-03-16 10:14:40,386 [INFO] JudoApp: Generating WB shells for Bracket 78
+2026-03-16 10:14:40,389 [INFO] JudoApp: Generating LB fights for Bracket 78
+2026-03-16 10:14:40,393 [INFO] JudoApp: Generating WB shells for Bracket 79
+2026-03-16 10:14:40,396 [INFO] JudoApp: Generating LB fights for Bracket 79
+2026-03-16 10:14:40,399 [INFO] JudoApp: Generating WB shells for Bracket 81
+2026-03-16 10:14:40,402 [INFO] JudoApp: Generating LB fights for Bracket 81
+2026-03-16 10:14:40,405 [INFO] JudoApp: Generating WB shells for Bracket 82
+2026-03-16 10:14:40,409 [INFO] JudoApp: Generating LB fights for Bracket 82
+2026-03-16 10:14:40,412 [INFO] JudoApp: Generating WB shells for Bracket 83
+2026-03-16 10:14:40,416 [INFO] JudoApp: Generating LB fights for Bracket 83
+2026-03-16 10:14:40,420 [INFO] JudoApp: Generating WB shells for Bracket 84
+2026-03-16 10:14:40,423 [INFO] JudoApp: Generating LB fights for Bracket 84
+2026-03-16 10:14:40,426 [INFO] JudoApp: Generating WB shells for Bracket 86
+2026-03-16 10:14:40,430 [INFO] JudoApp: Generating LB fights for Bracket 86
+2026-03-16 10:14:40,433 [INFO] JudoApp: Generating WB shells for Bracket 87
+2026-03-16 10:14:40,436 [INFO] JudoApp: Generating LB fights for Bracket 87
+2026-03-16 10:14:40,439 [INFO] JudoApp: Generating WB shells for Bracket 89
+2026-03-16 10:14:40,443 [INFO] JudoApp: Generating LB fights for Bracket 89
+2026-03-16 10:14:40,446 [INFO] JudoApp: Generating WB shells for Bracket 90
+2026-03-16 10:14:40,450 [INFO] JudoApp: Generating LB fights for Bracket 90
+2026-03-16 10:14:40,454 [INFO] JudoApp: Generating WB shells for Bracket 92
+2026-03-16 10:14:40,457 [INFO] JudoApp: Generating LB fights for Bracket 92
+2026-03-16 10:14:40,460 [INFO] JudoApp: Generating WB shells for Bracket 93
+2026-03-16 10:14:40,464 [INFO] JudoApp: Generating LB fights for Bracket 93
+2026-03-16 10:14:40,467 [INFO] JudoApp: Generating WB shells for Bracket 94
+2026-03-16 10:14:40,470 [INFO] JudoApp: Generating LB fights for Bracket 94
+2026-03-16 10:14:40,473 [INFO] JudoApp: Generating WB shells for Bracket 95
+2026-03-16 10:14:40,476 [INFO] JudoApp: Generating LB fights for Bracket 95
+2026-03-16 10:14:40,479 [INFO] JudoApp: Generating WB shells for Bracket 97
+2026-03-16 10:14:40,482 [INFO] JudoApp: Generating LB fights for Bracket 97
+2026-03-16 10:14:40,486 [INFO] JudoApp: Generating WB shells for Bracket 99
+2026-03-16 10:14:40,491 [INFO] JudoApp: Generating LB fights for Bracket 99
+2026-03-16 10:14:40,495 [INFO] JudoApp: Generating WB shells for Bracket 101
+2026-03-16 10:14:40,498 [INFO] JudoApp: Generating LB fights for Bracket 101
+2026-03-16 10:14:40,503 [INFO] JudoApp: Generating WB shells for Bracket 103
+2026-03-16 10:14:40,508 [INFO] JudoApp: Generating LB fights for Bracket 103
+2026-03-16 10:14:40,512 [INFO] JudoApp: Generating WB shells for Bracket 57
+2026-03-16 10:14:40,541 [INFO] JudoApp: Generating LB fights for Bracket 57
+2026-03-16 10:14:40,586 [INFO] JudoApp: Healing bracket progressions...
+2026-03-16 10:14:40,624 [INFO] JudoApp: Advancing Winner 276 from Fight 10 to LB Fight 23 (p1)
+2026-03-16 10:14:40,630 [INFO] JudoApp: Advancing Winner 269 from Fight 1 to WB Fight 9 (p1)
+2026-03-16 10:14:40,643 [INFO] JudoApp: Advancing Winner 276 from Fight 10 to LB Fight 23 (p1)
+2026-03-16 10:14:40,643 [INFO] JudoApp: Advancing Loser 276 from WB Fight 1 to LB Fight 10 (p1)
+2026-03-16 10:14:40,649 [INFO] JudoApp: Advancing Winner 278 from Fight 12 to LB Fight 13 (p1)
+2026-03-16 10:14:40,655 [INFO] JudoApp: Advancing Winner 274 from Fight 2 to WB Fight 9 (p2)
+2026-03-16 10:14:40,662 [INFO] JudoApp: Advancing Winner 273 from Fight 15 to LB Fight 16 (p1)
+2026-03-16 10:14:40,667 [INFO] JudoApp: Advancing Winner 279 from Fight 3 to WB Fight 11 (p1)
+2026-03-16 10:14:40,673 [INFO] JudoApp: Advancing Winner 270 from Fight 18 to LB Fight 19 (p1)
+2026-03-16 10:14:40,681 [INFO] JudoApp: Advancing Winner 272 from Fight 4 to WB Fight 11 (p2)
+2026-03-16 10:14:40,693 [INFO] JudoApp: Advancing Winner 278 from Fight 12 to LB Fight 13 (p1)
+2026-03-16 10:14:40,693 [INFO] JudoApp: Advancing Loser 278 from WB Fight 4 to LB Fight 12 (p2)
+2026-03-16 10:14:40,699 [INFO] JudoApp: Advancing Winner 280 from Fight 5 to WB Fight 14 (p1)
+2026-03-16 10:14:40,710 [INFO] JudoApp: Advancing Winner 273 from Fight 15 to LB Fight 16 (p1)
+2026-03-16 10:14:40,711 [INFO] JudoApp: Advancing Loser 273 from WB Fight 5 to LB Fight 15 (p1)
+2026-03-16 10:14:40,716 [INFO] JudoApp: Advancing Winner 271 from Fight 6 to WB Fight 14 (p2)
+2026-03-16 10:14:40,721 [INFO] JudoApp: Advancing Winner 275 from Fight 7 to WB Fight 17 (p1)
+2026-03-16 10:14:40,727 [INFO] JudoApp: Advancing Winner 277 from Fight 8 to WB Fight 17 (p2)
+2026-03-16 10:14:40,737 [INFO] JudoApp: Advancing Winner 270 from Fight 18 to LB Fight 19 (p1)
+2026-03-16 10:14:40,738 [INFO] JudoApp: Advancing Loser 270 from WB Fight 8 to LB Fight 18 (p2)
+2026-03-16 10:14:40,747 [INFO] JudoApp: Advancing Winner 269 from Fight 23 to LB Fight 24 (p1)
+2026-03-16 10:14:40,753 [INFO] JudoApp: Advancing Winner 274 from Fight 9 to WB Fight 20 (p1)
+2026-03-16 10:14:40,759 [INFO] JudoApp: Advancing Loser 269 from WB Fight 9 to LB Fight 23 (p2)
+2026-03-16 10:14:40,764 [INFO] JudoApp: Advancing Winner 279 from Fight 11 to WB Fight 20 (p2)
+2026-03-16 10:14:40,770 [INFO] JudoApp: Advancing Loser 272 from WB Fight 11 to LB Fight 13 (p2)
+2026-03-16 10:14:40,779 [INFO] JudoApp: Advancing Winner 278 from Fight 13 to LB Fight 24 (p2)
+2026-03-16 10:14:40,786 [INFO] JudoApp: Advancing Winner 280 from Fight 16 to LB Fight 25 (p1)
+2026-03-16 10:14:40,793 [INFO] JudoApp: Advancing Winner 271 from Fight 14 to WB Fight 21 (p1)
+2026-03-16 10:14:40,798 [INFO] JudoApp: Advancing Loser 280 from WB Fight 14 to LB Fight 16 (p2)
+2026-03-16 10:14:40,807 [INFO] JudoApp: Advancing Winner 270 from Fight 19 to LB Fight 25 (p2)
+2026-03-16 10:14:40,812 [INFO] JudoApp: Advancing Winner 277 from Fight 17 to WB Fight 21 (p2)
+2026-03-16 10:14:40,817 [INFO] JudoApp: Advancing Loser 275 from WB Fight 17 to LB Fight 19 (p2)
+2026-03-16 10:14:40,822 [INFO] JudoApp: Advancing Winner 279 from Fight 20 to WB Fight 22 (p1)
+2026-03-16 10:14:40,827 [INFO] JudoApp: Advancing Loser 274 from WB Fight 20 to LB Fight 26 (p2)
+2026-03-16 10:14:40,832 [INFO] JudoApp: Advancing Winner 269 from Fight 24 to LB Fight 26 (p1)
+2026-03-16 10:14:40,838 [INFO] JudoApp: Advancing Winner 277 from Fight 21 to WB Fight 22 (p2)
+2026-03-16 10:14:40,843 [INFO] JudoApp: Advancing Loser 271 from WB Fight 21 to LB Fight 27 (p2)
+2026-03-16 10:14:40,848 [INFO] JudoApp: Advancing Winner 270 from Fight 25 to LB Fight 27 (p1)
+2026-03-16 10:14:43,485 [INFO] JudoApp: New client connected. Total connections: 1
+2026-03-16 10:15:16,792 [INFO] JudoApp: Client disconnected. Total connections: 0
