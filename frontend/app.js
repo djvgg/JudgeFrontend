@@ -39,7 +39,11 @@ const Network = {
     async fetchMatches() {
         try {
             const response = await fetch(Config.DATA_SOURCE);
-            if (!response.ok) throw new Error('Network response was not ok');
+            if (!response.ok) {
+                if (response.status === 404) throw new Error('NOT_FOUND');
+                if (response.status >= 500) throw new Error('SERVER_ERROR');
+                throw new Error('NETWORK_ERROR');
+            }
             const data = await response.json();
             State.activeMatches = data.matches.map(m => ({
                 ...m,
@@ -49,7 +53,19 @@ const Network = {
             UI.autoInterleaveMatches(); // Set initial order
         } catch (error) {
             console.error('Failed to fetch matches:', error);
-            UI.displayError('Turnierdaten konnten nicht geladen werden.');
+            let msg = 'Turnierdaten konnten nicht geladen werden.';
+
+            if (error instanceof TypeError) {
+                msg = 'Verbindung fehlgeschlagen: Netzwerk-Timeout / Offline, Bitte WLAN prüfen.';
+            } else if (error.message === 'NOT_FOUND') {
+                msg = 'Datenfehler: Turnier-Datenbank nicht gefunden, Bitte Dateipfad prüfen.';
+            } else if (error.message === 'SERVER_ERROR') {
+                msg = 'Server-Fehler: Der Dienst antwortet nicht, Bitte Technik-Team kontaktieren.';
+            } else if (error.message === 'NETWORK_ERROR') {
+                msg = 'Netzwerkfehler: Server hat ungültig geantwortet.';
+            }
+
+            UI.displayError(msg);
         }
     },
 
@@ -371,9 +387,9 @@ const UI = {
                             <span class="fighter-club">${match.p1.club}</span>
                         </div>
                         <div class="vs-divider" style="opacity: 0.5;">VS</div>
-                        <div class="fighter p2" style="opacity: 0.4;">
-                            <span class="fighter-name">${match.p1.lastName} ${match.p1.firstName}</span>
-                            <span class="fighter-club">${match.p1.club}</span>
+                        <div class="fighter p2" style="opacity: 0.6;">
+                            <span class="fighter-name">FREILOS</span>
+                            <span class="fighter-club"></span>
                         </div>
                     </div>
                 ` : `
@@ -881,6 +897,7 @@ const UI = {
             // If a child match feeds this slot but the participant is already known
             // (pre-filled from a bye or previous result), show the name — not "Winner X".
             const slotInfo = (p, child, won, isSecondByeSlot = false) => {
+                if (isSecondByeSlot) return { label: 'FREILOS', cls: 'edv-freilos', score: null };
                 if (child && p.id === 'WAIT') {
                     const isFromWb = child.phase === 'wb' && m.phase === 'lb';
                     const prefix = isFromWb ? 'Verlierer' : 'Gewinner';

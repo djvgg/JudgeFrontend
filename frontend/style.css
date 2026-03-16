@@ -25,6 +25,13 @@
 
     --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     --header-height: 72px;
+
+    /* Spacing & Sizing Tokens */
+    --br-sm: 4px;
+    --br-md: 8px;
+    --br-lg: 12px;
+    --btn-height: 44px;
+    --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 * {
@@ -125,10 +132,13 @@ header {
     font-weight: 700;
     font-size: 0.85rem;
     cursor: pointer;
-    border-radius: 8px;
-    transition: all 0.2s;
+    border-radius: var(--br-md);
+    transition: var(--transition);
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .view-tab-btn:hover {
@@ -726,6 +736,8 @@ input:checked+.slider:before {
     color: #64b0e0;
     font-weight: 700;
     font-size: 1rem;
+    display: inline-block;
+    min-width: 20px;
 }
 
 .ps-sep {
@@ -737,6 +749,8 @@ input:checked+.slider:before {
 .ps-opp {
     color: #8a9aaa;
     font-size: 0.9rem;
+    display: inline-block;
+    min-width: 20px;
 }
 
 .ptd-loss .ps-my {
@@ -788,18 +802,21 @@ input:checked+.slider:before {
     background-color: rgba(0, 0, 0, 0.5);
 }
 
+.editable-score {
+    padding: 0 4px;
+    border-radius: 4px;
+    transition: background 0.15s;
+    cursor: text;
+}
+
 .editable-score:hover {
     background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-    cursor: text;
-    padding: 0 4px;
 }
 
 .editable-score:focus {
     outline: 2px solid var(--accent-color);
+    outline-offset: -2px;
     background-color: rgba(0, 0, 0, 0.5);
-    border-radius: 4px;
-    padding: 0 4px;
 }
 
 /* Pool leader highlight */
@@ -1077,14 +1094,26 @@ input:checked+.slider:before {
     gap: 12px;
 }
 
+/* Standard button tweaks */
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+
 .timer-btn {
-    padding: 0.6rem 1.2rem;
-    border-radius: 8px;
+    height: 40px;
+    padding: 0 1.25rem;
+    border-radius: var(--br-md);
     font-weight: 700;
     font-size: 0.85rem;
     cursor: pointer;
     border: none;
-    transition: all 0.2s;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .timer-btn.start {
@@ -1111,29 +1140,27 @@ input:checked+.slider:before {
 /* Score Buttons Base */
 .score-btn {
     width: 100%;
-    padding: 0.5rem;
-    border-radius: 8px;
-    border: none;
+    height: 40px;
+    padding: 0 1rem;
+    border-radius: var(--br-md);
+    border: 1px solid var(--border-color);
+    font-family: inherit;
     font-size: 0.9rem;
     font-weight: 700;
     cursor: pointer;
-    margin-bottom: 6px;
-    transition: all 0.2s;
+    margin-bottom: 8px;
+    transition: var(--transition);
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-}
-
-/* Pure Dark Mode Overrides for Buttons */
-.score-btn {
     background: var(--bg-tertiary);
-    border: 1px solid var(--border-color);
     color: var(--text-main);
 }
 
 .score-btn:hover {
     background: var(--border-color);
+    transform: translateY(-1px);
 }
 
 .score-btn.ippon-hit {
@@ -1160,7 +1187,7 @@ input:checked+.slider:before {
 
 .victory-btn {
     width: 100%;
-    padding: 0.9rem;
+    padding: 12px;
     border-radius: 12px;
     background: transparent;
     border: 2px solid var(--accent-color);
@@ -1189,12 +1216,13 @@ input:checked+.slider:before {
 
 .footer-btn {
     flex: 1;
-    padding: 0.8rem;
+    height: 44px;
     border-radius: 12px;
     font-weight: 700;
     cursor: pointer;
     border: none;
     transition: opacity 0.2s;
+    text-transform: uppercase;
 }
 
 .btn-undo {

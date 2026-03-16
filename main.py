@@ -803,7 +803,9 @@ def generate_lb_fights(bracket_id: int, session) -> int:
     created = 0
     fight_count = n // 2  # LB R0 starts with N/2 fights
 
-    for lb_round in range(lb_rounds_total - 1):  # skip last reduction round (both survivors = 3rd place)
+    for lb_round in range(
+        lb_rounds_total - 1
+    ):  # skip last reduction round (both survivors = 3rd place)
         for pos in range(fight_count):
             existing = (
                 session.query(FightModel)
@@ -1306,7 +1308,9 @@ def _post_fighter_sync(url: str, body: dict) -> None:
 
     try:
         data = _json_sync.dumps(body).encode()
-        req = _urllib_req.Request(url, data=data, headers={"Content-Type": "application/json"}, method="POST")
+        req = _urllib_req.Request(
+            url, data=data, headers={"Content-Type": "application/json"}, method="POST"
+        )
         with _urllib_req.urlopen(req, timeout=3):
             pass
     except Exception as e:

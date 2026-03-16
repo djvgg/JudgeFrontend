@@ -10,6 +10,7 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#121212">
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
@@ -33,7 +34,9 @@
                         <option value="4">Tisch 4</option>
                     </select>
                 </div>
-                <button onclick="App.handleTableSelection()" class="login-btn">ARENA BETRETEN</button>
+                <button onclick="App.handleTableSelection()" class="btn-base btn-primary login-btn">
+                    ARENA BETRETEN
+                </button>
                 <div id="login-error" class="error-msg" style="display: none;">Fehler bei der Tabellenauswahl</div>
             </div>
         </div>
@@ -67,8 +70,10 @@
                         </div>
                     </div>
                     <div id="connection-status" class="status-indicator offline" title="Verbindungsstatus"></div>
-                    <button class="logout-btn" id="header-logout-btn" onclick="App.handleLogout()"
-                        title="Vom System abmelden">Abmelden</button>
+                    <button class="btn-base btn-ghost logout-btn" id="header-logout-btn" onclick="App.handleLogout()"
+                        title="Vom System abmelden">
+                        Abmelden
+                    </button>
                 </div>
             </div>
         </header>
@@ -109,7 +114,9 @@
                 </div>
                 <div class="bracket-main">
                     <div class="bracket-header">
-                        <button class="back-btn" onclick="UI.switchView('fights')">← Zurück zur Liste</button>
+                        <button class="btn-base btn-secondary back-btn" onclick="UI.switchView('fights')">
+                            <i class="fas fa-arrow-left"></i> Liste
+                        </button>
                         <h2 id="current-bracket-title">Kategorie wählen</h2>
                         <div class="phase-toggle" id="phase-toggle" style="display:none">
                             <button class="phase-btn active" id="phase-btn-wb"
@@ -135,7 +142,8 @@
                 <div class="modal-header">
                     <div class="modal-title-group">
                         <h3 id="modal-category">Kategorie</h3>
-                        <button class="timer-btn reset ippon-board-btn" onclick="Scoring.sendToIpponBoard()">IPPON BOARD</button>
+                        <button class="timer-btn reset ippon-board-btn" onclick="Scoring.sendToIpponBoard()">IPPON
+                            BOARD</button>
                     </div>
                     <div class="center-timer">
                         <div id="match-timer" class="big-timer">04:00</div>
@@ -143,7 +151,9 @@
                     <div class="timer-controls">
                         <button id="timer-toggle-btn" class="timer-btn start"
                             onclick="Scoring.toggleTimer()">START</button>
-                        <button class="timer-btn reset" onclick="Scoring.resetTimer()">ZURÜCKSETZEN</button>
+                        <button class="timer-btn reset" onclick="Scoring.resetTimer()">
+                            RESET
+                        </button>
                     </div>
                 </div>
 
@@ -160,7 +170,7 @@
                                 PUNKTE</button>
                         </div>
                         <div class="victory-zone">
-                            <button class="victory-btn" onclick="winByDecision(1)">ALS GEWINNER FESTLEGEN</button>
+                            <button class="victory-btn" onclick="winByDecision(1)">GEWINNER</button>
                         </div>
                     </div>
 
@@ -178,15 +188,16 @@
                                 PUNKTE</button>
                         </div>
                         <div class="victory-zone">
-                            <button class="victory-btn" onclick="winByDecision(2)">ALS GEWINNER FESTLEGEN</button>
+                            <button class="victory-btn" onclick="winByDecision(2)">GEWINNER</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="modal-footer">
-                    <button class="footer-btn btn-undo" id="undo-btn" onclick="Scoring.undo()" disabled>AKTION
-                        RÜCKGÄNGIG</button>
-                    <button class="footer-btn btn-finish" onclick="Scoring.finishMatch()">KAMPF BEENDEN</button>
+                    <button class="footer-btn btn-undo" id="undo-btn" onclick="Scoring.undo()" disabled>
+                        RÜCKGÄNGIG
+                    </button>
+                    <button class="footer-btn btn-finish" onclick="Scoring.finishMatch()">BEENDEN</button>
                     <button class="footer-btn btn-undo" onclick="Scoring.closeModal()">SCHLIESSEN</button>
                 </div>
 

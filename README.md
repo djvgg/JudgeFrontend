@@ -1,53 +1,62 @@
-# Judge Interface - Real-Time Scoring System
+# Judo Judge Interface - Real-Time Scoring
 
-This documentation serves as a guide for the technical presentation of the tournament management software.
+Diese Dokumentation dient als technischer Leitfaden für das Turniermanagement-System, optimiert für schnelles Kampfrichter-Management und Echtzeit-Synchronisation.
 
 ---
 
-## 🟢 Presentation Quick Start
+## Schnellstart
 
-Follow these steps for a perfect live demonstration:
-
-1.  **Back-end Service**:
+1.  Server starten:
     ```powershell
-    # Standard mode (SQLite/PostgreSQL)
+    # Startet API und Frontend auf Port 5001
     python -m uvicorn main:app --host 0.0.0.0 --port 5001 --reload
     ```
-2.  **Front-end Client**:
-    ```powershell
-    python -m http.server 8080
-    ```
-3.  **Access**: Open `http://localhost:8080` in Chrome/Edge.
+2.  Zugriff: Öffnen Sie http://localhost:5001 in Chrome oder Edge.
 
 ---
 
-## 🏆 Key Features (Oral Presentation Points)
+## Kernfunktionen des Systems
 
-### 1. Unified Branding Integration
-The UI color palette (Shadow Grey & Fresh Sky Blue) is synchronized across all tournament apps (Weigh-in & Judge) for a professional look.
+### 1. Echtzeit-Synchronisation (WebSockets)
+Das Herzstück des Systems ist ein WebSocket-gesteuerter Event-Bus. Jede Punkteaktualisierung, jeder Timer-Start/Stopp und jeder Fortschritt in der Liste wird sofort an alle verbundenen Clients (Tablets, Ippon-Boards und öffentliche Anzeigen) übertragen.
 
-### 2. Mat-Side Efficiency (No Auth)
-Staff can quickly select their assigned table from a simple dropdown, avoiding authentication overhead during fast-paced tournament rounds.
+### 2. Ippon-Board Integration
+Direkte Unterstützung für die Ippon Board API. Über eine dedizierte Schaltfläche können Kampfrichter Kampfdaten direkt an externe Anzeige-Boards senden, um eine konsistente Datenanzeige für Zuschauer und Kampfgericht zu gewährleisten.
 
-### 3. Real-Time Drag & Drop Reordering
-Change the fight queue on the fly. Dragging matches automatically updates the order across all connected referee tablets via WebSockets.
+### 3. Sicherheit & Athletenschutz
+- Automatische Ruhezeiten: Das System erzwingt eine 10-minütige Pause für Kämpfer zwischen zwei Kämpfen.
+- Visuelle Warnungen: Die UI verhindert den Start eines Kampfes, wenn die Erholungsphase noch läuft, und zeigt einen Countdown direkt auf der Kampfkarte an.
 
-### 4. Safety & Health: Automatic Rest Timers
-The system enforces a **10-minute rest period** between matches for individual fighters. Referees receive a clear warning if they attempt to start a match prematurely.
-
-### 5. Instant Bracket Context
- referees are never more than one click away from the bracket context. Clicking "Live-Turnierbaum" on any match card reveals the category progress.
-
----
-
-## Technical Stack
-- **API/WS**: FastAPI (Python 3.13)
-- **Database**: PostgreSQL (IP: 172.17.192.28) / SQLite Fallback
-- **Frontend**: Modern JS (ES6+), Vanilla CSS, WebSocket API
-- **UX**: Progressive Web App (PWA) ready
+### 4. Intelligente Fehlerdiagnose
+Anstatt generischer Fehlermeldungen bietet die UI detaillierte Lösungen auf Deutsch:
+- Netzwerk: "Bitte WLAN prüfen" bei Verbindungsverlust.
+- Server: "Technik-Team kontaktieren" bei Dienstausfall.
+- Datenbank: "Datenbank nicht gefunden" bei fehlenden Turnierdaten.
 
 ---
 
-Maintained by the Tournament Development Team.
-License: GPL-3.0-or-later
-Copyright: 2026 TOP Team Combat Control
+## Technische Architektur
+
+### Frontend (Vanilla Stack)
+- HTML5/CSS3: Custom Design-System mit der Schriftart Rubik, optimiert für hohen Kontrast (Dark Mode).
+- Native JS (ES6+): Modulare Architektur (State, Network, UI, Scoring) ohne Overhead durch Frameworks für maximale Geschwindigkeit.
+- Font Awesome 6: Gezielter Einsatz von Symbolen für intuitive Navigation.
+
+### Backend (Python & FastAPI)
+- FastAPI: Effiziente Verwaltung von asynchronen WebSockets und REST-Endpunkten.
+- SQLAlchemy: Robuste ORM-Verwaltung für Turnierdaten (PostgreSQL/SQLite).
+- Self-Healing Algorithm: Automatische Korrektur der Turnierbaum-Logik beim Startup.
+
+---
+
+## Projektstruktur
+- frontend/index.html: Hauptoberfläche & Scoring Modals.
+- frontend/app.js: Kernlogik, WebSocket-Handler und Visualisierung.
+- frontend/style.css: Visuelles Design & Layout.
+- main.py: API-Server & Echtzeit-Engine.
+- backend/: Geschäftslogik für Turnierbäume (KO, Pool, Doppel-KO).
+
+---
+
+Maintained by TOP Team Combat Control 2026
+Lizenz: GPL-3.0-or-later | © 2026 Tournament Development Team
