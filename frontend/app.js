@@ -5,9 +5,10 @@
 // --- CONFIGURATION ---
 const Config = {
     API_HOST: window.location.hostname || 'localhost',
-    get API_BASE() { return `http://${this.API_HOST}:5001`; },
+    API_PORT: window.location.port || '5001',
+    get API_BASE() { return `http://${this.API_HOST}:${this.API_PORT}`; },
     get DATA_SOURCE() { return `${this.API_BASE}/api/matches`; },
-    get WS_URL() { return `ws://${this.API_HOST}:5001/ws`; },
+    get WS_URL() { return `ws://${this.API_HOST}:${this.API_PORT}/ws`; },
     DEV_MODE: window.location.port === '5500' || window.location.hostname === 'localhost'
 };
 

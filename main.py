@@ -1,5 +1,4 @@
 import asyncio as _asyncio
-import json as _json
 import logging as _logging
 import math as _math
 import os as _os
@@ -1234,6 +1233,7 @@ async def _handle_status_update(data: dict, session) -> None:
 IPPON_HOST = _os.getenv("IPPON_HOST", "172.17.192.62")
 IPPON_PORT = int(_os.getenv("IPPON_PORT", "8080"))
 OUR_HOST = _os.getenv("OUR_HOST", "localhost")
+APP_PORT = int(_os.getenv("APP_PORT", "5001"))
 
 
 @app.get("/api/ippon-config")
@@ -1301,8 +1301,8 @@ _current_ippon_match_id: int | None = None
 
 def _post_fighter_sync(url: str, body: dict) -> None:
     """Blocking HTTP POST via urllib (requests not available)."""
-    import urllib.request as _urllib_req
     import json as _json_sync
+    import urllib.request as _urllib_req
 
     try:
         data = _json_sync.dumps(body).encode()
@@ -1332,7 +1332,7 @@ async def _ippon_start(match_id: int, match_dict: dict) -> None:
         }
 
     fighters_url = f"http://{IPPON_HOST}:{IPPON_PORT}/fighters"
-    callback_url = f"http://{OUR_HOST}:5001/api/ippon-score"
+    callback_url = f"http://{OUR_HOST}:{APP_PORT}/api/ippon-score"
     p1 = match_dict.get("p1", {})
     p2 = match_dict.get("p2", {})
     if p1.get("id") and p1.get("id") != "WAIT" and p2.get("id") and p2.get("id") != "WAIT":
