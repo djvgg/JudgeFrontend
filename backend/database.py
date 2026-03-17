@@ -9,8 +9,13 @@ load_dotenv(override=True)
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Create sync engine
-engine = create_engine(DATABASE_URL)
+# Create sync engine.
+# pool_pre_ping: test each pooled connection before use — transparently
+#   reconnects if PostgreSQL closed the connection while idle (e.g. after a
+#   network blip or the DB server restarted).
+# pool_recycle: recycle connections after 10 min so they're never older than
+#   PostgreSQL's idle-session timeout (default is often 10–30 min in hosted DBs).
+engine = create_engine(DATABASE_URL, pool_pre_ping=True, pool_recycle=600)
 
 # Create session factory (sync)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -45,6 +50,10 @@ class BracketModel(Base):
     mat_id = Column(Integer)
     bracket_type = Column(String)  # e.g. 'POOL', 'DOUBLE_ELIMINATION', 'SINGLE_ELIMINATION'
     status = Column(String)
+    first_place = Column(Integer, nullable=True)
+    second_place = Column(Integer, nullable=True)
+    third_place_1 = Column(Integer, nullable=True)
+    third_place_2 = Column(Integer, nullable=True)
 
 
 class ParticipantModel(Base):

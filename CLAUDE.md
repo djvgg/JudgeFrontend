@@ -97,7 +97,7 @@ Three tournament formats are implemented, but the `bracket_type` field in the DB
 | bracket_type values | Meaning |
 |---------------------|---------|
 | `"ko"`, `"double"`, `"DOUBLE_ELIMINATION"` | Double elimination (Winner Bracket + Loser Bracket) |
-| `"POOL"` | Pure round-robin pool (no KO phase) |
+| `"POOL"`, `"pools"`, `"pool"` | Pure round-robin pool (no KO phase) |
 | Brackets with pool-phase fights + `bracket_type="double"` | **Double-pool→KO**: two pools, then single-elimination semifinals/final |
 
 The double-pool→KO format is **excluded** from LB generation — it only uses single-elimination KO after pools complete. Detection: check if any `FightModel` with `bracket_phase == "pool"` exists for that bracket.

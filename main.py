@@ -382,7 +382,12 @@ def _advance_winner(fight: FightModel, session) -> FightModel | None:
         return next_fight
 
     # ── Winners Bracket ───────────────────────────────────────────────────────
-    # Sibling check: the WB final has no sibling → stop.
+    # Stop condition: the WB final is the only fight at its round.
+    # We check sibling presence first (fast path), but if the sibling is
+    # missing we fall back to counting all WB fights at this round.
+    # A missing sibling can legitimately occur when the bracket generator
+    # skipped a "Freilos vs Freilos" phantom fight, leaving a gap in
+    # pos_in_round — that gap must NOT be mistaken for the WB final.
     sibling_pos = pos ^ 1
     sibling = (
         session.query(FightModel)
@@ -395,7 +400,21 @@ def _advance_winner(fight: FightModel, session) -> FightModel | None:
         .first()
     )
     if not sibling:
-        return None
+        # No sibling at the expected adjacent slot.  Only stop here if this
+        # really is the final (sole fight at this round).  If more WB fights
+        # exist at the same round, a phantom sibling caused the gap and we
+        # must still advance.
+        wb_count_at_round = (
+            session.query(FightModel)
+            .filter(
+                FightModel.bracket_id == fight.bracket_id,
+                FightModel.bracket_phase == "wb",
+                FightModel.round == lr,
+            )
+            .count()
+        )
+        if wb_count_at_round <= 1:
+            return None  # Sole fight at this round → genuine WB final
 
     next_coord = BracketManager.get_next_winner_coord(
         fight.bracket_id, lr, pos, fight.bracket_phase
@@ -618,6 +637,16 @@ def heal_bracket_progressions(session) -> bool:
             total_created = True
 
     session.commit()
+
+    # Finalize placements for any bracket whose fights are all decided
+    all_bracket_ids = {
+        row.bracket_id
+        for row in session.query(FightModel.bracket_id).distinct().all()
+    }
+    for bid in all_bracket_ids:
+        _finalize_bracket_placements(bid, session)
+    session.commit()
+
     return total_created
 
 
@@ -713,6 +742,155 @@ def _generate_double_pool_ko(bracket_id: int, session) -> list:
 
     session.flush()
     return created
+
+
+def _loser_of(fight: FightModel) -> int | None:
+    """Return the participant who lost the given fight."""
+    if not fight.winner_id:
+        return None
+    return (
+        fight.participant2_id
+        if fight.participant1_id == fight.winner_id
+        else fight.participant1_id
+    )
+
+
+def _finalize_bracket_placements(bracket_id: int, session) -> bool:
+    """
+    If all fights in a bracket are decided, write 1st/2nd/3rd placements and
+    set bracket status to 'completed'.  Returns True when newly finalized.
+
+    Three formats are supported:
+      • POOL          – pure round-robin; standings by wins ↓ then Übw ↓
+      • double-pool→KO – two pools + single-elim KO; 3rd = both SF losers
+      • double-elim   – WB + LB; 2nd = WB-final loser, 3rd = last-LB participants
+    """
+    bracket = session.query(BracketModel).filter(BracketModel.id == bracket_id).first()
+    if not bracket or bracket.status in ("completed", "finished"):
+        return False
+
+    all_fights = (
+        session.query(FightModel).filter(FightModel.bracket_id == bracket_id).all()
+    )
+    if not all_fights:
+        return False
+
+    # Every fight must be decided before we can finalize.
+    # A fight is decided if it has a winner, is a bye, or is finished/completed (draws in pool).
+    if any(
+        f.winner_id is None and f.status not in ("bye", "finished", "completed")
+        for f in all_fights
+    ):
+        return False
+
+    first_id = second_id = third_1_id = third_2_id = None
+    is_pool_ko = any(f.bracket_phase == "pool" for f in all_fights)
+
+    # ── Pure round-robin POOL ────────────────────────────────────────────────
+    if bracket.bracket_type in ("POOL", "pools", "pool"):
+        fighter_ids: set = set()
+        for f in all_fights:
+            if f.participant1_id:
+                fighter_ids.add(f.participant1_id)
+            if f.participant2_id:
+                fighter_ids.add(f.participant2_id)
+        stats: dict = {fid: {"wins": 0, "ubw": 0} for fid in fighter_ids}
+        for f in all_fights:
+            if f.status not in ("finished", "completed", "bye"):
+                continue
+            for fid in fighter_ids:
+                is_p1 = f.participant1_id == fid
+                is_p2 = f.participant2_id == fid
+                if not is_p1 and not is_p2:
+                    continue
+                own = int((f.score1 if is_p1 else f.score2) or 0)
+                opp = int((f.score2 if is_p1 else f.score1) or 0)
+                stats[fid]["ubw"] += max(0, own - opp)
+                if f.winner_id == fid:
+                    stats[fid]["wins"] += 1
+        ordered = sorted(
+            fighter_ids, key=lambda fid: (-stats[fid]["wins"], -stats[fid]["ubw"])
+        )
+        first_id = ordered[0] if len(ordered) > 0 else None
+        second_id = ordered[1] if len(ordered) > 1 else None
+        third_1_id = ordered[2] if len(ordered) > 2 else None
+        third_2_id = ordered[3] if len(ordered) > 3 else None
+
+    # ── Double-pool → KO (two round-robin pools + single-elim semifinals/final) ─
+    elif bracket.bracket_type in ("ko", "double", "DOUBLE_ELIMINATION") and is_pool_ko:
+        wb_fights = sorted(
+            [f for f in all_fights if f.bracket_phase == "wb"],
+            key=lambda f: (f.round or 0, f.pos_in_round or 0),
+        )
+        if not wb_fights:
+            return False
+        max_wb_round = max(f.round for f in wb_fights if f.round is not None)
+        wb_final_list = [f for f in wb_fights if f.round == max_wb_round]
+        if not wb_final_list or not wb_final_list[0].winner_id:
+            return False
+        wb_final = wb_final_list[0]
+        first_id = wb_final.winner_id
+        second_id = _loser_of(wb_final)
+        # 3rd = losers of the WB R0 semifinals
+        wb_r0 = sorted(
+            [f for f in wb_fights if f.round == 0],
+            key=lambda f: f.pos_in_round or 0,
+        )
+        third_1_id = _loser_of(wb_r0[0]) if len(wb_r0) > 0 else None
+        third_2_id = _loser_of(wb_r0[1]) if len(wb_r0) > 1 else None
+
+    # ── Full double-elimination (WB + LB, no pool phase) ────────────────────
+    elif bracket.bracket_type in ("ko", "double", "DOUBLE_ELIMINATION") and not is_pool_ko:
+        wb_fights = [f for f in all_fights if f.bracket_phase == "wb"]
+        lb_fights = [f for f in all_fights if f.bracket_phase == "lb"]
+        if not wb_fights:
+            return False
+        max_wb_round = max(f.round for f in wb_fights if f.round is not None)
+        wb_final_list = [f for f in wb_fights if f.round == max_wb_round]
+        if len(wb_final_list) != 1 or not wb_final_list[0].winner_id:
+            return False
+        wb_final = wb_final_list[0]
+        first_id = wb_final.winner_id
+        second_id = _loser_of(wb_final)
+
+        # 3rd place determined from the last LB round
+        lb_with_round = [f for f in lb_fights if f.round is not None]
+        if lb_with_round:
+            max_lb_round = max(f.round for f in lb_with_round)
+            last_lb = sorted(
+                [f for f in lb_with_round if f.round == max_lb_round],
+                key=lambda f: f.pos_in_round or 0,
+            )
+            if max_lb_round % 2 == 0:
+                # Even = reduction round (n=2 / 4-person bracket):
+                # single LB fight — both participants share 3rd (winner not advanced)
+                third_1_id = last_lb[0].participant1_id if last_lb else None
+                third_2_id = last_lb[0].participant2_id if last_lb else None
+            else:
+                # Odd = injection round (n≥4 brackets):
+                # winners of the two last LB fights both share 3rd
+                third_1_id = last_lb[0].winner_id if len(last_lb) > 0 else None
+                third_2_id = last_lb[1].winner_id if len(last_lb) > 1 else None
+            if not third_1_id or not third_2_id:
+                return False  # LB not yet fully decided
+
+    else:
+        return False  # Unknown bracket configuration
+
+    # ── Persist placements ───────────────────────────────────────────────────
+    session.query(BracketModel).filter(BracketModel.id == bracket_id).update({
+        "status": "completed",
+        "first_place": first_id,
+        "second_place": second_id,
+        "third_place_1": third_1_id,
+        "third_place_2": third_2_id,
+    })
+    session.flush()
+    logger.info(
+        f"Bracket {bracket_id} completed: "
+        f"1st={first_id}, 2nd={second_id}, 3rd={third_1_id}/{third_2_id}"
+    )
+    return True
 
 
 def generate_wb_shells(bracket_id: int, session) -> int:
@@ -1178,7 +1356,11 @@ async def _handle_status_update(data: dict, session) -> None:
                                     )
                             await manager.broadcast({"type": "REFRESH_LIST"})
 
-                    if bracket.bracket_type == "POOL":
+                    # Finalize placements if the bracket is now fully done
+                    _finalize_bracket_placements(fight.bracket_id, session)
+                    session.commit()
+
+                    if bracket.bracket_type in ("POOL", "pools", "pool"):
                         all_fights = (
                             session.query(FightModel)
                             .filter(FightModel.bracket_id == fight.bracket_id)

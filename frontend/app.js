@@ -957,7 +957,7 @@ const UI = {
 
         for (const poolIdx of poolIndices) {
             const pm = allMatches
-                .filter(m => (m.poolIndex ?? 0) === poolIdx)
+                .filter(m => m.phase === 'pool' && (m.poolIndex ?? 0) === poolIdx)
                 .sort((a, b) => (a.posInRound ?? 0) - (b.posInRound ?? 0));
             if (!pm.length) continue;
 
