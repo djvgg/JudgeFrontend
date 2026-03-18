@@ -52,7 +52,7 @@ class BracketManager:
         """
         Calculates standings for a Round Robin pool.
         participant_data: List of dicts with {'id': <GroupParticipantID>, 'name': ..., 'club': ...}
-        Tiebreaker order: Wins DESC → Ubw (score difference, own minus conceded) DESC.
+        Tiebreaker order: Wins DESC → Duration ASC (least total fight time) → Ubw DESC.
         """
         standings = []
         for p in participant_data:
@@ -61,6 +61,7 @@ class BracketManager:
                 "name": p["name"],
                 "club": p["club"],
                 "wins": 0,
+                "duration": 0,
                 "ubw": 0,
                 "fights_count": 0,
             }
@@ -76,6 +77,7 @@ class BracketManager:
                     continue
 
                 stats["fights_count"] += 1
+                stats["duration"] += int(f.duration or 0)
                 own_score = int((f.score1 if is_p1 else f.score2) or 0)
                 opp_score = int((f.score2 if is_p1 else f.score1) or 0)
                 stats["ubw"] += max(0, own_score - opp_score)
@@ -85,6 +87,6 @@ class BracketManager:
 
             standings.append(stats)
 
-        # Sort: Wins DESC, then Ubw (score difference) DESC
-        standings.sort(key=lambda x: (x["wins"], x["ubw"]), reverse=True)
+        # Sort: Wins DESC, then Duration ASC (least total time), then Ubw DESC
+        standings.sort(key=lambda x: (-x["wins"], x["duration"], -x["ubw"]))
         return standings

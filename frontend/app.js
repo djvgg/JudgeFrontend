@@ -28,6 +28,7 @@ const State = {
     },
     restTimerInterval: null,
     poolStandings: {},  // bracketId -> standings array
+    finalizedPools: new Set(),  // bracketIds already sent to backend for finalization
     bracketViewMode: 'live',   // 'live' | 'finished'
     bracketPhaseView: 'wb',    // 'wb'  | 'lb'
 };
@@ -984,31 +985,47 @@ const UI = {
 
             // --- Compute per-fighter stats ---
             const stats = fList.map(f => {
-                let wins = 0, ubw = 0;
+                let wins = 0, duration = 0, ubw = 0;
                 pm.forEach(m => {
                     const isP1 = String(m.p1?.id) === String(f.id);
                     const isP2 = String(m.p2?.id) === String(f.id);
                     if (!isP1 && !isP2) return;
                     if (m.status !== 'finished' && m.status !== 'completed') return;
+                    duration += Number(m.duration ?? 0);
                     const own = Number(isP1 ? (m.p1.score?.points ?? 0) : (m.p2.score?.points ?? 0));
                     const opp = Number(isP1 ? (m.p2.score?.points ?? 0) : (m.p1.score?.points ?? 0));
                     if (String(m.winnerId) === String(f.id)) wins++;
                     ubw += Math.max(0, own - opp);  // Ubw. = score difference, never negative
                 });
-                return { id: f.id, wins, ubw };
+                return { id: f.id, wins, duration, ubw };
             });
-            // Sort by wins DESC, then ubw DESC for tiebreaking
-            // Dense ranking: fighters with the same wins AND ubw share the same Platz
+            // Sort by wins DESC, then duration ASC (least total fight time), then ubw DESC
+            // Dense ranking: fighters with the same stats share the same Platz
             const ranked = [...stats].sort((a, b) => {
                 if (b.wins !== a.wins) return b.wins - a.wins;
+                if (a.duration !== b.duration) return a.duration - b.duration;
                 return b.ubw - a.ubw;
             });
             const platzOf = id => {
                 const me = stats.find(s => s.id === id);
-                return ranked.filter(s => s.wins > me.wins || (s.wins === me.wins && s.ubw > me.ubw)).length + 1;
+                return ranked.filter(s =>
+                    s.wins > me.wins ||
+                    (s.wins === me.wins && s.duration < me.duration) ||
+                    (s.wins === me.wins && s.duration === me.duration && s.ubw > me.ubw)
+                ).length + 1;
             };
             const anyDone = pm.some(m => m.status === 'finished' || m.status === 'completed');
             const allDone = pm.every(m => m.status === 'finished' || m.status === 'completed' || m.status === 'bye');
+
+            const bId = pm[0]?.bracketId ? Number(pm[0].bracketId) : null;
+            if (allDone && bId && !State.finalizedPools.has(bId)) {
+                State.finalizedPools.add(bId);
+                Network.send({
+                    type: 'SAVE_POOL_PLACEMENTS',
+                    bracketId: bId,
+                    placements: ranked.map(r => Number(r.id))
+                });
+            }
 
             // --- Build table ---
             const tbl = document.createElement('table');

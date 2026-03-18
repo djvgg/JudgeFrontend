@@ -651,7 +651,7 @@ def heal_bracket_progressions(session) -> bool:
 
 
 def _pool_standings_for_index(pool_fights: list, pool_index: int) -> list:
-    """Return participant IDs sorted by wins desc, then Ubw (score difference) desc."""
+    """Return participant IDs sorted by wins DESC, duration ASC, ubw DESC."""
     pf = [f for f in pool_fights if f.pool_index == pool_index]
     fighter_ids: set = set()
     for f in pf:
@@ -660,7 +660,7 @@ def _pool_standings_for_index(pool_fights: list, pool_index: int) -> list:
         if f.participant2_id:
             fighter_ids.add(f.participant2_id)
 
-    stats: dict = {fid: {"wins": 0, "ubw": 0} for fid in fighter_ids}
+    stats: dict = {fid: {"wins": 0, "duration": 0, "ubw": 0} for fid in fighter_ids}
     for f in pf:
         # Include all decided fights (even draws where winner_id is null)
         if f.status not in ("finished", "completed", "bye"):
@@ -670,13 +670,17 @@ def _pool_standings_for_index(pool_fights: list, pool_index: int) -> list:
             is_p2 = f.participant2_id == fid
             if not is_p1 and not is_p2:
                 continue
+            stats[fid]["duration"] += int(f.duration or 0)
             own = int((f.score1 if is_p1 else f.score2) or 0)
             opp = int((f.score2 if is_p1 else f.score1) or 0)
             stats[fid]["ubw"] += max(0, own - opp)
             if f.winner_id == fid:
                 stats[fid]["wins"] += 1
 
-    return sorted(fighter_ids, key=lambda fid: (-stats[fid]["wins"], -stats[fid]["ubw"]))
+    return sorted(
+        fighter_ids,
+        key=lambda fid: (-stats[fid]["wins"], stats[fid]["duration"], -stats[fid]["ubw"]),
+    )
 
 
 def _generate_double_pool_ko(bracket_id: int, session) -> list:
@@ -794,7 +798,7 @@ def _finalize_bracket_placements(bracket_id: int, session) -> bool:
                 fighter_ids.add(f.participant1_id)
             if f.participant2_id:
                 fighter_ids.add(f.participant2_id)
-        stats: dict = {fid: {"wins": 0, "ubw": 0} for fid in fighter_ids}
+        stats: dict = {fid: {"wins": 0, "duration": 0, "ubw": 0} for fid in fighter_ids}
         for f in all_fights:
             if f.status not in ("finished", "completed", "bye"):
                 continue
@@ -803,13 +807,15 @@ def _finalize_bracket_placements(bracket_id: int, session) -> bool:
                 is_p2 = f.participant2_id == fid
                 if not is_p1 and not is_p2:
                     continue
+                stats[fid]["duration"] += int(f.duration or 0)
                 own = int((f.score1 if is_p1 else f.score2) or 0)
                 opp = int((f.score2 if is_p1 else f.score1) or 0)
                 stats[fid]["ubw"] += max(0, own - opp)
                 if f.winner_id == fid:
                     stats[fid]["wins"] += 1
         ordered = sorted(
-            fighter_ids, key=lambda fid: (-stats[fid]["wins"], -stats[fid]["ubw"])
+            fighter_ids,
+            key=lambda fid: (-stats[fid]["wins"], stats[fid]["duration"], -stats[fid]["ubw"]),
         )
         first_id = ordered[0] if len(ordered) > 0 else None
         second_id = ordered[1] if len(ordered) > 1 else None
@@ -1265,6 +1271,25 @@ async def _handle_status_update(data: dict, session) -> None:
                 if bracket:
                     # WB/KO winner advancement (lazy creation + sibling guard)
                     next_fight = _advance_winner(fight, session)
+
+                    # If the sibling fight at this round is a bye, its winner
+                    # also needs to go to next_fight's other slot right now.
+                    # Without this, the next fight shows up with one empty slot
+                    # until the server restarts and heal_bracket_progressions runs.
+                    sibling_bye = (
+                        session.query(FightModel)
+                        .filter(
+                            FightModel.bracket_id == fight.bracket_id,
+                            FightModel.bracket_phase == fight.bracket_phase,
+                            FightModel.round == fight.round,
+                            FightModel.pos_in_round == (fight.pos_in_round ^ 1),
+                            FightModel.status == "bye",
+                        )
+                        .first()
+                    )
+                    if sibling_bye and sibling_bye.winner_id:
+                        _advance_winner(sibling_bye, session)
+
                     if next_fight:
                         session.commit()
                         updated_next = get_match_dict(next_fight.id, session)
@@ -1378,7 +1403,7 @@ async def _handle_status_update(data: dict, session) -> None:
                                 ParticipantModel,
                                 GroupParticipantModel.participant_id == ParticipantModel.id,
                             )
-                            .filter(GroupParticipantModel.participant_id.in_(list(p_ids)))
+                            .filter(GroupParticipantModel.id.in_(list(p_ids)))
                             .all()
                         )
                         participant_data = [
@@ -1396,7 +1421,51 @@ async def _handle_status_update(data: dict, session) -> None:
                             }
                         )
             except Exception as e:
-                print(f"Advancement error: {e}")
+                logger.error(f"Advancement error: {e}", exc_info=True)
+        elif fight.bracket_phase == "pool":
+            # Draw in a pool fight (equal scores, no winner_id): still finalize and update standings.
+            session.commit()
+            try:
+                bracket = (
+                    session.query(BracketModel).filter(BracketModel.id == fight.bracket_id).first()
+                )
+                if bracket:
+                    _finalize_bracket_placements(fight.bracket_id, session)
+                    session.commit()
+                    all_fights = (
+                        session.query(FightModel)
+                        .filter(FightModel.bracket_id == fight.bracket_id)
+                        .all()
+                    )
+                    p_ids = set()
+                    for f in all_fights:
+                        if f.participant1_id:
+                            p_ids.add(f.participant1_id)
+                        if f.participant2_id:
+                            p_ids.add(f.participant2_id)
+                    gps_with_p = (
+                        session.query(GroupParticipantModel, ParticipantModel)
+                        .join(
+                            ParticipantModel,
+                            GroupParticipantModel.participant_id == ParticipantModel.id,
+                        )
+                        .filter(GroupParticipantModel.id.in_(list(p_ids)))
+                        .all()
+                    )
+                    participant_data = [
+                        {"id": gp.id, "name": f"{p.first_name} {p.last_name}", "club": p.club}
+                        for gp, p in gps_with_p
+                    ]
+                    standings = BracketManager.calculate_pool_standings(all_fights, participant_data)
+                    await manager.broadcast(
+                        {
+                            "type": "POOL_STANDINGS",
+                            "bracketId": fight.bracket_id,
+                            "standings": standings,
+                        }
+                    )
+            except Exception as e:
+                logger.error(f"Advancement error (draw): {e}", exc_info=True)
 
     session.commit()
     session.refresh(fight)
@@ -1575,6 +1644,33 @@ async def _ippon_stop(match_id: int) -> None:
     pass
 
 
+async def _handle_save_pool_placements(data: dict, session) -> None:
+    """
+    Save pool placements sent from the frontend when all pool fights are done.
+    The frontend sends the GroupParticipant IDs in ranked order (1st, 2nd, 3rd, ...).
+    """
+    bracket_id = data.get("bracketId")
+    placements = data.get("placements", [])
+    if not bracket_id or not placements:
+        return
+    bracket = session.query(BracketModel).filter(BracketModel.id == bracket_id).first()
+    if not bracket or bracket.status == "completed":
+        return
+    session.query(BracketModel).filter(BracketModel.id == bracket_id).update({
+        "status": "completed",
+        "first_place": placements[0] if len(placements) > 0 else None,
+        "second_place": placements[1] if len(placements) > 1 else None,
+        "third_place_1": placements[2] if len(placements) > 2 else None,
+        "third_place_2": placements[3] if len(placements) > 3 else None,
+    })
+    session.commit()
+    logger.info(
+        f"Pool Bracket {bracket_id} finalized via frontend: "
+        f"1st={placements[0] if placements else None}, "
+        f"2nd={placements[1] if len(placements) > 1 else None}"
+    )
+
+
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await manager.connect(websocket)
@@ -1615,6 +1711,8 @@ async def websocket_endpoint(websocket: WebSocket):
                         await _handle_status_update(data, session)
                     elif msg_type == "MANUAL_OVERRIDE":
                         await _handle_manual_override(data, session)
+                    elif msg_type == "SAVE_POOL_PLACEMENTS":
+                        await _handle_save_pool_placements(data, session)
                     elif msg_type == "SIGNAL":
                         await manager.broadcast(data)
                 except Exception as e:
