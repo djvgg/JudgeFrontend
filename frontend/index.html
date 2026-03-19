@@ -11,6 +11,7 @@
     <meta name="theme-color" content="#121212">
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 </head>
 
 <body>
@@ -46,6 +47,10 @@
         <header>
             <div class="header-content">
                 <div class="header-brand">
+                    <button id="global-back-btn" class="global-back-btn" onclick="UI.switchView('fights')"
+                        style="display:none;" title="Zurück zur Liste">
+                        ← Liste
+                    </button>
                     <div class="logo-circle">J</div>
                     <h1 id="tournament-title">Turnier wird geladen...</h1>
                 </div>
@@ -114,9 +119,6 @@
                 </div>
                 <div class="bracket-main">
                     <div class="bracket-header">
-                        <button class="btn-base btn-secondary back-btn" onclick="UI.switchView('fights')">
-                            <i class="fas fa-arrow-left"></i> Liste
-                        </button>
                         <h2 id="current-bracket-title">Kategorie wählen</h2>
                         <div class="phase-toggle" id="phase-toggle" style="display:none">
                             <button class="phase-btn active" id="phase-btn-wb"

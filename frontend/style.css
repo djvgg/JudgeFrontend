@@ -1,4 +1,54 @@
-@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap');
+/* Local Rubik Fonts - Offline Fallback */
+@font-face {
+    font-family: 'RubikFallback';
+    src: url('fonts/rubik-400.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'RubikFallback';
+    src: url('fonts/rubik-500.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'RubikFallback';
+    src: url('fonts/rubik-600.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'RubikFallback';
+    src: url('fonts/rubik-700.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'RubikFallback';
+    src: url('fonts/rubik-800.ttf') format('truetype');
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+}
+
+body {
+    /* Use Google CDN 'Rubik' as primary, local 'RubikFallback' as secondary */
+    font-family: 'Rubik', 'RubikFallback', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--text-main);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    background-color: var(--bg-primary);
+}
 
 :root {
     /* Refined Official Branding Palette - edv_backend standard */
@@ -46,14 +96,7 @@ html {
     background-color: var(--bg-primary);
 }
 
-body {
-    font-family: 'Rubik', -apple-system, BlinkMacSystemFont, sans-serif;
-    background-color: var(--bg-primary);
-    color: var(--text-main);
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-    min-height: 100vh;
-}
+
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
@@ -314,10 +357,31 @@ header {
     font-weight: 700;
 }
 
+/* --- BRAND STYLING --- */
 .header-brand {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 1rem;
+}
+
+.global-back-btn {
+    background: var(--surface-light);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-right: 15px;
+}
+
+.global-back-btn:hover {
+    background: var(--border-color);
 }
 
 .logo-circle {
@@ -631,12 +695,34 @@ input:checked+.slider:before {
     letter-spacing: 0.5px;
 }
 
+/* Pool System Wrapper */
+.pool-system-wrapper {
+    width: 100%;
+    margin: 2rem 0;
+    overflow-x: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-color) var(--bg-secondary);
+}
+
+.pool-system-wrapper::-webkit-scrollbar {
+    height: 6px;
+}
+
+.pool-system-wrapper::-webkit-scrollbar-thumb {
+    background: var(--accent-color);
+    border-radius: 3px;
+}
+
 /* Main EDV pool table */
 .pool-edv-table {
     border-collapse: collapse;
     font-size: 0.9rem;
     color: var(--text-main);
-    margin-bottom: 0.5rem;
+    margin: 1.5rem auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .pool-edv-table th,
@@ -660,7 +746,7 @@ input:checked+.slider:before {
 }
 
 .pth-name {
-    min-width: 260px;
+    min-width: 180px;
     text-align: left !important;
 }
 
@@ -676,11 +762,11 @@ input:checked+.slider:before {
 }
 
 .pth-fight {
-    min-width: 72px;
+    min-width: 58px;
 }
 
 .pth-sum {
-    min-width: 64px;
+    min-width: 58px;
 }
 
 /* Data cells */
@@ -699,7 +785,10 @@ input:checked+.slider:before {
 .ptd-name {
     text-align: left;
     font-weight: 500;
-    min-width: 260px;
+    min-width: 180px;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
     font-size: 0.9rem;
 }
 
@@ -717,18 +806,18 @@ input:checked+.slider:before {
 /* black — not participating */
 .ptd-pending {
     background: #202c3a;
-    min-width: 72px;
+    min-width: 58px;
 }
 
 /* empty — fight pending     */
 .ptd-win {
     background: rgba(33, 150, 243, 0.12);
     font-weight: 700;
-    min-width: 72px;
+    min-width: 58px;
 }
 
 .ptd-loss {
-    min-width: 72px;
+    min-width: 58px;
 }
 
 /* Score display inside fight cells */
@@ -1103,9 +1192,9 @@ button:disabled {
 
 
 .timer-btn {
-    height: 40px;
+    height: var(--btn-height);
     padding: 0 1.25rem;
-    border-radius: var(--br-md);
+    border-radius: var(--br-lg);
     font-weight: 700;
     font-size: 0.85rem;
     cursor: pointer;
@@ -1140,9 +1229,9 @@ button:disabled {
 /* Score Buttons Base */
 .score-btn {
     width: 100%;
-    height: 40px;
+    height: var(--btn-height);
     padding: 0 1rem;
-    border-radius: var(--br-md);
+    border-radius: var(--br-lg);
     border: 1px solid var(--border-color);
     font-family: inherit;
     font-size: 0.9rem;
@@ -1286,8 +1375,9 @@ button:disabled {
     background: transparent;
     border: 1px solid var(--accent-color);
     color: var(--accent-color);
-    padding: 0.4rem 1rem;
-    border-radius: 8px;
+    padding: 0 1.25rem;
+    height: 38px;
+    border-radius: var(--br-lg);
     font-weight: 600;
     font-size: 0.8rem;
     cursor: pointer;
@@ -1572,13 +1662,15 @@ button:disabled {
     background: var(--bg-tertiary);
     color: var(--text-main);
     border: 1px solid var(--border-color);
-    padding: 8px 16px;
-    border-radius: 8px;
+    height: var(--btn-height);
+    padding: 0 1.25rem;
+    border-radius: var(--br-lg);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
     display: flex;
     align-items: center;
+    gap: 10px;
 }
 
 .back-btn:hover {

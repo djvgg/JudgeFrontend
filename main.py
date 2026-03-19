@@ -35,13 +35,19 @@ logger = _logging.getLogger("JudoApp")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info("Starting up Judo Real-Time API...")
+    logger.info("========================================")
+    logger.info("   JUDO REAL-TIME SYSTEM STARTUP        ")
+    logger.info("========================================")
+
+    logger.info("[INIT] Initializing Database Service...")
     init_db()
+    logger.info("[INIT] Database connected and schema verified.")
+
     with SessionLocal() as session:
+        logger.info("[BRACKET] Pre-creating fight shells for KO systems...")
         # Pre-create WB R1+ and all LB fight shells for every double-elimination
         # bracket so the full tree is visible and scorable immediately.
-        # Exclude pool brackets (bracket_type='double' there means double-pool,
-        # not double-elimination — they use single-elimination KO after pools).
+        # Exclude pool brackets.
         pool_bracket_ids_startup = {
             f.bracket_id
             for f in session.query(FightModel.bracket_id)
@@ -56,13 +62,20 @@ async def lifespan(app: FastAPI):
         )
         for b in double_brackets:
             if b.id in pool_bracket_ids_startup:
-                continue  # pool→KO bracket: no LB
+                continue
             generate_wb_shells(b.id, session)
             generate_lb_fights(b.id, session)
         session.commit()
-        # Catch up with any fights finished externally while the server was down
-        logger.info("Healing bracket progressions...")
+        logger.info(f"[BRACKET] Successfully processed {len(double_brackets)} brackets.")
+
+        logger.info("[BRACKET] Healing bracket progressions (consistency check)...")
         heal_bracket_progressions(session)
+        logger.info("[BRACKET] Progressions healed and synchronized.")
+
+    logger.info("[WS] WebSocket Event Bus initialized and ready.")
+    logger.info("========================================")
+    logger.info("   SYSTEM ONLINE: REACHABLE AT PORT 5001")
+    logger.info("========================================")
     yield
 
 
@@ -192,11 +205,13 @@ def get_match_dict(fight_id: int, session):
         .filter(BracketModel.id == fight.bracket_id)
         .first()
     )
-    category = (
-        f"{b_info[1].age_group} {b_info[1].weight_class}"
-        if b_info
-        else f"Bracket {fight.bracket_id}"
-    )
+    if b_info:
+        _age = b_info[1].age_group or ""
+        _weight = b_info[1].weight_class or ""
+        category = f"{_age} {_weight}".strip() or f"Bracket {fight.bracket_id}"
+    else:
+        category = f"Bracket {fight.bracket_id}"
+
 
     # table_id: fight-level override → bracket mat_id → computed fallback
     if fight.table_id:
@@ -640,8 +655,7 @@ def heal_bracket_progressions(session) -> bool:
 
     # Finalize placements for any bracket whose fights are all decided
     all_bracket_ids = {
-        row.bracket_id
-        for row in session.query(FightModel.bracket_id).distinct().all()
+        row.bracket_id for row in session.query(FightModel.bracket_id).distinct().all()
     }
     for bid in all_bracket_ids:
         _finalize_bracket_placements(bid, session)
@@ -753,9 +767,7 @@ def _loser_of(fight: FightModel) -> int | None:
     if not fight.winner_id:
         return None
     return (
-        fight.participant2_id
-        if fight.participant1_id == fight.winner_id
-        else fight.participant1_id
+        fight.participant2_id if fight.participant1_id == fight.winner_id else fight.participant1_id
     )
 
 
@@ -773,17 +785,14 @@ def _finalize_bracket_placements(bracket_id: int, session) -> bool:
     if not bracket or bracket.status in ("completed", "finished"):
         return False
 
-    all_fights = (
-        session.query(FightModel).filter(FightModel.bracket_id == bracket_id).all()
-    )
+    all_fights = session.query(FightModel).filter(FightModel.bracket_id == bracket_id).all()
     if not all_fights:
         return False
 
     # Every fight must be decided before we can finalize.
     # A fight is decided if it has a winner, is a bye, or is finished/completed (draws in pool).
     if any(
-        f.winner_id is None and f.status not in ("bye", "finished", "completed")
-        for f in all_fights
+        f.winner_id is None and f.status not in ("bye", "finished", "completed") for f in all_fights
     ):
         return False
 
@@ -815,7 +824,11 @@ def _finalize_bracket_placements(bracket_id: int, session) -> bool:
                     stats[fid]["wins"] += 1
         ordered = sorted(
             fighter_ids,
-            key=lambda fid: (-stats[fid]["wins"], stats[fid]["duration"], -stats[fid]["ubw"]),
+            key=lambda fid: (
+                -stats[fid]["wins"],
+                stats[fid]["duration"],
+                -stats[fid]["ubw"],
+            ),
         )
         first_id = ordered[0] if len(ordered) > 0 else None
         second_id = ordered[1] if len(ordered) > 1 else None
@@ -884,13 +897,15 @@ def _finalize_bracket_placements(bracket_id: int, session) -> bool:
         return False  # Unknown bracket configuration
 
     # ── Persist placements ───────────────────────────────────────────────────
-    session.query(BracketModel).filter(BracketModel.id == bracket_id).update({
-        "status": "completed",
-        "first_place": first_id,
-        "second_place": second_id,
-        "third_place_1": third_1_id,
-        "third_place_2": third_2_id,
-    })
+    session.query(BracketModel).filter(BracketModel.id == bracket_id).update(
+        {
+            "status": "completed",
+            "first_place": first_id,
+            "second_place": second_id,
+            "third_place_1": third_1_id,
+            "third_place_2": third_2_id,
+        }
+    )
     session.flush()
     logger.info(
         f"Bracket {bracket_id} completed: "
@@ -1120,11 +1135,13 @@ def get_matches():
             next_match_id = fight_lookup.get(next_key)
 
             b_info = bracket_info.get(f.bracket_id)
-            category = (
-                f"{b_info[1].age_group} {b_info[1].weight_class}"
-                if b_info
-                else f"Bracket {f.bracket_id}"
-            )
+            if b_info:
+                _age = b_info[1].age_group or ""
+                _weight = b_info[1].weight_class or ""
+                category = f"{_age} {_weight}".strip() or f"Bracket {f.bracket_id}"
+            else:
+                category = f"Bracket {f.bracket_id}"
+
 
             # table_id: fight-level override → bracket mat_id → computed fallback
             if f.table_id:
