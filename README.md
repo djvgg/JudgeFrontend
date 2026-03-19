@@ -32,15 +32,17 @@ Anstatt generischer Fehlermeldungen bietet die UI detaillierte Lösungen auf Deu
 - Netzwerk: "Bitte WLAN prüfen" bei Verbindungsverlust.
 - Server: "Technik-Team kontaktieren" bei Dienstausfall.
 - Datenbank: "Datenbank nicht gefunden" bei fehlenden Turnierdaten.
+- 100% Offline-Fähigkeit: Automatischer Fallback auf lokale Ressourcen und SQLite-Datenbank.
+
 
 ---
 
 ## Technische Architektur
 
 ### Frontend (Vanilla Stack)
-- HTML5/CSS3: Custom Design-System mit der Schriftart Rubik, optimiert für hohen Kontrast (Dark Mode).
+- HTML5/CSS3: Custom Design-System basierend auf professionellen System-Fonts, optimiert für hohen Kontrast (Dark Mode).
 - Native JS (ES6+): Modulare Architektur (State, Network, UI, Scoring) ohne Overhead durch Frameworks für maximale Geschwindigkeit.
-- Font Awesome 6: Gezielter Einsatz von Symbolen für intuitive Navigation.
+- Smarte System-Symbole: Gezielter Einsatz von leichtgewichtigen Symbolen für intuitive Navigation ohne externe Abhängigkeiten.
 
 ### Backend (Python & FastAPI)
 - FastAPI: Effiziente Verwaltung von asynchronen WebSockets und REST-Endpunkten.

@@ -1040,18 +1040,15 @@ const UI = {
                 if (rs) t.rowSpan = rs; if (cs) t.colSpan = cs;
                 return t;
             };
-            th1.appendChild(mkTH('Start<br>nr', 'pth pth-startnr', 2));
-            th1.appendChild(mkTH('Kämpfername<br>Verein', 'pth pth-name', 2));
-            th1.appendChild(mkTH('Kampfnummer', 'pth pth-kampfnr', null, 2));
-            for (let i = 1; i <= numFights; i++) th1.appendChild(mkTH(String(i), 'pth pth-fight', 2));
-            th1.appendChild(mkTH('Punkte', 'pth pth-sum', 2));
-            th1.appendChild(mkTH('Ubw.', 'pth pth-sum', 2));
-            th1.appendChild(mkTH('Platz', 'pth pth-sum', 2));
+            th1.appendChild(mkTH('Start<br>nr', 'pth pth-startnr', 1));
+            th1.appendChild(mkTH('Kämpfername<br>Verein', 'pth pth-name', 1));
+            for (let i = 1; i <= numFights; i++) th1.appendChild(mkTH(String(i), 'pth pth-fight', 1));
+            th1.appendChild(mkTH('Punkte', 'pth pth-sum', 1));
+            th1.appendChild(mkTH('Ubw.', 'pth pth-sum', 1));
+            th1.appendChild(mkTH('Platz', 'pth pth-sum', 1));
 
-            // Header row 2: sub-headers under Kampfnummer
-            const th2 = thead.insertRow();
-            th2.appendChild(mkTH('Pkt', 'pth pth-sub'));
-            th2.appendChild(mkTH('Ubw.', 'pth pth-sub'));
+            // Header row 2 removed for compactness
+
 
             // Body
             const tbody = tbl.createTBody();
@@ -1065,8 +1062,7 @@ const UI = {
                 const name = `${f.lastName}${f.firstName ? ', ' + f.firstName : ''} [${f.club || '?'}]`;
                 tr.appendChild(Object.assign(document.createElement('td'), { className: 'ptd ptd-startnr', textContent: String(f.startNr) }));
                 tr.appendChild(Object.assign(document.createElement('td'), { className: 'ptd ptd-name', textContent: name }));
-                tr.appendChild(Object.assign(document.createElement('td'), { className: 'ptd ptd-lbl', textContent: 'Punkte' }));
-                tr.appendChild(Object.assign(document.createElement('td'), { className: 'ptd ptd-lbl', textContent: 'Ubw.' }));
+
 
                 pm.forEach(m => {
                     const isP1 = String(m.p1?.id) === String(f.id);
@@ -1109,7 +1105,7 @@ const UI = {
             const trTime = tbody.insertRow();
             trTime.classList.add('pool-kampfzeit-row');
             const tdLabel = document.createElement('td');
-            tdLabel.colSpan = 4; tdLabel.className = 'ptd ptd-kampfzeit';
+            tdLabel.colSpan = 2; tdLabel.className = 'ptd ptd-kampfzeit';
             tdLabel.textContent = 'Kampfzeit';
             trTime.appendChild(tdLabel);
             for (let i = 0; i < numFights; i++) {
