@@ -1,9 +1,9 @@
-import os
 import logging
+import os
+
 from dotenv import load_dotenv
 from sqlalchemy import Column, Integer, String, create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
-from sqlalchemy.exc import OperationalError
 
 # Setup local logging for database initialization
 logging.basicConfig(level=logging.INFO)
@@ -17,32 +17,33 @@ SQLITE_URL = "sqlite:///./local_tournament.db"
 
 def get_engine():
     """
-    Creates the database engine with an automatic fallback to SQLite 
+    Creates the database engine with an automatic fallback to SQLite
     if the primary PostgreSQL connection fails.
     """
     primary_url = os.getenv("DATABASE_URL")
-    
+
     try:
         # 1. Try PostgreSQL (Primary)
         if primary_url and primary_url.startswith("postgresql"):
-            db_logger.info(f"Attempting to connect to PostgreSQL...")
+            db_logger.info("Attempting to connect to PostgreSQL...")
             # We use a short search_timeout to avoid 30s hangs at startup
             temp_engine = create_engine(
-                primary_url, 
-                pool_pre_ping=True, 
+                primary_url,
+                pool_pre_ping=True,
                 pool_recycle=600,
                 connect_args={"connect_timeout": 3}  # 3 seconds timeout for fast fail
             )
-            with temp_engine.connect() as conn:
+            with temp_engine.connect():
                 db_logger.info("PostgreSQL connection successful.")
                 return temp_engine
+
     except Exception as e:
-        db_logger.warning(f"PostgreSQL Connection Failed: {e}")
+        db_logger.warning(f"PostgreSQL connection failed: {e}")
 
     # 2. Fallback to SQLite (Offline Mode)
     db_logger.warning("Switching to OFFLINE MODE (Local SQLite Database).")
     return create_engine(
-        SQLITE_URL, 
+        SQLITE_URL,
         connect_args={"check_same_thread": False}
     )
 

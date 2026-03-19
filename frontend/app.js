@@ -135,6 +135,11 @@ const UI = {
         document.getElementById('fights-view').style.display = isFights ? 'block' : 'none';
         document.getElementById('brackets-view').style.display = isBrackets ? 'flex' : 'none';
 
+        const globalBackBtn = document.getElementById('global-back-btn');
+        if (globalBackBtn) {
+            globalBackBtn.style.display = isBrackets ? 'flex' : 'none';
+        }
+
         if (isBrackets) this.updateBracketSidebar();
     },
 

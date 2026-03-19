@@ -357,10 +357,31 @@ header {
     font-weight: 700;
 }
 
+/* --- BRAND STYLING --- */
 .header-brand {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 1rem;
+}
+
+.global-back-btn {
+    background: var(--surface-light);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-right: 15px;
+}
+
+.global-back-btn:hover {
+    background: var(--border-color);
 }
 
 .logo-circle {
