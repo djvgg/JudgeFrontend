@@ -940,10 +940,9 @@ const UI = {
                 const isBye = !p.lastName || p.lastName === 'TBD' || p.id === 'WAIT';
                 if (isBye) return { label: '-', cls: 'edv-freilos', score: null };
                 const name = p.lastName + (p.firstName ? ', ' + p.firstName : '');
-                const club = p.club ? ` [${p.club}]` : '';
-                const score = m.status !== 'upcoming' ? (p.score?.points ?? 0) : null;
+                const score = p.score?.points ?? 0;
                 const cls = won ? 'edv-winner' : 'edv-participant';
-                return { label: name + club, cls, score, style: isSecondByeSlot ? 'opacity:0.4' : '' };
+                return { label: name, cls, score, style: isSecondByeSlot ? 'opacity:0.4' : '' };
             };
 
             // Bye fight: same participant in both slots → show participant once, then dimmed duplicate
@@ -959,7 +958,8 @@ const UI = {
                 ? `<span class="edv-score editable-score" contenteditable="true" data-match="${m.matchId}" data-player="${pNum}" onblur="App.handleInlineScoreEdit(event)">${s.score}</span>` : '';
 
             const node = document.createElement('div');
-            node.className = `edv-node absolute-node ${m.phase === 'lb' ? 'edv-lb' : ''}`;
+            const isClickable = m.status !== 'finished' && m.status !== 'bye' && m.bracketType === 'ko';
+            node.className = `edv-node absolute-node ${m.phase === 'lb' ? 'edv-lb' : ''}${isClickable ? ' edv-clickable' : ''}`;
             node.style.cssText = `position:absolute;left:${pos.x + OFFSET_X}px;top:${pos.y + OFFSET_Y}px;width:${MATCH_WIDTH}px;`;
             node.innerHTML = `
                 <div class="edv-slot ${s1.cls}" style="${s1.style || ''}">
@@ -970,6 +970,7 @@ const UI = {
                     <span class="edv-name">${s2.label}</span>${scoreHtml(s2, 2)}
                 </div>
             `;
+            if (isClickable) node.onclick = (e) => { if (!e.target.classList.contains('editable-score')) Scoring.openModal(m.matchId); };
             viz.appendChild(node);
         });
     },
@@ -986,7 +987,10 @@ const UI = {
         const wrapper = document.createElement('div');
         wrapper.className = 'pool-system-wrapper';
 
-        // Pool System title removed at user request
+        const hint = document.createElement('div');
+        hint.className = 'pool-click-hint';
+        hint.textContent = '▶ Offene Kampfnummern anklicken zum Starten';
+        wrapper.appendChild(hint);
 
         for (const poolIdx of poolIndices) {
             const pm = allMatches
@@ -1074,12 +1078,19 @@ const UI = {
             };
             th1.appendChild(mkTH('Start<br>nr', 'pth pth-startnr', 1));
             th1.appendChild(mkTH('Kämpfername<br>Verein', 'pth pth-name', 1));
-            for (let i = 1; i <= numFights; i++) th1.appendChild(mkTH(String(i), 'pth pth-fight', 1));
+            for (let i = 1; i <= numFights; i++) {
+                const fightForCol = pm[i - 1];
+                const isOpen = fightForCol && fightForCol.status !== 'finished' && fightForCol.status !== 'bye';
+                const th = mkTH(String(i), `pth pth-fight${isOpen ? ' pth-fight-open' : ''}`, 1);
+                if (isOpen) {
+                    th.title = 'Kampf öffnen';
+                    th.onclick = () => Scoring.openModal(fightForCol.matchId);
+                }
+                th1.appendChild(th);
+            }
             th1.appendChild(mkTH('Punkte', 'pth pth-sum', 1));
             th1.appendChild(mkTH('Ubw.', 'pth pth-sum', 1));
             th1.appendChild(mkTH('Platz', 'pth pth-sum', 1));
-
-            // Header row 2 removed for compactness
 
 
             // Body
@@ -1104,25 +1115,20 @@ const UI = {
                         td.className = 'ptd ptd-nopart';
                     } else {
                         const done = m.status === 'finished' || m.status === 'completed';
-                        if (!done) {
-                            td.className = 'ptd ptd-pending';
-                        } else {
-                            const myPts = Number(isP1 ? (m.p1.score?.points ?? 0) : (m.p2.score?.points ?? 0));
-                            const oppPts = Number(isP1 ? (m.p2.score?.points ?? 0) : (m.p1.score?.points ?? 0));
-                            const won = String(m.winnerId) === String(f.id);
-                            td.className = `ptd ${won ? 'ptd-win' : 'ptd-loss'}`;
-                            // Show "myScore | oppScore" mirrored, and make them editable
-                            const p1Num = isP1 ? 1 : 2;
-                            const p2Num = isP1 ? 2 : 1;
-                            td.innerHTML = `
-                                <span class="ps-my editable-score" contenteditable="true" 
-                                      data-match="${m.matchId}" data-player="${p1Num}"
-                                      onblur="App.handleInlineScoreEdit(event)">${myPts}</span>
-                                <span class="ps-sep">|</span>
-                                <span class="ps-opp editable-score" contenteditable="true" 
-                                      data-match="${m.matchId}" data-player="${p2Num}"
-                                      onblur="App.handleInlineScoreEdit(event)">${oppPts}</span>`;
-                        }
+                        const myPts = Number(isP1 ? (m.p1.score?.points ?? 0) : (m.p2.score?.points ?? 0));
+                        const oppPts = Number(isP1 ? (m.p2.score?.points ?? 0) : (m.p1.score?.points ?? 0));
+                        const won = done && String(m.winnerId) === String(f.id);
+                        td.className = `ptd ${done ? (won ? 'ptd-win' : 'ptd-loss') : 'ptd-pending'}`;
+                        const p1Num = isP1 ? 1 : 2;
+                        const p2Num = isP1 ? 2 : 1;
+                        td.innerHTML = `
+                            <span class="ps-my editable-score" contenteditable="true"
+                                  data-match="${m.matchId}" data-player="${p1Num}"
+                                  onblur="App.handleInlineScoreEdit(event)">${myPts}</span>
+                            <span class="ps-sep">|</span>
+                            <span class="ps-opp editable-score" contenteditable="true"
+                                  data-match="${m.matchId}" data-player="${p2Num}"
+                                  onblur="App.handleInlineScoreEdit(event)">${oppPts}</span>`;
                     }
                     tr.appendChild(td);
                 });
