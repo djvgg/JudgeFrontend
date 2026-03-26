@@ -364,25 +364,7 @@ header {
     gap: 1rem;
 }
 
-.global-back-btn {
-    background: var(--surface-light);
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-right: 15px;
-}
 
-.global-back-btn:hover {
-    background: var(--border-color);
-}
 
 .logo-circle {
     width: 32px;
@@ -582,6 +564,42 @@ input:checked+.slider:before {
     background: var(--accent-color);
     border-color: var(--accent-color);
     color: white;
+}
+
+/* --- WARTELISTE & LIST GROUPS --- */
+.group-title {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    margin: 0 0 1rem 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+.fights-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Compact style for waiting list matches */
+.fight-card.compact-card {
+    padding: 0.75rem 1rem;
+    opacity: 0.85;
+    transform: scale(0.98);
+}
+
+.fight-card.compact-card:hover {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.fight-card.compact-card .category-box .category-name {
+    font-size: 1.1rem;
+}
+
+.fight-card.compact-card .fighter-name {
+    font-size: 1.1rem;
 }
 
 /* Category & Bracket Link */
@@ -1353,6 +1371,14 @@ button:disabled {
     display: flex;
     align-items: center;
     gap: 10px;
+    transition: all 0.2s ease;
+}
+
+.select-wrapper:hover {
+    background-color: var(--border-color);
+    border-color: var(--accent-color);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .table-select {

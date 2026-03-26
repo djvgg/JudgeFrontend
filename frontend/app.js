@@ -197,11 +197,15 @@ const UI = {
     },
 
     renderFightList() {
-        const container = document.getElementById('fight-list');
+        const activeContainer = document.getElementById('fight-list');
+        const waitingContainer = document.getElementById('waiting-fights-list');
+        const waitingSection = document.getElementById('waiting-list-section');
+
         const tableNum = document.getElementById('table-select')?.value || "1";
         const assignedTable = localStorage.getItem('assignedTable');
 
-        container.innerHTML = '';
+        if (activeContainer) activeContainer.innerHTML = '';
+        if (waitingContainer) waitingContainer.innerHTML = '';
 
         let displayMatches = [...State.activeMatches];
 
@@ -225,7 +229,30 @@ const UI = {
         const nextMatchIds = new Set(nextMatchByTable.values());
 
         const isAdminMode = tableNum === 'admin';
-        displayMatches.forEach(m => container.appendChild(this.createFightCard(m, assignedTable, nextMatchIds, isAdminMode)));
+        let hasWaiting = false;
+
+        displayMatches.forEach(m => {
+            const card = this.createFightCard(m, assignedTable, nextMatchIds, isAdminMode);
+            const isLive = m.status === 'live';
+            const isNext = nextMatchIds.has(m.matchId);
+
+            if (isAdminMode) {
+                if (activeContainer) activeContainer.appendChild(card);
+            } else {
+                if (isLive || isNext) {
+                    if (activeContainer) activeContainer.appendChild(card);
+                } else {
+                    card.classList.add('compact-card');
+                    if (waitingContainer) waitingContainer.appendChild(card);
+                    hasWaiting = true;
+                }
+            }
+        });
+
+        if (waitingSection && !isAdminMode) {
+            waitingSection.style.display = hasWaiting ? 'block' : 'none';
+        }
+
         document.getElementById('match-count').textContent = `${displayMatches.length} Kämpfe angezeigt`;
 
         if (isAdminMode) {
@@ -1395,13 +1422,26 @@ const Scoring = {
 
     finishMatch() {
         if (!State.currentScoringMatch) return;
+        const finishedTableId = State.currentScoringMatch.tableId;
         State.currentScoringMatch.status = 'finished';
         const elapsed = 240 - Math.max(0, State.timer.remainingSeconds);
         const msg = { type: 'STATUS_UPDATE', matchId: State.currentScoringMatch.matchId, status: 'finished' };
         if (elapsed > 0) msg.duration = elapsed; // only send if timer was actually used
         Network.send(msg);
-        this.closeModal();
+
+        // Find the next upcoming match for the same table *before* closing
+        const nextMatch = [...State.activeMatches]
+            .filter(m => String(m.tableId) === String(finishedTableId) && m.status !== 'finished' && m.status !== 'bye')
+            .sort((a, b) => a.order - b.order)[0];
+
         UI.renderFightList();
+
+        if (nextMatch) {
+            // SEAMLESS SWITCH: Immediately update modal with next match data
+            this.openModal(nextMatch.matchId);
+        } else {
+            this.closeModal();
+        }
     }
 };
 

@@ -47,14 +47,15 @@
         <header>
             <div class="header-content">
                 <div class="header-brand">
-                    <button id="global-back-btn" class="global-back-btn" onclick="UI.switchView('fights')"
-                        style="display:none;" title="Zurück zur Liste">
-                        ← Liste
-                    </button>
                     <div class="logo-circle">J</div>
                     <h1 id="tournament-title">Turnier wird geladen...</h1>
                 </div>
                 <div class="header-controls">
+                    <div id="global-back-btn" class="select-wrapper" onclick="UI.switchView('fights')"
+                        style="display:none; cursor:pointer;" title="Zurück zur Liste">
+                        <span class="finished-brackets-btn"><i class="fas fa-chevron-left"
+                                style="font-size: 0.8rem; margin-right: 5px; opacity: 0.8;"></i> Liste</span>
+                    </div>
                     <div class="select-wrapper" onclick="UI.switchToBrackets('upcoming')" style="cursor:pointer"
                         title="Live Turnierbaum anzeigen">
                         <span class="finished-brackets-btn" style="color: #2ecc71;">Live-Turnierbaum</span>
@@ -102,8 +103,17 @@
                 </div>
 
                 <section class="matches-container">
-                    <div id="fight-list" class="fight-list">
-                        <div class="status-msg">Kämpfe werden geladen...</div>
+                    <div id="active-fights-section" class="fights-group">
+                        <div id="fight-list" class="fight-list">
+                            <div class="status-msg">Kämpfe werden geladen...</div>
+                        </div>
+                    </div>
+
+                    <div id="waiting-list-section" class="fights-group" style="display: none; margin-top: 1.5rem;">
+                        <h3 class="group-title">Warteliste <span
+                                style="font-size: 0.8rem; opacity: 0.7; font-weight: normal;">(Kommende Kämpfe)</span>
+                        </h3>
+                        <div id="waiting-fights-list" class="fight-list"></div>
                     </div>
                 </section>
             </div>
@@ -172,7 +182,7 @@
                                 PUNKTE</button>
                         </div>
                         <div class="victory-zone">
-                            <button class="victory-btn" onclick="winByDecision(1)">GEWINNER</button>
+                            <button class="victory-btn" onclick="winByDecision(1)">ALS GEWINNER FESTLEGEN</button>
                         </div>
                     </div>
 
@@ -190,7 +200,7 @@
                                 PUNKTE</button>
                         </div>
                         <div class="victory-zone">
-                            <button class="victory-btn" onclick="winByDecision(2)">GEWINNER</button>
+                            <button class="victory-btn" onclick="winByDecision(2)">ALS GEWINNER FESTLEGEN</button>
                         </div>
                     </div>
                 </div>

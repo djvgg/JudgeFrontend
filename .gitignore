@@ -34,5 +34,10 @@ generated_brackets/
 .DS_Store
 Thumbs.db
 
-#Doxyfile
+# Doxyfile
 html/
+
+# Local databases and logs
+*.db
+*.log
+.env
