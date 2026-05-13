@@ -16,6 +16,7 @@ const State = {
     activeMatches: [],
     currentScoringMatch: null,
     currentBracketCategory: null,
+    currentMatchId: null,
     draggedMatchId: null,
     isTableFilterActive: true,
     scoreHistory: [],
@@ -40,6 +41,7 @@ const Network = {
                 ...m,
                 restSeconds: m.restSeconds || (m.restTimeMin * 60)
             }));
+            State.currentMatchId = data.currentMatchId ?? null;
             UI.updateTournamentTitle(data.tournamentName);
             UI.autoInterleaveMatches(); // Set initial order
         } catch (error) {
@@ -72,6 +74,9 @@ const Network = {
             }
         } else if (data.type === 'SIGNAL') {
             Scoring.triggerTimerSignal(data.signalType, false);
+        } else if (data.type === 'CURRENT_MATCH_SET') {
+            State.currentMatchId = data.matchId ?? null;
+            UI.renderFightList();
         } else if (data.type === 'REFRESH_LIST') {
             App.init();
         }
@@ -173,8 +178,9 @@ const UI = {
     createFightCard(match, assignedTable, nextMatchIds, isAdminMode) {
         let isReadOnly = assignedTable && String(match.tableId) !== String(assignedTable);
         if (isAdminMode) isReadOnly = false;
+        const isCurrent = State.currentMatchId === match.matchId;
         const card = document.createElement('div');
-        card.className = `fight-card ${match.status === 'live' ? 'active-match' : ''} ${isReadOnly ? 'read-only' : ''}`;
+        card.className = `fight-card ${match.status === 'live' ? 'active-match' : ''} ${isReadOnly ? 'read-only' : ''} ${isCurrent ? 'current-match' : ''}`;
         card.dataset.matchId = match.matchId;
 
         const restTag = (match.status !== 'finished' && match.restSeconds > 0)
@@ -183,8 +189,9 @@ const UI = {
 
         const isNextOnTable = nextMatchIds && nextMatchIds.has(match.matchId);
         const isUpcoming = match.status === 'upcoming' || match.status === 'pending';
-        const statusLabel = isUpcoming ? (isNextOnTable ? 'NÄCHSTE' : 'WARTEND') :
-            (match.status === 'live' ? 'LIVE' : (match.status === 'bye' ? 'FREILOS' : 'BEENDET'));
+        const statusLabel = isCurrent ? '⚡ AKTIV' :
+            (isUpcoming ? (isNextOnTable ? 'NÄCHSTE' : 'WARTEND') :
+            (match.status === 'live' ? 'LIVE' : (match.status === 'bye' ? 'FREILOS' : 'BEENDET')));
 
         card.innerHTML = `
             <div class="fight-nr-badge"><div class="fight-num-circle">${match.fightNr}</div></div>
@@ -205,7 +212,7 @@ const UI = {
                 </div>
             </div>
             <div class="status-box">
-                <div class="status-badge ${match.status}">${statusLabel}</div>
+                <div class="status-badge ${match.status} ${isCurrent ? 'current' : ''}">${statusLabel}</div>
                 ${restTag}
             </div>
             <div class="action-area">

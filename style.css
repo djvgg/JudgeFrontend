@@ -563,6 +563,22 @@ input:checked+.slider:before {
     color: var(--accent-secondary);
 }
 
+.status-badge.current {
+    color: #ffb300;
+    font-weight: 900;
+    animation: pulse-current 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse-current {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.55; }
+}
+
+.fight-card.current-match {
+    border-left: 5px solid #ffb300;
+    box-shadow: 0 0 0 1px rgba(255, 179, 0, 0.35), 0 2px 12px rgba(255, 179, 0, 0.15);
+}
+
 .action-area {
     display: flex;
     flex-direction: column;

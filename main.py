@@ -152,7 +152,11 @@ def get_matches():
             for f in fights
         }
         match_list = [_build_match_dict(session, f, fight_lookup) for f in fights]
-        return {"tournamentName": "Automated Tournament", "matches": match_list}
+        return {
+            "tournamentName": "Automated Tournament",
+            "matches": match_list,
+            "currentMatchId": last_pushed_match_id,
+        }
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
@@ -218,7 +222,7 @@ def import_brackets(groups: list[dict]):
         return {"status": "success", "matches_imported": matches_imported}
 
 @app.post("/api/push-to-ipponboard/{match_id}")
-def push_to_ipponboard(match_id: int):
+async def push_to_ipponboard(match_id: int):
     from src.database import FightModel
 
     with SessionLocal() as session:
@@ -264,6 +268,7 @@ def push_to_ipponboard(match_id: int):
     global last_pushed_match_id
     if resp.ok:
         last_pushed_match_id = match_id
+        await manager.broadcast({"type": "CURRENT_MATCH_SET", "matchId": match_id})
 
     return {
         "status": "ok" if resp.ok else "error",
