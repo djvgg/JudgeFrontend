@@ -119,7 +119,7 @@ def _build_match_dict(session, fight, fight_lookup: dict | None = None) -> dict:
         ).first()
         next_match_id = nxt.id if nxt else None
     next_match_pos = "p1" if (fight.pos_in_round or 0) % 2 == 0 else "p2"
-    table_id = str((fight.fight_number or fight.id) % 4 + 1)
+    table_id = fight.table_id
 
     return {
         "matchId": fight.id,
