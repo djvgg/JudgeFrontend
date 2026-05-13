@@ -592,7 +592,8 @@ input:checked+.slider:before {
 .btn-start,
 .btn-result,
 .btn-winner,
-.btn-draw {
+.btn-draw,
+.btn-reopen {
     color: white;
     border: none;
     padding: 0.5rem 0.85rem;
@@ -602,6 +603,16 @@ input:checked+.slider:before {
     cursor: pointer;
     transition: background 0.2s, transform 0.05s;
     white-space: nowrap;
+}
+
+.btn-reopen { background-color: #e65100; }
+.btn-reopen:hover { background-color: #bf360c; }
+.btn-reopen:disabled {
+    background-color: var(--bg-tertiary);
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    cursor: not-allowed;
+    opacity: 0.5;
 }
 
 .btn-start { background-color: var(--accent-color); }

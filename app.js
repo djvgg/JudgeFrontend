@@ -221,9 +221,10 @@ const UI = {
                  <button class="btn-result" ${isReadOnly ? 'disabled' : ''} onclick="event.stopPropagation(); openResultDialog(${match.matchId})">Ergebnis setzen</button>` :
                 (match.status === 'bye'
                     ? `<span class="winner-badge bye-badge" title="Freilos">🏆 ${match.winnerName || 'Freilos'} <span class="bye-tag">Freilos</span></span>`
-                    : (match.winnerName
+                    : `${match.winnerName
                         ? `<span class="winner-badge" title="Sieger">🏆 ${match.winnerName}</span>`
-                        : `<span class="draw-badge" title="Unentschieden">Unentschieden</span>`))}
+                        : `<span class="draw-badge" title="Unentschieden">Unentschieden</span>`}
+                       <button class="btn-reopen" ${isReadOnly ? 'disabled' : ''} onclick="event.stopPropagation(); reopenMatch(${match.matchId})" title="Kampf wieder öffnen">🔄 Erneut starten</button>`)}
             </div>
         `;
 
@@ -769,6 +770,19 @@ window.confirmResult = function (kind) {
     else if (kind === 'p2') markWinner(currentResultMatchId, 2);
     else markDraw(currentResultMatchId);
     closeResultDialog();
+};
+
+window.reopenMatch = async function (matchId) {
+    if (!confirm('Diesen Kampf wirklich erneut starten?\nDas bisherige Ergebnis wird zurückgesetzt.')) return;
+    try {
+        const resp = await fetch(`${Config.API_BASE}/api/reopen-match/${matchId}`, { method: 'POST' });
+        if (!resp.ok) {
+            const err = await resp.json().catch(() => ({}));
+            alert(`Fehler: ${err.detail || resp.statusText}`);
+        }
+    } catch (e) {
+        alert(`Verbindungsfehler: ${e.message}`);
+    }
 };
 
 window.sendToIpponboard = async function (matchId) {

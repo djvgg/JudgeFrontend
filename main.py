@@ -277,6 +277,28 @@ async def push_to_ipponboard(match_id: int):
         "payload": payload,
     }
 
+@app.post("/api/reopen-match/{match_id}")
+async def reopen_match(match_id: int):
+    from src.database import FightModel
+
+    with SessionLocal() as session:
+        fight = session.query(FightModel).filter(FightModel.id == match_id).first()
+        if not fight:
+            raise HTTPException(status_code=404, detail=f"Match {match_id} not found")
+        if fight.status == "bye":
+            raise HTTPException(status_code=400, detail="Freilose können nicht wieder gestartet werden")
+
+        fight.status = "pending"
+        fight.winner_id = None
+        fight.score1 = None
+        fight.score2 = None
+        session.commit()
+        session.refresh(fight)
+        match_dict = _build_match_dict(session, fight)
+
+    await manager.broadcast({"type": "SCORE_SYNC", "matchId": match_id, "match": match_dict})
+    return {"status": "ok", "matchId": match_id}
+
 @app.post("/api/ippon-score")
 async def ippon_score(payload: dict):
     """Webhook from Ipponboard's 'Senden' button: applies the result to the
