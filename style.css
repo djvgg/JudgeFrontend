@@ -615,6 +615,20 @@ input:checked+.slider:before {
     opacity: 0.5;
 }
 
+.btn-row {
+    display: flex;
+    flex-direction: row;
+    gap: 0.3rem;
+}
+
+.btn-icon {
+    flex: 1 1 0;
+    padding: 0.25rem 0.4rem;
+    font-size: 0.95rem;
+    line-height: 1;
+    min-width: 0;
+}
+
 .btn-start { background-color: var(--accent-color); }
 .btn-start:hover { background-color: #304ffe; }
 

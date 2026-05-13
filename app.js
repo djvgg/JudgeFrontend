@@ -224,7 +224,10 @@ const UI = {
                     : `${match.winnerName
                         ? `<span class="winner-badge" title="Sieger">🏆 ${match.winnerName}</span>`
                         : `<span class="draw-badge" title="Unentschieden">Unentschieden</span>`}
-                       <button class="btn-reopen" ${isReadOnly ? 'disabled' : ''} onclick="event.stopPropagation(); reopenMatch(${match.matchId})" title="Kampf wieder öffnen">🔄 Erneut starten</button>`)}
+                       <div class="btn-row">
+                         <button class="btn-result btn-icon" ${isReadOnly ? 'disabled' : ''} onclick="event.stopPropagation(); openResultDialog(${match.matchId})" title="Ergebnis ändern" aria-label="Ergebnis ändern">✏️</button>
+                         <button class="btn-reopen btn-icon" ${isReadOnly ? 'disabled' : ''} onclick="event.stopPropagation(); reopenMatch(${match.matchId})" title="Erneut starten" aria-label="Erneut starten">🔄</button>
+                       </div>`)}
             </div>
         `;
 
