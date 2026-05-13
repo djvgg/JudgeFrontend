@@ -52,6 +52,18 @@ class ParticipantModel(Base):
     gender = Column(String)
     club = Column(String)
 
+class GroupParticipantModel(Base):
+    """
+    Join table 'group_participants'. fights.participant{1,2}_id and
+    fights.winner_id reference this table's id, not participants.id.
+    """
+    __tablename__ = "group_participants"
+    __table_args__ = {'extend_existing': True}
+
+    id = Column(Integer, primary_key=True)
+    group_id = Column(Integer)
+    participant_id = Column(Integer)
+
 class FightModel(Base):
     """
     Native 'fights' table from the backend.

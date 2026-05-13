@@ -195,12 +195,12 @@ const UI = {
             </div>
             <div class="fighters-display">
                 <div class="fighter p1">
-                    <span class="fighter-name">${match.p1.lastName}</span>
+                    <span class="fighter-name">${match.p1.firstName} ${match.p1.lastName}</span>
                     <span class="fighter-club">${match.p1.club}</span>
                 </div>
                 <div class="vs-divider">VS</div>
                 <div class="fighter p2">
-                    <span class="fighter-name">${match.p2.lastName}</span>
+                    <span class="fighter-name">${match.p2.firstName} ${match.p2.lastName}</span>
                     <span class="fighter-club">${match.p2.club}</span>
                 </div>
             </div>
@@ -210,13 +210,17 @@ const UI = {
             </div>
             <div class="action-area">
                 ${(match.status !== 'finished' && match.status !== 'bye') ?
-                `<button class="btn-start" ${isReadOnly ? 'disabled' : ''} onclick="event.stopPropagation(); Scoring.openModal(${match.matchId})">${match.status === 'live' ? 'WEITER' : 'START'}</button>` :
-                `<span class="text-muted">${match.status === 'bye' ? 'FREILOS' : 'FERTIG'}</span>`}
+                `<button class="btn-start" ${isReadOnly ? 'disabled' : ''} onclick="event.stopPropagation(); sendToIpponboard(${match.matchId})" title="An Ipponboard senden">Start</button>
+                 <button class="btn-result" ${isReadOnly ? 'disabled' : ''} onclick="event.stopPropagation(); openResultDialog(${match.matchId})">Ergebnis setzen</button>` :
+                (match.status === 'bye'
+                    ? `<span class="text-muted">FREILOS</span>`
+                    : (match.winnerName
+                        ? `<span class="winner-badge" title="Sieger">🏆 ${match.winnerName}</span>`
+                        : `<span class="draw-badge" title="Unentschieden">Unentschieden</span>`))}
             </div>
         `;
 
         if (!isReadOnly && match.status !== 'finished' && match.status !== 'bye') {
-            card.onclick = () => Scoring.openModal(match.matchId);
             this.setupDragAndDrop(card, match.matchId);
         }
 
@@ -400,16 +404,22 @@ const UI = {
 
             const p1Score = m.p1.score.points || 0;
             const p2Score = m.p2.score.points || 0;
-            const p1Won = m.status === 'finished' && p1Score >= p2Score;
-            const p2Won = m.status === 'finished' && p2Score > p1Score;
+            const p1Won = m.status === 'finished' && m.winnerId != null && m.winnerId === m.p1.gpId;
+            const p2Won = m.status === 'finished' && m.winnerId != null && m.winnerId === m.p2.gpId;
 
+            const p1Display = m.p1.firstName || m.p1.lastName
+                ? `${m.p1.firstName || ''} ${m.p1.lastName || ''}`.trim()
+                : 'TBD';
+            const p2Display = m.p2.firstName || m.p2.lastName
+                ? `${m.p2.firstName || ''} ${m.p2.lastName || ''}`.trim()
+                : 'TBD';
             node.innerHTML = `
                 <div class="match-node-p ${p1Won ? 'winner' : ''}">
-                    <span class="p-name">${m.p1.lastName || 'TBD'}</span>
+                    <span class="p-name">${p1Display}</span>
                     <span class="p-score-box">${p1Score}</span>
                 </div>
                 <div class="match-node-p ${p2Won ? 'winner' : ''}">
-                    <span class="p-name">${m.p2.lastName || 'TBD'}</span>
+                    <span class="p-name">${p2Display}</span>
                     <span class="p-score-box">${p2Score}</span>
                 </div>
             `;
@@ -713,4 +723,60 @@ window.winByDecision = function (playerNum) {
     // Show victory overlay instead of auto-closing silently
     const winnerName = `${player.firstName} ${player.lastName}`.trim() || 'Player';
     UI.showVictoryPopup(winnerName);
+};
+
+window.markWinner = function (matchId, playerNum) {
+    const loserNum = playerNum === 1 ? 2 : 1;
+    Network.send({ type: 'SCORE_UPDATE', matchId, playerNum, scoreType: 'points', value: 1 });
+    Network.send({ type: 'SCORE_UPDATE', matchId, playerNum: loserNum, scoreType: 'points', value: 0 });
+    Network.send({ type: 'STATUS_UPDATE', matchId, status: 'finished' });
+};
+
+window.markDraw = function (matchId) {
+    Network.send({ type: 'SCORE_UPDATE', matchId, playerNum: 1, scoreType: 'points', value: 0 });
+    Network.send({ type: 'SCORE_UPDATE', matchId, playerNum: 2, scoreType: 'points', value: 0 });
+    Network.send({ type: 'STATUS_UPDATE', matchId, status: 'finished' });
+};
+
+let currentResultMatchId = null;
+
+window.openResultDialog = function (matchId) {
+    const m = State.activeMatches.find(x => x.matchId === matchId);
+    if (!m) return;
+    currentResultMatchId = matchId;
+    document.getElementById('result-modal-subtitle').textContent =
+        `${m.p1.firstName} ${m.p1.lastName} (${m.p1.club}) vs ${m.p2.firstName} ${m.p2.lastName} (${m.p2.club})`;
+    document.getElementById('result-btn-p1').textContent = `Sieger ${m.p1.firstName} ${m.p1.lastName}`;
+    document.getElementById('result-btn-p2').textContent = `Sieger ${m.p2.firstName} ${m.p2.lastName}`;
+    document.getElementById('result-modal').style.display = 'flex';
+};
+
+window.closeResultDialog = function () {
+    document.getElementById('result-modal').style.display = 'none';
+    currentResultMatchId = null;
+};
+
+window.confirmResult = function (kind) {
+    if (currentResultMatchId === null) return;
+    if (kind === 'p1') markWinner(currentResultMatchId, 1);
+    else if (kind === 'p2') markWinner(currentResultMatchId, 2);
+    else markDraw(currentResultMatchId);
+    closeResultDialog();
+};
+
+window.sendToIpponboard = async function (matchId) {
+    try {
+        const resp = await fetch(`${Config.API_BASE}/api/push-to-ipponboard/${matchId}`, { method: 'POST' });
+        const data = await resp.json();
+        if (!resp.ok) {
+            alert(`Ipponboard-Fehler: ${data.detail || resp.statusText}`);
+            return;
+        }
+        const p = data.payload || {};
+        const f1 = p.fighter1 || {};
+        const f2 = p.fighter2 || {};
+        alert(`An Ipponboard gesendet:\n${f1.firstname} ${f1.lastname} vs ${f2.firstname} ${f2.lastname}\n(${f1.gender}${f1.agegroup} ${f1.weightclass})`);
+    } catch (e) {
+        alert(`Verbindungsfehler: ${e.message}`);
+    }
 };

@@ -115,6 +115,26 @@
             </div>
         </main>
 
+        <!-- Result Picker Modal -->
+        <div id="result-modal" class="modal-overlay" style="display: none;">
+            <div class="modal-content result-modal-content">
+                <div class="result-modal-header">
+                    <h2>Ergebnis eintragen</h2>
+                    <p id="result-modal-subtitle" class="text-muted"></p>
+                </div>
+                <div class="result-buttons">
+                    <button id="result-btn-p1" class="btn-winner btn-winner-p1 btn-result-choice"
+                        onclick="confirmResult('p1')"></button>
+                    <button class="btn-draw btn-result-choice" onclick="confirmResult('draw')">Unentschieden</button>
+                    <button id="result-btn-p2" class="btn-winner btn-winner-p2 btn-result-choice"
+                        onclick="confirmResult('p2')"></button>
+                </div>
+                <div class="result-modal-footer">
+                    <button class="footer-btn btn-undo" onclick="closeResultDialog()">Abbrechen</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Scoring Modal Refined -->
         <div id="scoring-modal" class="modal-overlay" style="display: none;">
             <div class="modal-content">
