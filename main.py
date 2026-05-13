@@ -55,6 +55,52 @@ manager = ConnectionManager()
 
 # --- Fighter resolution helpers ---
 
+_BRACKET_TYPE_LABELS = {
+    "pools": "Pool",
+    "double": "Doppelpool",
+    "ko": "Doppel-KO",
+    "special": "Spezial",
+}
+
+
+def _resolve_groups(session, bracket_ids: set[int]) -> dict[int, dict]:
+    """bracket_id → {gender, age_group, weight_class, bracket_type}."""
+    if not bracket_ids:
+        return {}
+    rows = session.execute(
+        text("SELECT b.id, g.gender, g.age_group, g.weight_class, b.bracket_type "
+             "FROM brackets b JOIN groups g ON g.id = b.group_id "
+             "WHERE b.id IN :bids"),
+        {"bids": tuple(bracket_ids)},
+    ).fetchall()
+    return {
+        r[0]: {
+            "gender": r[1] or "",
+            "age_group": r[2] or "",
+            "weight_class": r[3] or "",
+            "bracket_type": r[4] or "",
+        }
+        for r in rows
+    }
+
+
+def _group_label(group_info: dict) -> str:
+    """Bracket-level label (no pool suffix): 'U18 w -70kg'."""
+    parts = [group_info.get("age_group", ""), group_info.get("gender", ""), group_info.get("weight_class", "")]
+    return " ".join(p for p in parts if p)
+
+
+def _category_label(fight, group_info: dict) -> str:
+    """Per-fight label: 'U18 w -70kg' (KO) or 'U18 w -70kg · Pool 1' (pool)."""
+    base = _group_label(group_info)
+    if fight.bracket_phase == "pool" and fight.pool_index is not None:
+        pool = f"Pool {fight.pool_index + 1}"
+        return f"{base} · {pool}" if base else pool
+    if base:
+        return base
+    return f"Bracket {fight.bracket_id}" if fight.bracket_id else "Unknown"
+
+
 def _resolve_participants(session, gp_ids: set[int]) -> dict[int, dict]:
     """Resolve a set of group_participants.id values to their real
     participant data. Returns {gp_id: {gpId, participantId, firstName, lastName, club}}."""
@@ -79,13 +125,20 @@ def _resolve_participants(session, gp_ids: set[int]) -> dict[int, dict]:
     }
 
 
-def _build_match_dict(session, fight, fight_lookup: dict | None = None) -> dict:
+def _build_match_dict(session, fight, fight_lookup: dict | None = None,
+                      group_lookup: dict | None = None) -> dict:
     """Build the canonical match dict for /api/matches and SCORE_SYNC payloads.
-    fight_lookup: optional {(bracket_id, phase, round, pos): fight_id} for batch use."""
+    fight_lookup: optional {(bracket_id, phase, round, pos): fight_id} for batch use.
+    group_lookup: optional {bracket_id: {gender, age_group, weight_class}}."""
     from src.database import FightModel
 
     gp_ids = {gp for gp in (fight.participant1_id, fight.participant2_id, fight.winner_id) if gp}
     resolved = _resolve_participants(session, gp_ids)
+
+    if group_lookup is not None:
+        group_info = group_lookup.get(fight.bracket_id, {})
+    else:
+        group_info = _resolve_groups(session, {fight.bracket_id}).get(fight.bracket_id, {}) if fight.bracket_id else {}
 
     def fighter_payload(gp_id, score):
         info = resolved.get(gp_id) if gp_id else None
@@ -126,6 +179,15 @@ def _build_match_dict(session, fight, fight_lookup: dict | None = None) -> dict:
         "tableId": table_id,
         "fightNr": fight.fight_number or fight.id,
         "category": f"Bracket {fight.bracket_id}" if fight.bracket_id else "Unknown Category",
+        "categoryLabel": _category_label(fight, group_info),
+        "groupLabel": _group_label(group_info) or (f"Bracket {fight.bracket_id}" if fight.bracket_id else "Unknown"),
+        "bracketId": fight.bracket_id,
+        "bracketType": group_info.get("bracket_type", ""),
+        "bracketTypeLabel": _BRACKET_TYPE_LABELS.get(group_info.get("bracket_type", ""), group_info.get("bracket_type", "")),
+        "gender": group_info.get("gender", ""),
+        "ageGroup": group_info.get("age_group", ""),
+        "weightClass": group_info.get("weight_class", ""),
+        "poolIndex": fight.pool_index,
         "round": (fight.round or 0) + 1,
         "posInRound": fight.pos_in_round or 0,
         "p1": fighter_payload(fight.participant1_id, fight.score1),
@@ -151,7 +213,8 @@ def get_matches():
             (f.bracket_id, f.bracket_phase, f.round, f.pos_in_round): f.id
             for f in fights
         }
-        match_list = [_build_match_dict(session, f, fight_lookup) for f in fights]
+        group_lookup = _resolve_groups(session, {f.bracket_id for f in fights if f.bracket_id})
+        match_list = [_build_match_dict(session, f, fight_lookup, group_lookup) for f in fights]
         return {
             "tournamentName": "Automated Tournament",
             "matches": match_list,
@@ -238,15 +301,10 @@ async def push_to_ipponboard(match_id: int):
         if not f1 or not f2:
             raise HTTPException(status_code=400, detail="Participants not found via group_participants")
 
-        row = session.execute(
-            text("SELECT g.gender, g.age_group, g.weight_class "
-                 "FROM groups g JOIN brackets b ON b.group_id = g.id "
-                 "WHERE b.id = :bid"),
-            {"bid": fight.bracket_id},
-        ).fetchone()
-        gender = row[0] if row else ""
-        age_group = row[1] if row else ""
-        weight_class = row[2] if row else ""
+        group_info = _resolve_groups(session, {fight.bracket_id}).get(fight.bracket_id, {}) if fight.bracket_id else {}
+        gender = group_info.get("gender", "")
+        age_group = group_info.get("age_group", "")
+        weight_class = group_info.get("weight_class", "")
 
         def fighter_json(info):
             return {

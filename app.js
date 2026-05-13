@@ -159,9 +159,9 @@ const UI = {
         const finished = matches.filter(m => m.status === 'finished' || m.status === 'bye').sort((a, b) => a.order - b.order);
         const upcoming = matches.filter(m => m.status !== 'finished' && m.status !== 'bye');
 
-        const males = upcoming.filter(m => m.category.toLowerCase().includes('maennlich')).sort((a, b) => a.matchId - b.matchId);
-        const females = upcoming.filter(m => m.category.toLowerCase().includes('frauen') || m.category.toLowerCase().includes('weiblich')).sort((a, b) => a.matchId - b.matchId);
-        const others = upcoming.filter(m => !m.category.toLowerCase().includes('maennlich') && !m.category.toLowerCase().includes('frauen') && !m.category.toLowerCase().includes('weiblich')).sort((a, b) => a.matchId - b.matchId);
+        const males = upcoming.filter(m => m.gender === 'm').sort((a, b) => a.matchId - b.matchId);
+        const females = upcoming.filter(m => m.gender === 'w').sort((a, b) => a.matchId - b.matchId);
+        const others = upcoming.filter(m => m.gender !== 'm' && m.gender !== 'w').sort((a, b) => a.matchId - b.matchId);
 
         const interleaved = [];
         const maxLen = Math.max(males.length, females.length);
@@ -197,7 +197,7 @@ const UI = {
             <div class="fight-nr-badge"><div class="fight-num-circle">${match.fightNr}</div></div>
             <div class="category-box">
                 <span class="table-label">Tisch ${match.tableId}</span>
-                <span class="category-name">${match.category}</span>
+                <span class="category-name">${match.categoryLabel || match.category}</span>
                 <a href="#" class="bracket-link" onclick="UI.handleBracketClick(event, ${match.matchId})">Live-Turnierbaum</a>
             </div>
             <div class="fighters-display">
@@ -259,16 +259,23 @@ const UI = {
         const list = document.getElementById('bracket-category-list');
         if (!list) return;
         list.innerHTML = '';
-        const categories = [...new Set(State.activeMatches.map(m => m.category))];
-        categories.forEach(cat => {
+        const byKey = new Map();
+        State.activeMatches.forEach(m => {
+            const key = m.category;
+            if (!byKey.has(key)) {
+                const base = m.groupLabel || m.categoryLabel || m.category;
+                byKey.set(key, m.bracketTypeLabel ? `${base} · ${m.bracketTypeLabel}` : base);
+            }
+        });
+        byKey.forEach((label, key) => {
             const div = document.createElement('div');
-            div.className = `category-item ${State.currentBracketCategory === cat ? 'active' : ''}`;
-            div.textContent = cat;
-            div.onclick = () => { State.currentBracketCategory = cat; this.renderBracketVisualization(); this.updateBracketSidebar(); };
+            div.className = `category-item ${State.currentBracketCategory === key ? 'active' : ''}`;
+            div.textContent = label;
+            div.onclick = () => { State.currentBracketCategory = key; this.renderBracketVisualization(); this.updateBracketSidebar(); };
             list.appendChild(div);
         });
-        if (!State.currentBracketCategory && categories.length > 0) {
-            State.currentBracketCategory = categories[0];
+        if (!State.currentBracketCategory && byKey.size > 0) {
+            State.currentBracketCategory = byKey.keys().next().value;
             this.renderBracketVisualization();
         }
     },
@@ -279,7 +286,10 @@ const UI = {
 
         if (!viz || !State.currentBracketCategory) return;
         viz.innerHTML = '';
-        if (titleEl) titleEl.textContent = State.currentBracketCategory;
+        const sample = State.activeMatches.find(m => m.category === State.currentBracketCategory);
+        const baseTitle = (sample && (sample.groupLabel || sample.categoryLabel)) || State.currentBracketCategory;
+        const mode = sample && sample.bracketTypeLabel;
+        if (titleEl) titleEl.textContent = mode ? `${baseTitle} · ${mode}` : baseTitle;
 
         // Main bracket only for now: filter out Loser Bracket (lb) matches to prevent them breaking the vertical DAG tree
         const matches = State.activeMatches.filter(m => m.category === State.currentBracketCategory && m.phase !== 'lb');
