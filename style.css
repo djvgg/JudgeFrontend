@@ -559,7 +559,8 @@ input:checked+.slider:before {
     color: var(--success-color);
 }
 
-.status-badge.finished {
+.status-badge.finished,
+.status-badge.bye {
     color: var(--accent-secondary);
 }
 
@@ -637,6 +638,21 @@ input:checked+.slider:before {
     font-weight: 700;
     font-size: 0.85rem;
     white-space: nowrap;
+}
+
+.winner-badge.bye-badge {
+    background-color: var(--accent-secondary, #0288d1);
+}
+
+.bye-tag {
+    margin-left: 0.5rem;
+    padding: 0.1rem 0.45rem;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.2);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
 }
 
 .draw-badge {

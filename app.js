@@ -191,7 +191,7 @@ const UI = {
         const isUpcoming = match.status === 'upcoming' || match.status === 'pending';
         const statusLabel = isCurrent ? '⚡ AKTIV' :
             (isUpcoming ? (isNextOnTable ? 'NÄCHSTE' : 'WARTEND') :
-            (match.status === 'live' ? 'LIVE' : (match.status === 'bye' ? 'FREILOS' : 'BEENDET')));
+            (match.status === 'live' ? 'LIVE' : 'BEENDET'));
 
         card.innerHTML = `
             <div class="fight-nr-badge"><div class="fight-num-circle">${match.fightNr}</div></div>
@@ -220,7 +220,7 @@ const UI = {
                 `<button class="btn-start" ${isReadOnly ? 'disabled' : ''} onclick="event.stopPropagation(); sendToIpponboard(${match.matchId})" title="An Ipponboard senden">Start</button>
                  <button class="btn-result" ${isReadOnly ? 'disabled' : ''} onclick="event.stopPropagation(); openResultDialog(${match.matchId})">Ergebnis setzen</button>` :
                 (match.status === 'bye'
-                    ? `<span class="text-muted">FREILOS</span>`
+                    ? `<span class="winner-badge bye-badge" title="Freilos">🏆 ${match.winnerName || 'Freilos'} <span class="bye-tag">Freilos</span></span>`
                     : (match.winnerName
                         ? `<span class="winner-badge" title="Sieger">🏆 ${match.winnerName}</span>`
                         : `<span class="draw-badge" title="Unentschieden">Unentschieden</span>`))}
