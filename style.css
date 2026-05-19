@@ -228,6 +228,197 @@ header {
     border-radius: 10px;
     box-shadow: var(--card-shadow);
     position: relative;
+    cursor: default;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+/* Clickable cards: both fighters present (or match finished, for re-edit). */
+.bracket-match-node.clickable {
+    cursor: pointer;
+}
+.bracket-match-node.clickable:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    border-color: var(--accent-color, #22AAF0);
+}
+
+/* Not-ready cards: at least one fighter still TBD — visually dimmed. */
+.bracket-match-node.not-ready {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Loser-bracket nodes: orange accent so they read as "secondary path". */
+.bracket-match-node--lb {
+    border-color: #d97706;
+}
+.bracket-match-node--lb .match-node-header {
+    background: rgba(217, 119, 6, 0.15);
+    color: #fbbf24;
+}
+
+/* Pool fights: blue accent to distinguish round-robin from KO. */
+.bracket-match-node--pool {
+    border-color: #2563eb;
+}
+.bracket-match-node--pool .match-node-header {
+    background: rgba(37, 99, 235, 0.18);
+    color: #93c5fd;
+}
+
+/* Header strip with fight number and optional phase badge */
+.match-node-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.25rem 0.6rem;
+    background: rgba(0, 0, 0, 0.25);
+    border-bottom: 1px solid var(--border-color);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.match-node-num {
+    font-weight: 700;
+    color: var(--text-muted);
+}
+
+.match-node-badge {
+    font-weight: 700;
+    padding: 0.05rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.65rem;
+}
+.match-node-badge--lb { background: #d97706; color: #fff; }
+.match-node-badge--pool { background: #2563eb; color: #fff; }
+
+/* Teil E — Doppelpool layout: two round-robin tables side-by-side + KO below */
+.pools-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    padding: 1rem;
+    align-items: flex-start;
+}
+
+.pool-table-wrapper {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: var(--card-shadow);
+}
+
+.pool-section-title {
+    margin: 0 0 0.6rem 0;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    border-bottom: 2px solid #2563eb;
+    padding-bottom: 0.3rem;
+}
+
+.pool-table {
+    border-collapse: separate;
+    border-spacing: 4px;
+    font-size: 0.85rem;
+}
+
+.pool-header-cell {
+    background: rgba(37, 99, 235, 0.2);
+    color: var(--text-primary);
+    padding: 0.45rem 0.8rem;
+    font-weight: 700;
+    text-align: center;
+    border-radius: 6px;
+    min-width: 110px;
+    max-width: 160px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.pool-row-header { text-align: left; }
+
+.pool-cell {
+    padding: 0.6rem 0.4rem;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 6px;
+    min-width: 60px;
+    font-weight: 600;
+}
+
+.pool-cell--diagonal {
+    background: rgba(255, 255, 255, 0.02);
+    color: var(--text-muted);
+}
+
+.pool-cell--missing {
+    color: var(--text-muted);
+    opacity: 0.4;
+}
+
+.pool-cell--match {
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+}
+.pool-cell--match:hover {
+    background: rgba(34, 170, 240, 0.2);
+    transform: scale(1.03);
+}
+
+.pool-cell--row-won { background: rgba(0, 230, 118, 0.25); color: #00e676; }
+.pool-cell--col-won { background: rgba(255, 100, 100, 0.18); color: #ff7575; }
+
+/* KO phase below the pool tables */
+.pool-ko-section {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-width: 480px;
+}
+
+.pool-ko-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.5rem 0.8rem;
+}
+.pool-ko-card.clickable { cursor: pointer; }
+.pool-ko-card.clickable:hover {
+    border-color: var(--accent-color, #22AAF0);
+    transform: translateY(-1px);
+}
+.pool-ko-card.not-ready { opacity: 0.55; cursor: not-allowed; }
+
+.pool-ko-header {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.25rem;
+}
+.pool-ko-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.2rem 0;
+    font-weight: 600;
+}
+.pool-ko-row.winner { color: #00e676; }
+
+/* "Weiterrücken" — the slot is empty in DB but the feeder has a winner;
+   show the projected name italic + dimmed so it reads as "not yet locked". */
+.match-node-p.projected .p-name {
+    font-style: italic;
+    opacity: 0.65;
+}
+.match-node-p.projected .p-score-box {
+    opacity: 0.4;
 }
 
 .match-node-p {
@@ -403,10 +594,10 @@ input:checked+.slider:before {
     background-color: var(--bg-secondary);
     border: 1px solid var(--border-color);
     border-radius: 12px;
-    padding: 0 2.5rem;
-    height: 85px;
+    padding: 0.6rem 2.5rem;
+    min-height: 110px;
     display: grid;
-    grid-template-columns: 60px 220px 1fr 180px 140px;
+    grid-template-columns: 60px 220px 1fr 180px 170px;
     align-items: center;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
@@ -583,17 +774,27 @@ input:checked+.slider:before {
 .action-area {
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
+    gap: 0.3rem;
     justify-content: center;
     align-items: stretch;
-    min-width: 150px;
+    min-width: 160px;
+}
+
+/* Slightly smaller padding on the per-card buttons so three of them fit
+   vertically without inflating the row too much. */
+.action-area .btn-start,
+.action-area .btn-result,
+.action-area .btn-next-up {
+    padding: 0.38rem 0.7rem;
+    font-size: 0.78rem;
 }
 
 .btn-start,
 .btn-result,
 .btn-winner,
 .btn-draw,
-.btn-reopen {
+.btn-reopen,
+.btn-next-up {
     color: white;
     border: none;
     padding: 0.5rem 0.85rem;
@@ -635,13 +836,43 @@ input:checked+.slider:before {
 .btn-result { background-color: var(--accent-secondary, #0288d1); }
 .btn-result:hover { background-color: #01579b; }
 
-.btn-winner { background-color: var(--success-color, #2e7d32); }
-.btn-winner:hover { background-color: #1b5e20; }
-.btn-winner-p2 { background-color: #c62828; }
-.btn-winner-p2:hover { background-color: #8e0000; }
+/* Result-picker winner buttons — Ipponboard colors:
+   erstgenannter (p1) immer weiß, zweitgenannter (p2) immer blau.
+   The shared `.btn-winner` rule used to color all three buttons green;
+   `.btn-winner-p1` / `.btn-winner-p2` now win over it via the same specificity
+   and source order below. */
+.btn-winner { background-color: var(--text-muted, #757575); color: #fff; }
+.btn-winner:hover { background-color: #5a5a5a; }
+
+.btn-winner-p1 {
+    background-color: #ffffff;
+    color: #000000;
+    border: 2px solid #cccccc;
+}
+.btn-winner-p1:hover { background-color: #f0f0f0; }
+
+.btn-winner-p2 {
+    background-color: #1500ff;
+    color: #ffffff;
+    border: 2px solid #1500ff;
+}
+.btn-winner-p2:hover { background-color: #1a1aff; }
 
 .btn-draw { background-color: var(--text-muted, #757575); }
 .btn-draw:hover { background-color: #424242; }
+
+/* Teil D — "Als nächster"-button. Neutral gray when idle, gold when armed. */
+.btn-next-up {
+    background-color: #475569;
+    color: #ffffff;
+}
+.btn-next-up:hover { background-color: #334155; }
+.btn-next-up.active {
+    background-color: #ffd700;
+    color: #000;
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+}
+.btn-next-up.active:hover { background-color: #f1c40f; }
 
 .btn-start:disabled,
 .btn-result:disabled,
@@ -749,18 +980,81 @@ input:checked+.slider:before {
 
 /* Victory Popup Overlays */
 .victory-overlay {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.85);
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.88);
     backdrop-filter: blur(10px);
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 12px;
-    z-index: 100;
+    z-index: 2000;
+}
+
+/* Side-by-side fighter boxes — Ipponboard color scheme */
+.victory-fighters {
+    display: flex;
+    gap: 1.5rem;
+    margin: 1.5rem 0 2rem 0;
+    justify-content: center;
+}
+
+.victory-fighter {
+    min-width: 240px;
+    padding: 1.4rem 1.6rem;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    border: 3px solid transparent;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.victory-fighter--white {
+    background: #ffffff;
+    color: #000000;
+}
+
+.victory-fighter--blue {
+    background: #1500ff;
+    color: #ffffff;
+}
+
+.victory-fighter--winner {
+    border-color: #ffd700;
+    box-shadow: 0 0 24px rgba(255, 215, 0, 0.55);
+    transform: scale(1.04);
+}
+
+.victory-fighter-badge {
+    font-size: 0.85rem;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    background: #ffd700;
+    color: #000;
+    padding: 0.15rem 0.7rem;
+    border-radius: 4px;
+    min-height: 1.2em;
+}
+.victory-fighter-badge:empty {
+    background: transparent;
+    padding: 0;
+}
+
+.victory-fighter-name {
+    font-size: 1.6rem;
+    font-weight: 800;
+    text-align: center;
+    line-height: 1.1;
+}
+
+.victory-fighter-score {
+    font-size: 2.6rem;
+    font-weight: 900;
+    line-height: 1;
 }
 
 .victory-content {

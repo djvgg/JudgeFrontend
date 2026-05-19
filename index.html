@@ -79,6 +79,13 @@
                                 <span class="slider"></span>
                             </div>
                         </label>
+                        <label class="toggle-container" title="Wenn aktiv: sobald der aktuelle Kampf beendet ist, wird der mit '⏭ Als nächster' markierte Kampf automatisch an das Ipponboard gesendet.">
+                            <span class="toggle-label">Auto-Senden ans Ipponboard</span>
+                            <div class="switch">
+                                <input type="checkbox" id="auto-send-toggle">
+                                <span class="slider"></span>
+                            </div>
+                        </label>
                     </div>
                     <div class="header-actions">
                         <span class="match-count" id="match-count">0 Kämpfe</span>
@@ -195,15 +202,28 @@
                     <button class="footer-btn btn-undo" onclick="Scoring.closeModal()">CLOSE</button>
                 </div>
 
-                <!-- Victory Overlay -->
-                <div id="victory-overlay" class="victory-overlay" style="display: none;">
-                    <div class="victory-content">
-                        <h2 class="victory-title">MATCH FINISHED!</h2>
-                        <p class="victory-subtitle" id="victory-subtitle">Player wins by reaching 10 points!</p>
-                        <button class="victory-close-btn" onclick="Scoring.finishMatch()">CLOSE MATCH & RETURN TO
-                            LIST</button>
+            </div>
+        </div>
+
+        <!-- Victory Overlay (top-level so it works regardless of which modal triggered it) -->
+        <div id="victory-overlay" class="victory-overlay" style="display: none;">
+            <div class="victory-content">
+                <h2 class="victory-title">KAMPF BEENDET!</h2>
+                <p class="victory-subtitle" id="victory-subtitle"></p>
+                <!-- Side-by-side fighter boxes — Ipponboard colors: p1 white, p2 blue -->
+                <div class="victory-fighters">
+                    <div id="victory-p1" class="victory-fighter victory-fighter--white">
+                        <span id="victory-p1-badge" class="victory-fighter-badge"></span>
+                        <span id="victory-p1-name" class="victory-fighter-name"></span>
+                        <span id="victory-p1-score" class="victory-fighter-score"></span>
+                    </div>
+                    <div id="victory-p2" class="victory-fighter victory-fighter--blue">
+                        <span id="victory-p2-badge" class="victory-fighter-badge"></span>
+                        <span id="victory-p2-name" class="victory-fighter-name"></span>
+                        <span id="victory-p2-score" class="victory-fighter-score"></span>
                     </div>
                 </div>
+                <button class="victory-close-btn" onclick="Scoring.finishMatch(); document.getElementById('victory-overlay').style.display='none';">SCHLIESSEN</button>
             </div>
         </div>
 

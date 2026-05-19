@@ -19,6 +19,8 @@ const State = {
     currentMatchId: null,
     draggedMatchId: null,
     isTableFilterActive: true,
+    nextUpMatchId: null,           // which match is queued ("⏭ Als nächster")
+    autoSendEnabled: false,        // toggle state, persisted to localStorage
     scoreHistory: [],
     timer: {
         interval: null,
@@ -64,11 +66,23 @@ const Network = {
         if (data.type === 'SCORE_SYNC') {
             const idx = State.activeMatches.findIndex(m => m.matchId === data.matchId);
             if (idx !== -1) {
+                const prev = State.activeMatches[idx];
+                const wasNotFinished = prev.status !== 'finished';
                 State.activeMatches[idx] = { ...data.match, restSeconds: State.activeMatches[idx].restSeconds };
                 if (State.currentScoringMatch?.matchId === data.matchId) {
                     State.currentScoringMatch = State.activeMatches[idx];
                     UI.updateScoreDisplay();
                 }
+
+                const justFinished = wasNotFinished && data.match.status === 'finished';
+                if (justFinished && State.autoSendEnabled && State.nextUpMatchId &&
+                    State.nextUpMatchId !== data.matchId) {
+                    const queuedId = State.nextUpMatchId;
+                    State.nextUpMatchId = null;
+                    localStorage.removeItem('nextUpMatchId');
+                    sendToIpponboard(queuedId);
+                }
+
                 UI.renderFightList();
                 UI.renderBracketVisualization();
             }
@@ -104,13 +118,53 @@ const UI = {
         document.getElementById('tournament-title').textContent = title;
     },
 
-    showVictoryPopup(winnerName) {
-        document.getElementById('victory-subtitle').textContent = `${winnerName} hat den Kampf gewonnen!`;
+
+    showVictoryPopup(matchOrName, winnerSlot) {
         const overlay = document.getElementById('victory-overlay');
-        const titleEl = overlay.querySelector('h2');
-        if (titleEl) titleEl.textContent = 'KAMPF BEENDET!';
-        const closeBtn = overlay.querySelector('.victory-close-btn');
-        if (closeBtn) closeBtn.textContent = 'SCHLIESSEN';
+        const subtitle = document.getElementById('victory-subtitle');
+        const p1Box = document.getElementById('victory-p1');
+        const p2Box = document.getElementById('victory-p2');
+
+        // Legacy: called with just a name string → fall back to single-line message.
+        if (typeof matchOrName === 'string') {
+            subtitle.textContent = `${matchOrName} hat den Kampf gewonnen!`;
+            if (p1Box) p1Box.style.display = 'none';
+            if (p2Box) p2Box.style.display = 'none';
+            overlay.style.display = 'flex';
+            return;
+        }
+
+        const m = matchOrName;
+        const p1Name = `${m.p1.firstName || ''} ${m.p1.lastName || ''}`.trim() || '—';
+        const p2Name = `${m.p2.firstName || ''} ${m.p2.lastName || ''}`.trim() || '—';
+        const p1Score = m.p1.score?.points ?? 0;
+        const p2Score = m.p2.score?.points ?? 0;
+
+        document.getElementById('victory-p1-name').textContent = p1Name;
+        document.getElementById('victory-p2-name').textContent = p2Name;
+        document.getElementById('victory-p1-score').textContent = p1Score;
+        document.getElementById('victory-p2-score').textContent = p2Score;
+
+        // Reset state, then mark winner
+        p1Box.classList.remove('victory-fighter--winner');
+        p2Box.classList.remove('victory-fighter--winner');
+        p1Box.style.display = '';
+        p2Box.style.display = '';
+        document.getElementById('victory-p1-badge').textContent = '';
+        document.getElementById('victory-p2-badge').textContent = '';
+
+        if (winnerSlot === 'p1') {
+            p1Box.classList.add('victory-fighter--winner');
+            document.getElementById('victory-p1-badge').textContent = 'SIEGER';
+            subtitle.textContent = `${p1Name} gewinnt`;
+        } else if (winnerSlot === 'p2') {
+            p2Box.classList.add('victory-fighter--winner');
+            document.getElementById('victory-p2-badge').textContent = 'SIEGER';
+            subtitle.textContent = `${p2Name} gewinnt`;
+        } else {
+            subtitle.textContent = 'Unentschieden';
+        }
+
         overlay.style.display = 'flex';
     },
 
@@ -218,6 +272,7 @@ const UI = {
             <div class="action-area">
                 ${(match.status !== 'finished' && match.status !== 'bye') ?
                 `<button class="btn-start" ${isReadOnly ? 'disabled' : ''} onclick="event.stopPropagation(); sendToIpponboard(${match.matchId})" title="An Ipponboard senden">Start</button>
+                 <button class="btn-next-up ${State.nextUpMatchId === match.matchId ? 'active' : ''}" ${isReadOnly ? 'disabled' : ''} onclick="event.stopPropagation(); markAsNext(${match.matchId})" title="Als nächsten markieren — wird bei Auto-Send aktiv automatisch ans Ipponboard gesendet, sobald der aktuelle Kampf endet.">${State.nextUpMatchId === match.matchId ? '⏭ NÄCHSTER' : '⏭ Als nächster'}</button>
                  <button class="btn-result" ${isReadOnly ? 'disabled' : ''} onclick="event.stopPropagation(); openResultDialog(${match.matchId})">Ergebnis setzen</button>` :
                 (match.status === 'bye'
                     ? `<span class="winner-badge bye-badge" title="Freilos">🏆 ${match.winnerName || 'Freilos'} <span class="bye-tag">Freilos</span></span>`
@@ -291,9 +346,16 @@ const UI = {
         const mode = sample && sample.bracketTypeLabel;
         if (titleEl) titleEl.textContent = mode ? `${baseTitle} · ${mode}` : baseTitle;
 
-        // Main bracket only for now: filter out Loser Bracket (lb) matches to prevent them breaking the vertical DAG tree
-        const matches = State.activeMatches.filter(m => m.category === State.currentBracketCategory && m.phase !== 'lb');
+       
+        const matches = State.activeMatches.filter(m => m.category === State.currentBracketCategory);
         if (matches.length === 0) return;
+
+        
+        const isDouble = sample && sample.bracketType === 'double';
+        if (isDouble) {
+            this.renderDoublePool(viz, matches);
+            return;
+        }
 
         // Build a map of matches and their children (matches that feed INTO them)
         const matchMap = new Map();
@@ -305,6 +367,31 @@ const UI = {
                 parent.children.push(m.matchId);
             }
         });
+
+        
+        const feedersBySlot = new Map();
+        matches.forEach(m => {
+            if (m.nextMatchId && m.nextMatchPos && matchMap.has(m.nextMatchId)) {
+                const f = feedersBySlot.get(m.nextMatchId) || { p1: null, p2: null };
+                f[m.nextMatchPos] = m;
+                feedersBySlot.set(m.nextMatchId, f);
+            }
+        });
+
+        
+        function projectedName(match, slotKey) {
+            const slot = match[slotKey];
+            const hasRealFighter = slot && slot.gpId && slot.lastName && slot.lastName !== 'TBD';
+            if (hasRealFighter) return null;
+            const feeders = feedersBySlot.get(match.matchId);
+            const feeder = feeders ? feeders[slotKey] : null;
+            if (!feeder || feeder.winnerId == null) return null;
+            const winnerSide = feeder.p1 && feeder.p1.gpId === feeder.winnerId ? feeder.p1
+                              : feeder.p2 && feeder.p2.gpId === feeder.winnerId ? feeder.p2
+                              : null;
+            if (!winnerSide) return null;
+            return `${winnerSide.firstName || ''} ${winnerSide.lastName || ''}`.trim() || null;
+        }
 
         // Identify roots (matches that don't feed into any other match in this category)
         const roots = [];
@@ -318,7 +405,7 @@ const UI = {
         roots.sort((a, b) => a.matchId - b.matchId);
 
         const MATCH_WIDTH = 220;
-        const MATCH_HEIGHT = 100;
+        const MATCH_HEIGHT = 120;
         const X_SPACING = 300;
         const Y_SPACING = 140;
 
@@ -416,8 +503,13 @@ const UI = {
         matches.forEach(m => {
             const pos = positions.get(m.matchId);
             if (!pos) return;
+            const isLB = m.phase === 'lb';
+            const isPool = m.phase === 'pool';
             const node = document.createElement('div');
-            node.className = 'bracket-match-node absolute-node';
+            const phaseClass = isLB ? ' bracket-match-node--lb'
+                              : isPool ? ' bracket-match-node--pool'
+                              : '';
+            node.className = `bracket-match-node absolute-node${phaseClass}`;
             node.style.position = 'absolute';
             node.style.left = `${pos.x + OFFSET_X}px`;
             node.style.top = `${pos.y + OFFSET_Y}px`;
@@ -428,24 +520,227 @@ const UI = {
             const p1Won = m.status === 'finished' && m.winnerId != null && m.winnerId === m.p1.gpId;
             const p2Won = m.status === 'finished' && m.winnerId != null && m.winnerId === m.p2.gpId;
 
-            const p1Display = m.p1.firstName || m.p1.lastName
-                ? `${m.p1.firstName || ''} ${m.p1.lastName || ''}`.trim()
-                : 'TBD';
-            const p2Display = m.p2.firstName || m.p2.lastName
-                ? `${m.p2.firstName || ''} ${m.p2.lastName || ''}`.trim()
-                : 'TBD';
+            const p1Real = (m.p1.firstName || m.p1.lastName) ? `${m.p1.firstName || ''} ${m.p1.lastName || ''}`.trim() : '';
+            const p2Real = (m.p2.firstName || m.p2.lastName) ? `${m.p2.firstName || ''} ${m.p2.lastName || ''}`.trim() : '';
+            const p1Proj = projectedName(m, 'p1');
+            const p2Proj = projectedName(m, 'p2');
+            // Empty TBD slots get filled with the projected winner from the feeder fight,
+            // shown italic + dimmed so it's clearly "not yet locked in".
+            const p1Display = p1Real || p1Proj || 'TBD';
+            const p2Display = p2Real || p2Proj || 'TBD';
+            const p1ProjectedClass = !p1Real && p1Proj ? ' projected' : '';
+            const p2ProjectedClass = !p2Real && p2Proj ? ' projected' : '';
+
+            const badge = isLB ? '<span class="match-node-badge match-node-badge--lb">LB</span>'
+                         : isPool ? `<span class="match-node-badge match-node-badge--pool">Pool ${(m.poolIndex ?? 0) + 1}</span>`
+                         : '';
+
+            // Click on a bracket node opens the Result-picker dialog (Teil B).
+            // Only fightable matches react — TBD / bye / future-only nodes show a hint.
+            const p1HasFighter = m.p1.gpId != null;
+            const p2HasFighter = m.p2.gpId != null;
+            const isReady = p1HasFighter && p2HasFighter;
+            const isFinished = m.status === 'finished';
+            if (isReady && !isFinished) {
+                node.classList.add('clickable');
+                node.title = `Kampf #${m.fightNr} — Ergebnis eintragen`;
+                node.onclick = () => openResultDialog(m.matchId);
+            } else if (isReady && isFinished) {
+                node.classList.add('clickable');
+                node.title = `Kampf #${m.fightNr} (beendet) — Ergebnis ändern`;
+                node.onclick = () => openResultDialog(m.matchId);
+            } else if (!isReady && !isFinished) {
+                node.classList.add('not-ready');
+                node.title = 'Kampf noch nicht startbar — beide Kämpfer fehlen';
+            }
+
             node.innerHTML = `
-                <div class="match-node-p ${p1Won ? 'winner' : ''}">
+                <div class="match-node-header">
+                    <span class="match-node-num">#${m.fightNr}</span>
+                    ${badge}
+                </div>
+                <div class="match-node-p ${p1Won ? 'winner' : ''}${p1ProjectedClass}">
                     <span class="p-name">${p1Display}</span>
                     <span class="p-score-box">${p1Score}</span>
                 </div>
-                <div class="match-node-p ${p2Won ? 'winner' : ''}">
+                <div class="match-node-p ${p2Won ? 'winner' : ''}${p2ProjectedClass}">
                     <span class="p-name">${p2Display}</span>
                     <span class="p-score-box">${p2Score}</span>
                 </div>
             `;
             viz.appendChild(node);
         });
+    },
+
+   
+    renderDoublePool(viz, matches) {
+        const poolFights = matches.filter(m => m.phase === 'pool');
+        const koFights   = matches.filter(m => m.phase !== 'pool');
+
+        // Group pool fights by pool_index.
+        const poolsMap = new Map(); // poolIndex -> list of fights
+        poolFights.forEach(m => {
+            const k = m.poolIndex ?? 0;
+            if (!poolsMap.has(k)) poolsMap.set(k, []);
+            poolsMap.get(k).push(m);
+        });
+
+        const poolsContainer = document.createElement('div');
+        poolsContainer.className = 'pools-container';
+
+        [...poolsMap.keys()].sort((a, b) => a - b).forEach(poolIndex => {
+            const poolFightsHere = poolsMap.get(poolIndex);
+            poolsContainer.appendChild(this.renderRoundRobinPool(poolIndex, poolFightsHere));
+        });
+
+        viz.style.display = 'block';
+        viz.style.position = 'static';
+        viz.style.minWidth = '';
+        viz.style.minHeight = '';
+        viz.appendChild(poolsContainer);
+
+        // If there are KO matches (winners of pools fight each other), render them
+        // below the pool tables using a simplified vertical list. The full DAG
+        // layout would be overkill for typically 1–3 KO fights here.
+        if (koFights.length > 0) {
+            const koSection = document.createElement('div');
+            koSection.className = 'pool-ko-section';
+            const heading = document.createElement('h3');
+            heading.className = 'pool-section-title';
+            heading.textContent = 'KO-Phase';
+            koSection.appendChild(heading);
+
+            koFights.sort((a, b) => (a.round ?? 0) - (b.round ?? 0) || (a.fightNr ?? 0) - (b.fightNr ?? 0))
+                .forEach(m => koSection.appendChild(this.renderPoolKoCard(m)));
+
+            viz.appendChild(koSection);
+        }
+    },
+
+    /**
+     * Build one round-robin table for a single pool.
+     * Returns a DOM element.
+     */
+    renderRoundRobinPool(poolIndex, poolFights) {
+        // Collect unique fighters as {gpId, displayName} pairs.
+        const fighterByGp = new Map();
+        const collect = (slot) => {
+            if (!slot || slot.gpId == null) return;
+            if (!fighterByGp.has(slot.gpId)) {
+                const name = `${slot.firstName || ''} ${slot.lastName || ''}`.trim() || `#${slot.gpId}`;
+                fighterByGp.set(slot.gpId, { gpId: slot.gpId, name, club: slot.club || '' });
+            }
+        };
+        poolFights.forEach(m => { collect(m.p1); collect(m.p2); });
+
+        // Stable ordering by last name then first name.
+        const fighters = [...fighterByGp.values()].sort((a, b) => a.name.localeCompare(b.name, 'de'));
+
+        // Lookup: pair (a,b) -> fight, with a-side score / b-side score
+        const matchByPair = new Map();
+        poolFights.forEach(m => {
+            if (m.p1?.gpId == null || m.p2?.gpId == null) return;
+            const k1 = `${m.p1.gpId}|${m.p2.gpId}`;
+            const k2 = `${m.p2.gpId}|${m.p1.gpId}`;
+            matchByPair.set(k1, { fight: m, swap: false });
+            matchByPair.set(k2, { fight: m, swap: true });
+        });
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'pool-table-wrapper';
+
+        const title = document.createElement('h3');
+        title.className = 'pool-section-title';
+        title.textContent = `Pool ${poolIndex + 1}`;
+        wrapper.appendChild(title);
+
+        const table = document.createElement('table');
+        table.className = 'pool-table';
+
+        // Header row: empty cell + one column per fighter
+        const thead = document.createElement('thead');
+        const headRow = document.createElement('tr');
+        headRow.appendChild(document.createElement('th'));
+        fighters.forEach(f => {
+            const th = document.createElement('th');
+            th.className = 'pool-header-cell';
+            th.title = f.club ? `${f.name} (${f.club})` : f.name;
+            th.textContent = f.name;
+            headRow.appendChild(th);
+        });
+        thead.appendChild(headRow);
+        table.appendChild(thead);
+
+        // Body rows: one per fighter, with score cells
+        const tbody = document.createElement('tbody');
+        fighters.forEach(rowFighter => {
+            const tr = document.createElement('tr');
+            const rowHeader = document.createElement('th');
+            rowHeader.className = 'pool-header-cell pool-row-header';
+            rowHeader.title = rowFighter.club ? `${rowFighter.name} (${rowFighter.club})` : rowFighter.name;
+            rowHeader.textContent = rowFighter.name;
+            tr.appendChild(rowHeader);
+
+            fighters.forEach(colFighter => {
+                const td = document.createElement('td');
+                td.className = 'pool-cell';
+                if (rowFighter.gpId === colFighter.gpId) {
+                    td.classList.add('pool-cell--diagonal');
+                    td.textContent = '—';
+                } else {
+                    const entry = matchByPair.get(`${rowFighter.gpId}|${colFighter.gpId}`);
+                    if (!entry) {
+                        td.textContent = '·';
+                        td.classList.add('pool-cell--missing');
+                    } else {
+                        const { fight, swap } = entry;
+                        const rowSide = swap ? fight.p2 : fight.p1;
+                        const colSide = swap ? fight.p1 : fight.p2;
+                        const rs = rowSide.score?.points ?? 0;
+                        const cs = colSide.score?.points ?? 0;
+                        const isFinished = fight.status === 'finished';
+                        const rowWon = isFinished && fight.winnerId === rowSide.gpId;
+                        const colWon = isFinished && fight.winnerId === colSide.gpId;
+
+                        td.title = `Kampf #${fight.fightNr} — ${rowSide.lastName} vs ${colSide.lastName}`;
+                        td.textContent = isFinished ? `${rs}:${cs}` : (fight.status === 'live' ? '…' : '?');
+                        td.classList.add('pool-cell--match');
+                        if (rowWon) td.classList.add('pool-cell--row-won');
+                        if (colWon) td.classList.add('pool-cell--col-won');
+
+                        td.onclick = () => openResultDialog(fight.matchId);
+                    }
+                }
+                tr.appendChild(td);
+            });
+
+            tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        wrapper.appendChild(table);
+
+        return wrapper;
+    },
+
+
+    renderPoolKoCard(m) {
+        const card = document.createElement('div');
+        const isFinished = m.status === 'finished';
+        const ready = m.p1.gpId != null && m.p2.gpId != null;
+        card.className = `pool-ko-card${ready ? ' clickable' : ' not-ready'}`;
+        if (ready) card.onclick = () => openResultDialog(m.matchId);
+        const p1Name = `${m.p1.firstName || ''} ${m.p1.lastName || ''}`.trim() || 'TBD';
+        const p2Name = `${m.p2.firstName || ''} ${m.p2.lastName || ''}`.trim() || 'TBD';
+        const p1S = m.p1.score?.points ?? 0;
+        const p2S = m.p2.score?.points ?? 0;
+        const p1Won = isFinished && m.winnerId === m.p1.gpId;
+        const p2Won = isFinished && m.winnerId === m.p2.gpId;
+        card.innerHTML = `
+            <div class="pool-ko-header">#${m.fightNr}${m.phase === 'lb' ? ' · LB' : ''}</div>
+            <div class="pool-ko-row${p1Won ? ' winner' : ''}"><span>${p1Name}</span><span>${p1S}</span></div>
+            <div class="pool-ko-row${p2Won ? ' winner' : ''}"><span>${p2Name}</span><span>${p2S}</span></div>
+        `;
+        return card;
     },
 
     setupDragAndDrop(card, matchId) {
@@ -684,6 +979,20 @@ const App = {
             State.isTableFilterActive = e.target.checked;
             UI.renderFightList();
         };
+
+
+        const autoToggle = document.getElementById('auto-send-toggle');
+        if (autoToggle) {
+            State.autoSendEnabled = localStorage.getItem('autoSendEnabled') === 'true';
+            autoToggle.checked = State.autoSendEnabled;
+            autoToggle.onchange = (e) => {
+                State.autoSendEnabled = e.target.checked;
+                localStorage.setItem('autoSendEnabled', String(State.autoSendEnabled));
+            };
+        }
+
+        const savedNext = localStorage.getItem('nextUpMatchId');
+        if (savedNext) State.nextUpMatchId = parseInt(savedNext, 10) || null;
     },
 
     startRestTimer() {
@@ -741,9 +1050,8 @@ window.winByDecision = function (playerNum) {
         UI.updateScoreDisplay();
     }
 
-    // Show victory overlay instead of auto-closing silently
-    const winnerName = `${player.firstName} ${player.lastName}`.trim() || 'Player';
-    UI.showVictoryPopup(winnerName);
+
+    UI.showVictoryPopup(State.currentScoringMatch, playerNum === 1 ? 'p1' : 'p2');
 };
 
 window.markWinner = function (matchId, playerNum) {
@@ -779,10 +1087,24 @@ window.closeResultDialog = function () {
 
 window.confirmResult = function (kind) {
     if (currentResultMatchId === null) return;
+    // Capture match before closing the dialog (which nulls currentResultMatchId).
+    const matchObj = State.activeMatches.find(x => x.matchId === currentResultMatchId);
+
     if (kind === 'p1') markWinner(currentResultMatchId, 1);
     else if (kind === 'p2') markWinner(currentResultMatchId, 2);
     else markDraw(currentResultMatchId);
     closeResultDialog();
+
+    // Show victory overlay with Ipponboard colors. Build a synthetic match
+    // reflecting the just-sent scores (the WS broadcast will catch up shortly,
+    // but the overlay should not flicker).
+    if (matchObj) {
+        const synthetic = {
+            p1: { ...matchObj.p1, score: { points: kind === 'p1' ? 1 : 0 } },
+            p2: { ...matchObj.p2, score: { points: kind === 'p2' ? 1 : 0 } },
+        };
+        UI.showVictoryPopup(synthetic, kind === 'draw' ? 'draw' : kind);
+    }
 };
 
 window.reopenMatch = async function (matchId) {
@@ -796,6 +1118,18 @@ window.reopenMatch = async function (matchId) {
     } catch (e) {
         alert(`Verbindungsfehler: ${e.message}`);
     }
+};
+
+window.markAsNext = function (matchId) {
+    // Toggle: clicking the same card again clears the marker.
+    if (State.nextUpMatchId === matchId) {
+        State.nextUpMatchId = null;
+        localStorage.removeItem('nextUpMatchId');
+    } else {
+        State.nextUpMatchId = matchId;
+        localStorage.setItem('nextUpMatchId', String(matchId));
+    }
+    UI.renderFightList();
 };
 
 window.sendToIpponboard = async function (matchId) {
