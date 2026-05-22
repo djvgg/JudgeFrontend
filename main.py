@@ -227,38 +227,47 @@ async def websocket_endpoint(websocket: WebSocket):
     try:
         while True:
             data = await websocket.receive_json()
+            match_id = data.get("matchId")
 
             with SessionLocal() as session:
                 from src.database import FightModel
                 if data["type"] == "SCORE_UPDATE":
-                    fight = session.query(FightModel).filter(FightModel.id == data["matchId"]).first()
-                    if fight:
-                        if data["playerNum"] == 1:
-                            fight.score1 = data["value"]
-                        else:
-                            fight.score2 = data["value"]
-                        session.commit()
-                        session.refresh(fight)
-                        match_dict = _build_match_dict(session, fight)
-                        await manager.broadcast({"type": "SCORE_SYNC", "matchId": data["matchId"], "match": match_dict})
+                    fight = session.query(FightModel).filter(FightModel.id == match_id).first()
+                    if not fight:
+                        await _send_unknown_match_error(websocket, match_id, "SCORE_UPDATE")
+                        continue
+                    value = data["value"]
+                    # Schema is INTEGER; cast defensively in case a client sends a string.
+                    if isinstance(value, str):
+                        value = int(value) if value.strip() else None
+                    if data["playerNum"] == 1:
+                        fight.score1 = value
+                    else:
+                        fight.score2 = value
+                    session.commit()
+                    session.refresh(fight)
+                    match_dict = _build_match_dict(session, fight)
+                    await manager.broadcast({"type": "SCORE_SYNC", "matchId": match_id, "match": match_dict})
 
                 elif data["type"] == "STATUS_UPDATE":
-                    fight = session.query(FightModel).filter(FightModel.id == data["matchId"]).first()
-                    if fight:
-                        fight.status = data["status"]
-                        if data["status"] == "finished":
-                            s1 = fight.score1 or 0
-                            s2 = fight.score2 or 0
-                            if s1 > s2:
-                                fight.winner_id = fight.participant1_id
-                            elif s2 > s1:
-                                fight.winner_id = fight.participant2_id
-                            else:
-                                fight.winner_id = None
-                        session.commit()
-                        session.refresh(fight)
-                        match_dict = _build_match_dict(session, fight)
-                        await manager.broadcast({"type": "SCORE_SYNC", "matchId": data["matchId"], "match": match_dict})
+                    fight = session.query(FightModel).filter(FightModel.id == match_id).first()
+                    if not fight:
+                        await _send_unknown_match_error(websocket, match_id, "STATUS_UPDATE")
+                        continue
+                    fight.status = data["status"]
+                    if data["status"] == "finished":
+                        s1 = fight.score1 or 0
+                        s2 = fight.score2 or 0
+                        if s1 > s2:
+                            fight.winner_id = fight.participant1_id
+                        elif s2 > s1:
+                            fight.winner_id = fight.participant2_id
+                        else:
+                            fight.winner_id = None
+                    session.commit()
+                    session.refresh(fight)
+                    match_dict = _build_match_dict(session, fight)
+                    await manager.broadcast({"type": "SCORE_SYNC", "matchId": match_id, "match": match_dict})
 
                 elif data["type"] == "REORDER":
                     for m_id, order in data["orders"].items():
@@ -271,6 +280,29 @@ async def websocket_endpoint(websocket: WebSocket):
 
     except WebSocketDisconnect:
         manager.disconnect(websocket)
+    except RuntimeError as e:
+        # `receive_json()` on a half-closed socket raises RuntimeError
+        # ("WebSocket is not connected"). Treat as a disconnect.
+        if "not connected" in str(e):
+            manager.disconnect(websocket)
+        else:
+            raise
+
+
+async def _send_unknown_match_error(websocket: WebSocket, match_id, event_type: str) -> None:
+    """Surface a previously-silent drop. Client sees the error instead of
+    a phantom-success simulation. Server-side log line for ops."""
+    import logging
+    logging.getLogger("uvicorn.error").warning(
+        "WS %s: unknown matchId=%r — dropping message", event_type, match_id
+    )
+    with contextlib.suppress(Exception):
+        await websocket.send_json({
+            "type": "ERROR",
+            "code": "unknown_match",
+            "matchId": match_id,
+            "event": event_type,
+        })
 
 @app.post("/api/import-brackets")
 def import_brackets(groups: list[dict]):

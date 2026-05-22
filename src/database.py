@@ -84,7 +84,7 @@ class FightModel(Base):
     round = Column(Integer, nullable=True)
     pos_in_round = Column(Integer, nullable=True)
     pool_index = Column(Integer, nullable=True)
-    table_id = Column(String, nullable=True)
+    table_id = Column(Integer, nullable=True)
     winner_id = Column(Integer, nullable=True)
 
 def get_db():

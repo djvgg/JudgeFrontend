@@ -1,53 +1,105 @@
+# SPDX-FileCopyrightText: 2026 TOP Team Combat Control
+# SPDX-License-Identifier: GPL-3.0-or-later
+"""End-to-end tournament simulation against a live JudgeFrontend backend.
+
+Voraussetzung:
+    Backend läuft auf http://localhost:5001
+    DB ist mit mindestens einem Bracket + Fights gefüllt (siehe
+    edv/seed_test_tournament.py für einen Mini-Stand).
+
+Liest alle nicht-abgeschlossenen Fights aus /api/matches, sortiert sie nach
+(bracketId, round, posInRound) und spielt sie über den WebSocket-Endpoint
+/ws durch (SCORE_UPDATE + STATUS_UPDATE finished). p1 gewinnt jeden Kampf
+mit 10:0.
+
+Vorher: hartkodierte matchId 1..15, die nie mit echten fight.id übereinstimmten.
+"""
+from __future__ import annotations
+
 import asyncio
 import json
+import sys
+from typing import Any
 
+import requests
 import websockets
 
 
-async def simulate_tournament_progression():
-    """
-    Simulates a full tournament progression by winning matches through WebSocket.
-    """
-    uri = "ws://localhost:5001/ws"
+BACKEND_HTTP = "http://localhost:5001"
+BACKEND_WS = "ws://localhost:5001/ws"
+
+
+def fetch_matches() -> list[dict[str, Any]]:
+    r = requests.get(f"{BACKEND_HTTP}/api/matches", timeout=5)
+    r.raise_for_status()
+    payload = r.json()
+    return payload.get("matches", [])
+
+
+def select_simulatable(matches: list[dict]) -> list[dict]:
+    """Pickbare Fights: status pending, beide Teilnehmer gesetzt, nicht bye."""
+    out = []
+    for m in matches:
+        if m.get("status") in ("finished", "bye"):
+            continue
+        if not m.get("p1") or not m.get("p2"):
+            continue
+        if not m["p1"].get("participantId") or not m["p2"].get("participantId"):
+            continue
+        out.append(m)
+
+    def sort_key(m):
+        return (m.get("bracketId") or 0, m.get("round") or 0, m.get("posInRound") or 0)
+
+    out.sort(key=sort_key)
+    return out
+
+
+async def simulate(matches: list[dict]) -> None:
+    async with websockets.connect(BACKEND_WS) as ws:
+        print(f"Connected. Simulating {len(matches)} fight(s).")
+        for m in matches:
+            mid = m["matchId"]
+            label = m.get("categoryLabel") or m.get("category") or "?"
+            r = m.get("round")
+            pir = m.get("posInRound")
+            print(f"  fight #{mid:>4}  bracket={m.get('bracketId')}  r{r}/p{pir}  {label}")
+            await ws.send(json.dumps({
+                "type": "SCORE_UPDATE",
+                "matchId": mid,
+                "playerNum": 1,
+                "scoreType": "points",
+                "value": 10,
+            }))
+            await asyncio.sleep(0.05)
+            await ws.send(json.dumps({
+                "type": "STATUS_UPDATE",
+                "matchId": mid,
+                "status": "finished",
+            }))
+            await asyncio.sleep(0.05)
+        # Drain broadcasts so the server doesn't see us as flaky.
+        await asyncio.sleep(0.5)
+    print("Done.")
+
+
+def main() -> int:
     try:
-        async with websockets.connect(uri) as websocket:
-            print("Connected to Tournament WebSocket")
+        matches = fetch_matches()
+    except requests.RequestException as e:
+        print(f"Backend nicht erreichbar ({e}). Erst uvicorn auf :5001 starten.",
+              file=sys.stderr)
+        return 1
 
-            # --- Round 1: Matches 1 to 8 ---
-            for match_id in range(1, 9):
-                print(f"Propagating Winner for Match #{match_id} (Round 1)")
-                # Assign 10 points (Auto-win condition)
-                await websocket.send(json.dumps({"type": "SCORE_UPDATE", "matchId": match_id, "playerNum": 1, "scoreType": "points", "value": 10}))
-                await asyncio.sleep(0.3)
-                await websocket.send(json.dumps({"type": "STATUS_UPDATE", "matchId": match_id, "status": "finished"}))
-                await asyncio.sleep(0.5)
+    pickable = select_simulatable(matches)
+    if not pickable:
+        print(f"Keine simulierbaren Fights gefunden (insgesamt {len(matches)} im Backend). "
+              f"Beide Teilnehmer gesetzt und status=pending erwartet.")
+        return 1
 
-            # --- Round 2: Matches 9 to 12 ---
-            for match_id in range(9, 13):
-                print(f"Propagating Winner for Match #{match_id} (Round 2)")
-                await websocket.send(json.dumps({"type": "SCORE_UPDATE", "matchId": match_id, "playerNum": 1, "scoreType": "points", "value": 10}))
-                await asyncio.sleep(0.3)
-                await websocket.send(json.dumps({"type": "STATUS_UPDATE", "matchId": match_id, "status": "finished"}))
-                await asyncio.sleep(0.5)
+    asyncio.run(simulate(pickable))
+    return 0
 
-            # --- Semi-finals: Matches 13 to 14 ---
-            for match_id in range(13, 15):
-                print(f"Propagating Winner for Semi-final Match #{match_id}")
-                await websocket.send(json.dumps({"type": "SCORE_UPDATE", "matchId": match_id, "playerNum": 1, "scoreType": "points", "value": 10}))
-                await asyncio.sleep(0.3)
-                await websocket.send(json.dumps({"type": "STATUS_UPDATE", "matchId": match_id, "status": "finished"}))
-                await asyncio.sleep(0.5)
-
-            # --- Final: Match 15 ---
-            print("Finishing Grand Final Match #15")
-            await websocket.send(json.dumps({"type": "SCORE_UPDATE", "matchId": 15, "playerNum": 1, "scoreType": "points", "value": 10}))
-            await asyncio.sleep(0.3)
-            await websocket.send(json.dumps({"type": "STATUS_UPDATE", "matchId": 15, "status": "finished"}))
-
-            print("\nSimulation complete. The tournament tree is now fully updated!")
-
-    except Exception as e:
-        print(f"Connection error: {e}")
 
 if __name__ == "__main__":
-    asyncio.run(simulate_tournament_progression())
+    sys.exit(main())
