@@ -84,20 +84,36 @@ async def simulate(matches: list[dict]) -> None:
 
 
 def main() -> int:
-    try:
-        matches = fetch_matches()
-    except requests.RequestException as e:
-        print(f"Backend nicht erreichbar ({e}). Erst uvicorn auf :5001 starten.",
-              file=sys.stderr)
-        return 1
+    # Mehrere Pässe: nach Round-0-Sieg propagiert das Backend in Round 1,
+    # die im naechsten Pass spielbar wird. Schleife bis nichts mehr offen ist
+    # oder MAX_PASSES erreicht (Safety-Netz).
+    MAX_PASSES = 5
+    passes_done = 0
+    total_simulated = 0
 
-    pickable = select_simulatable(matches)
-    if not pickable:
-        print(f"Keine simulierbaren Fights gefunden (insgesamt {len(matches)} im Backend). "
-              f"Beide Teilnehmer gesetzt und status=pending erwartet.")
-        return 1
+    while passes_done < MAX_PASSES:
+        try:
+            matches = fetch_matches()
+        except requests.RequestException as e:
+            print(f"Backend nicht erreichbar ({e}). Erst uvicorn auf :5001 starten.",
+                  file=sys.stderr)
+            return 1
 
-    asyncio.run(simulate(pickable))
+        pickable = select_simulatable(matches)
+        if not pickable:
+            if passes_done == 0:
+                print(f"Keine simulierbaren Fights gefunden (insgesamt {len(matches)} im Backend). "
+                      f"Beide Teilnehmer gesetzt und status=pending erwartet.")
+                return 1
+            print(f"Alle spielbaren Fights durch ({total_simulated} insgesamt, {passes_done} Pass(es)).")
+            return 0
+
+        passes_done += 1
+        print(f"--- Pass {passes_done} ---")
+        asyncio.run(simulate(pickable))
+        total_simulated += len(pickable)
+
+    print(f"MAX_PASSES={MAX_PASSES} erreicht, breche ab (insgesamt {total_simulated} Fights).")
     return 0
 
 

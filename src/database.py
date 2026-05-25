@@ -64,6 +64,24 @@ class GroupParticipantModel(Base):
     group_id = Column(Integer)
     participant_id = Column(Integer)
 
+class BracketModel(Base):
+    """
+    Native 'brackets' table from the backend. Welle 2B.1 needs first_place /
+    second_place / third_place_1 to persist pool standings.
+    """
+    __tablename__ = "brackets"
+    __table_args__ = {'extend_existing': True}
+
+    id = Column(Integer, primary_key=True)
+    group_id = Column(Integer)
+    bracket_type = Column(String)
+    status = Column(String)
+    first_place = Column(Integer, nullable=True)
+    second_place = Column(Integer, nullable=True)
+    third_place_1 = Column(Integer, nullable=True)
+    third_place_2 = Column(Integer, nullable=True)
+
+
 class FightModel(Base):
     """
     Native 'fights' table from the backend.
