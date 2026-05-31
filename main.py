@@ -101,6 +101,13 @@ def _category_label(fight, group_info: dict) -> str:
     return f"Bracket {fight.bracket_id}" if fight.bracket_id else "Unknown"
 
 
+def _pool_label(fight) -> str:
+    """'Pool N' (1-based) for pool fights, '' otherwise — sent to Ipponboard verbatim."""
+    if fight.bracket_phase == "pool" and fight.pool_index is not None:
+        return f"Pool {fight.pool_index + 1}"
+    return ""
+
+
 def _resolve_participants(session, gp_ids: set[int]) -> dict[int, dict]:
     """Resolve a set of group_participants.id values to their real
     participant data. Returns {gp_id: {gpId, participantId, firstName, lastName, club}}."""
@@ -455,6 +462,42 @@ def _compute_pool_standings(session, bracket_id, pool_index=None):
     return ordered
 
 
+def _best_of_three_decided(session, bracket_id):
+    """True wenn ein Zweier-Pool (Best-of-three) bereits entschieden ist.
+
+    Ein Zweier-Pool besteht aus genau zwei Teilnehmern, die dreimal gegeneinander
+    kaempfen (siehe edv pool_renderer._generate_fight_schedule(2)). Sobald einer
+    zwei Siege hat, ist der dritte Kampf bedeutungslos — das Bracket darf ohne ihn
+    abgeschlossen werden.
+
+    Returns: (decided: bool, open_fights: list[FightModel]) — die noch offenen
+    Pool-Fights, damit der Aufrufer sie als 'bye' schliessen kann.
+    """
+    from src.database import FightModel as _FightModel
+
+    fights = session.query(_FightModel).filter(
+        _FightModel.bracket_id == bracket_id,
+        _FightModel.bracket_phase == "pool",
+    ).all()
+
+    gp_ids: set[int] = set()
+    wins: dict[int, int] = {}
+    open_fights = []
+    for f in fights:
+        if f.participant1_id is not None:
+            gp_ids.add(f.participant1_id)
+        if f.participant2_id is not None:
+            gp_ids.add(f.participant2_id)
+        if f.status in ("finished", "bye"):
+            if f.winner_id is not None:
+                wins[f.winner_id] = wins.get(f.winner_id, 0) + 1
+        else:
+            open_fights.append(f)
+
+    decided = len(gp_ids) == 2 and max(wins.values(), default=0) >= 2
+    return decided, open_fights
+
+
 def _finalize_pool_bracket_if_complete(session, fight):
     """Welle 2B.1 (Single-Pool) + 2B.2 (Doppelpool-Trigger):
     Wenn alle Pool-Fights eines Brackets durch sind:
@@ -481,7 +524,16 @@ def _finalize_pool_bracket_if_complete(session, fight):
         ~_FightModel.status.in_(["finished", "bye"]),
     ).count()
     if open_fights > 0:
-        return None
+        # Best-of-three (Zweier-Pool): bei 2-0/2-1 ist der dritte Kampf moot.
+        # Frueh abschliessen und den toten Rest-Kampf als 'bye' schliessen, damit
+        # er nicht offen haengen bleibt. Doppelpools spielen immer alle Fights.
+        decided, leftover = (False, [])
+        if bracket.bracket_type != "double":
+            decided, leftover = _best_of_three_decided(session, fight.bracket_id)
+        if not decided:
+            return None
+        for f in leftover:
+            f.status = "bye"   # winner_id bleibt None -> zaehlt nicht als Sieg
 
     # Doppelpool: KO-Stage eager anlegen, Bracket bleibt pending.
     if bracket.bracket_type == "double":
@@ -777,7 +829,8 @@ async def push_to_ipponboard(match_id: int):
                 "weightclass": weight_class,
             }
 
-        payload = {"fighter1": fighter_json(f1), "fighter2": fighter_json(f2)}
+        # optional pool label, top-level sibling of fighter1/fighter2 (empty for non-pool fights)
+        payload = {"fighter1": fighter_json(f1), "fighter2": fighter_json(f2), "pool": _pool_label(fight)}
 
     try:
         resp = requests.post(f"{IPPONBOARD_URL}/fighters", json=payload, timeout=3)
@@ -800,6 +853,8 @@ async def push_to_ipponboard(match_id: int):
 async def reopen_match(match_id: int):
     from src.database import FightModel
 
+    global last_pushed_match_id
+
     with SessionLocal() as session:
         fight = session.query(FightModel).filter(FightModel.id == match_id).first()
         if not fight:
@@ -814,6 +869,12 @@ async def reopen_match(match_id: int):
         session.commit()
         session.refresh(fight)
         match_dict = _build_match_dict(session, fight)
+
+    # Reopening the currently-pushed match makes its assignment stale — drop the pointer
+    # so a pending Ipponboard callback for it is rejected rather than mis-applied.
+    if last_pushed_match_id == match_id:
+        last_pushed_match_id = None
+        await manager.broadcast({"type": "CURRENT_MATCH_SET", "matchId": None})
 
     await manager.broadcast({"type": "SCORE_SYNC", "matchId": match_id, "match": match_dict})
     return {"status": "ok", "matchId": match_id}
@@ -854,12 +915,19 @@ async def ippon_score(payload: dict):
         session.refresh(fight)
 
         match_dict = _build_match_dict(session, fight)
+        appliedId = fight.id
 
-    await manager.broadcast({"type": "SCORE_SYNC", "matchId": fight.id, "match": match_dict})
+    await manager.broadcast({"type": "SCORE_SYNC", "matchId": appliedId, "match": match_dict})
+
+    # Clear the pushed-match pointer so a late/duplicate Ipponboard callback can't be
+    # applied to whatever match got pushed next. Next callback hits the "No match pushed
+    # yet" guard until the operator pushes again.
+    last_pushed_match_id = None
+    await manager.broadcast({"type": "CURRENT_MATCH_SET", "matchId": None})
 
     return {
         "status": "ok",
-        "match_id": last_pushed_match_id,
+        "match_id": appliedId,
         "winner": winner,
         "winner_name": match_dict["winnerName"],
     }
