@@ -1,8 +1,9 @@
-const CACHE_NAME = 'judo-judge-v3';
+const CACHE_NAME = 'judo-judge-v5';
 const ASSETS = [
     './',
     './index.html',
     './style.css',
+    './fightOrder.js',
     './app.js'
 ];
 

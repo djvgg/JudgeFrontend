@@ -85,6 +85,21 @@ class TestCategoryLabel:
         assert backend._category_label(fight, {}) == 'Unknown'
 
 
+class TestPoolLabel:
+    """_pool_label feeds the optional top-level 'pool' field of POST /fighters."""
+
+    def test_pool_fight_one_based(self):
+        assert backend._pool_label(_fight(bracket_phase='pool', pool_index=0)) == 'Pool 1'
+        assert backend._pool_label(_fight(bracket_phase='pool', pool_index=2)) == 'Pool 3'
+
+    def test_ko_fight_empty(self):
+        assert backend._pool_label(_fight(bracket_phase='wb', pool_index=None)) == ''
+
+    def test_pool_phase_without_index_empty(self):
+        # defensive: phase says pool but index missing -> no label, no crash
+        assert backend._pool_label(_fight(bracket_phase='pool', pool_index=None)) == ''
+
+
 class TestBuildMatchDict:
     """Test the central match dict builder used by REST + WebSocket."""
 

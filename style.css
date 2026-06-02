@@ -294,6 +294,24 @@ header {
 }
 .match-node-badge--lb { background: #d97706; color: #fff; }
 .match-node-badge--pool { background: #2563eb; color: #fff; }
+.match-node-badge--bye { background: #16a34a; color: #fff; }
+/* Endkampf-Marker (Finale / Bronze) — Gold, hebt die Entscheidungskämpfe hervor. */
+.match-node-badge--stage { background: #ca8a04; color: #1a1205; border: 1px solid #fde047; }
+/* Freilos node: decided on creation, not a fightable bout. */
+.bracket-match-node.bye-node { opacity: 0.92; cursor: default; }
+
+/* Per-mat queue position ("Matte X, Kampf N") on a bracket-tree node. */
+.match-node-mat {
+    font-weight: 600;
+    padding: 0.05rem 0.35rem;
+    border-radius: 4px;
+    font-size: 0.6rem;
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--text-muted);
+    text-transform: none;
+    letter-spacing: 0;
+    white-space: nowrap;
+}
 
 /* Teil E — Doppelpool layout: two round-robin tables side-by-side + KO below */
 .pools-container {
@@ -362,17 +380,40 @@ header {
     opacity: 0.4;
 }
 
+/* A bout that actually takes place gets a white background (like the white score
+   cells on the DJB Excel sheet); blocked cells stay shaded. */
 .pool-cell--match {
     cursor: pointer;
+    background: #ffffff;
+    color: #1a1a1a;
     transition: background 0.15s, transform 0.1s;
 }
 .pool-cell--match:hover {
-    background: rgba(34, 170, 240, 0.2);
+    background: #e6f4ff;
     transform: scale(1.03);
 }
 
-.pool-cell--row-won { background: rgba(0, 230, 118, 0.25); color: #00e676; }
-.pool-cell--col-won { background: rgba(255, 100, 100, 0.18); color: #ff7575; }
+.pool-cell--row-won { background: #c9f7d6; color: #0a7d33; }
+.pool-cell--col-won { background: #ffd6d6; color: #b3261e; }
+
+/* Bout-column header (run order 1..k) and blocked cells where a fighter does
+   not compete in that bout — mirrors the shaded cells on the DJB Excel sheet. */
+.pool-bout-header { min-width: 44px; max-width: 56px; }
+.pool-bout-num { display: block; font-weight: 700; line-height: 1.1; }
+.pool-bout-mat {
+    display: block;
+    font-size: 0.6rem;
+    font-weight: 600;
+    line-height: 1.1;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+.pool-cell--blocked {
+    background: repeating-linear-gradient(
+        45deg, rgba(255,255,255,0.03), rgba(255,255,255,0.03) 4px,
+        rgba(255,255,255,0.06) 4px, rgba(255,255,255,0.06) 8px);
+    min-width: 44px;
+}
 
 /* KO phase below the pool tables */
 .pool-ko-section {
@@ -434,9 +475,15 @@ header {
     border-bottom: none;
 }
 
+/* Judo colours: fighter 1 = weiß, fighter 2 = blau (the adjacent-sibling
+   selectors skip the header div). Winner override below keeps precedence. */
+.match-node-header + .match-node-p { background: rgba(255, 255, 255, 0.14); }
+.match-node-p + .match-node-p { background: rgba(37, 99, 235, 0.22); }
+
 .match-node-p.winner {
-    background: rgba(0, 230, 118, 0.1);
+    background: rgba(0, 230, 118, 0.22);
     color: var(--success-color);
+    font-weight: 700;
 }
 
 .p-name {
@@ -510,6 +557,29 @@ h1 {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.btn-auto-order {
+    background: transparent;
+    color: var(--accent-color);
+    border: 1px solid var(--accent-color);
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.btn-auto-order:hover {
+    background: var(--accent-color);
+    color: #fff;
 }
 
 .filter-group {
@@ -644,6 +714,32 @@ input:checked+.slider:before {
     width: fit-content;
 }
 
+/* Per-mat queue rank — when this fight is due on its mat. */
+.queue-rank-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--accent-orange, #ffa726);
+    background: rgba(255, 167, 38, 0.12);
+    border: 1px solid rgba(255, 167, 38, 0.35);
+    padding: 2px 8px;
+    border-radius: 4px;
+    width: fit-content;
+    margin-top: 2px;
+}
+
+/* Endkampf-Marker in der Kampfliste (Finale / Kampf um Platz 3). */
+.stage-label-badge {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #1a1205;
+    background: #fbbf24;
+    border: 1px solid #fde047;
+    padding: 2px 8px;
+    border-radius: 4px;
+    width: fit-content;
+    margin-top: 2px;
+}
+
 /* Fight NR Badge */
 .fight-nr-badge {
     font-size: 1.1rem;
@@ -720,6 +816,13 @@ input:checked+.slider:before {
 .fighter-name {
     font-size: 1rem;
     font-weight: 600;
+}
+
+/* Freilos/Walkover phantom seat — dimmed + italic, reads as "no opponent". */
+.fighter--freilos .fighter-name {
+    font-style: italic;
+    font-weight: 500;
+    color: var(--text-muted);
 }
 
 .fighter-club {

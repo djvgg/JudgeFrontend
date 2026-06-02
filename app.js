@@ -45,7 +45,10 @@ const Network = {
             }));
             State.currentMatchId = data.currentMatchId ?? null;
             UI.updateTournamentTitle(data.tournamentName);
-            UI.autoInterleaveMatches(); // Set initial order
+            // Reihenfolge kommt aus dem Backend (`order` = persistiertes fight_number).
+            // Die Auto-Reihenfolge (Chunked-RR) wird NICHT mehr bei jedem Fetch
+            // angewandt — sonst würden manuelle Drag&Drop-Umsortierungen überschrieben.
+            // Sie wird bewusst per Button ausgelöst (UI.applyAutoOrder).
         } catch (error) {
             console.error('Failed to fetch matches:', error);
             UI.displayError('Turnierdaten konnten nicht geladen werden.');
@@ -68,19 +71,26 @@ const Network = {
             if (idx !== -1) {
                 const prev = State.activeMatches[idx];
                 const wasNotFinished = prev.status !== 'finished';
-                State.activeMatches[idx] = { ...data.match, restSeconds: State.activeMatches[idx].restSeconds };
+                // Keep the stable running fight number (a single-match rebuild can't
+                // know the tournament-wide order) and the rest timer.
+                State.activeMatches[idx] = { ...data.match, restSeconds: prev.restSeconds, fightNr: prev.fightNr ?? data.match.fightNr, p1From: data.match.p1From ?? prev.p1From, p2From: data.match.p2From ?? prev.p2From };
                 if (State.currentScoringMatch?.matchId === data.matchId) {
                     State.currentScoringMatch = State.activeMatches[idx];
                     UI.updateScoreDisplay();
                 }
 
                 const justFinished = wasNotFinished && data.match.status === 'finished';
-                if (justFinished && State.autoSendEnabled && State.nextUpMatchId &&
-                    State.nextUpMatchId !== data.matchId) {
-                    const queuedId = State.nextUpMatchId;
+                if (justFinished && State.autoSendEnabled) {
+                    // Explicit ⏭ marker wins; otherwise default to the next fight in
+                    // line on the same mat (the finished one is already filtered out).
+                    let queuedId = State.nextUpMatchId;
+                    if (!queuedId || queuedId === data.matchId) {
+                        const onMat = UI.orderedActiveOnMat(data.match.tableId);
+                        queuedId = onMat[0]?.matchId ?? null;
+                    }
                     State.nextUpMatchId = null;
                     localStorage.removeItem('nextUpMatchId');
-                    sendToIpponboard(queuedId);
+                    if (queuedId && queuedId !== data.matchId) sendToIpponboard(queuedId);
                 }
 
                 UI.renderFightList();
@@ -178,9 +188,22 @@ const UI = {
         const tableNum = document.getElementById('table-select')?.value || "1";
         const assignedTable = localStorage.getItem('assignedTable');
 
+        // Self-heal a stale "⏭ Als nächster" marker: if the queued match has
+        // vanished from the list or is already done, drop it so no outdated
+        // assignment lingers (e.g. it was played without auto-send).
+        if (State.nextUpMatchId !== null) {
+            const queued = State.activeMatches.find(m => m.matchId === State.nextUpMatchId);
+            if (!queued || queued.status === 'finished' || queued.status === 'bye') {
+                State.nextUpMatchId = null;
+                localStorage.removeItem('nextUpMatchId');
+            }
+        }
+
         container.innerHTML = '';
 
-        let displayMatches = [...State.activeMatches];
+        // Hide eager-materialized TBD-vs-TBD phantoms (full-tree display only) —
+        // the queue shows real fightable bouts + already-decided ones.
+        let displayMatches = [...State.activeMatches].filter(m => this.queueEligible(m));
 
         // Apply table filter if active AND we are not admin
         if (State.isTableFilterActive && tableNum !== 'admin') {
@@ -197,39 +220,152 @@ const UI = {
         // Identify the true "Next" match per table (only the first 'upcoming' per tableId)
         const nextMatchByTable = new Map();
         [...State.activeMatches].sort((a, b) => a.order - b.order).forEach(m => {
-            if ((m.status === 'upcoming' || m.status === 'pending') && !nextMatchByTable.has(m.tableId)) {
+            if (this.isStartable(m) && (m.status === 'upcoming' || m.status === 'pending')
+                && !nextMatchByTable.has(m.tableId)) {
                 nextMatchByTable.set(m.tableId, m.matchId);
             }
         });
         const nextMatchIds = new Set(nextMatchByTable.values());
 
+        // Per-mat queue rank: 1 = next up on that mat, counting only upcoming
+        // fights in running order — so you can see when each fight is due.
+        const rankByMatch = this.computeMatRanks();
+
+        // "Als nächstes" = the on-deck fight = rank 2 in each mat's running order
+        // (rank 1 is the one going to the mat now). A manual ⏭ marker overrides
+        // its mat's default — markAsNext() also reorders it into position 2, so the
+        // marker and the running order stay in sync.
+        const nextUpIds = this.computeNextUpIds();
+
         const isAdminMode = tableNum === 'admin';
-        displayMatches.forEach(m => container.appendChild(this.createFightCard(m, assignedTable, nextMatchIds, isAdminMode)));
+        displayMatches.forEach(m => container.appendChild(
+            this.createFightCard(m, assignedTable, nextMatchIds, isAdminMode,
+                rankByMatch.get(m.matchId), nextUpIds)));
         document.getElementById('match-count').textContent = `${displayMatches.length} Kämpfe angezeigt`;
     },
 
+    // List membership: real fightable bouts + already-decided ones. The eager
+    // full-tree materialization creates TBD-vs-TBD phantoms for *display* in the
+    // bracket tree — those must never clutter the Kampfliste / mat queue.
+    queueEligible(m) {
+        return (m.p1?.gpId != null && m.p2?.gpId != null)
+            || m.status === 'finished' || m.status === 'bye';
+    },
+
+    // Active AND startable (both fighters known, not yet done) — the set the mat
+    // queue ranks and orders over (excludes finished/bye AND TBD phantoms).
+    isStartable(m) {
+        return m.p1?.gpId != null && m.p2?.gpId != null
+            && m.status !== 'finished' && m.status !== 'bye';
+    },
+
+    // Per-mat queue rank: matchId -> position on its mat (1 = next up), counting
+    // only startable fights in running order. Single source for the fight list AND
+    // the live bracket tree's "Matte X, Kampf N" badges.
+    computeMatRanks() {
+        const rankByMatch = new Map();
+        const perMatCount = new Map();
+        [...State.activeMatches]
+            .filter(m => this.isStartable(m))
+            .sort((a, b) => (a.order || 0) - (b.order || 0))
+            .forEach(m => {
+                const k = String(m.tableId);
+                const r = (perMatCount.get(k) || 0) + 1;
+                perMatCount.set(k, r);
+                rankByMatch.set(m.matchId, r);
+            });
+        return rankByMatch;
+    },
+
+    // Compact "Matte X, Kampf N" badge HTML for a bracket-tree node, or '' if the
+    // fight has no mat rank (finished/bye/not in the active queue).
+    matRankBadge(matchId, rankByMatch, tableId) {
+        const r = rankByMatch.get(matchId);
+        if (!r || tableId == null) return '';
+        return `<span class="match-node-mat" title="Reihenfolge auf der Matte">Matte ${tableId}, Kampf ${r}</span>`;
+    },
+
+    // Startable fights on a mat, in running order (excludes finished/bye + TBD).
+    orderedActiveOnMat(tableKey) {
+        return [...State.activeMatches]
+            .filter(m => String(m.tableId) === String(tableKey) && this.isStartable(m))
+            .sort((a, b) => (a.order || 0) - (b.order || 0));
+    },
+
+    // Reorder `matchId` so it sits right behind the first active fight on its mat
+    // (i.e. becomes "Kampf 2" = on deck). Persists the new order via REORDER.
+    moveMatchToSecondOnMat(matchId) {
+        const list = State.activeMatches;
+        const fromIdx = list.findIndex(m => m.matchId === matchId);
+        if (fromIdx === -1) { this.renderFightList(); return; }
+        const target = list[fromIdx];
+        const first = this.orderedActiveOnMat(target.tableId)
+            .find(m => m.matchId !== matchId);
+        if (!first) { this.renderFightList(); return; } // already the only/first fight
+        list.splice(fromIdx, 1);
+        const firstIdx = list.findIndex(m => m.matchId === first.matchId);
+        list.splice(firstIdx + 1, 0, target);
+        list.forEach((m, i) => m.order = i + 1);
+        const orders = {};
+        list.forEach(m => orders[m.matchId] = m.order);
+        Network.send({ type: 'REORDER', orders });
+        this.renderFightList();
+    },
+
+    // The on-deck fight id per mat: rank 2 by default, overridden by a manual ⏭ marker.
+    computeNextUpIds() {
+        const ids = new Set();
+        const manual = State.nextUpMatchId;
+        const manualMatch = manual != null
+            ? State.activeMatches.find(m => m.matchId === manual
+                && m.status !== 'finished' && m.status !== 'bye')
+            : null;
+        const manualMat = manualMatch ? String(manualMatch.tableId) : null;
+        const mats = new Set(State.activeMatches.map(m => String(m.tableId)));
+        mats.forEach(matKey => {
+            if (matKey === manualMat) { ids.add(manual); return; }
+            const onMat = this.orderedActiveOnMat(matKey);
+            if (onMat.length >= 2) ids.add(onMat[1].matchId); // rank 2 = on deck
+        });
+        return ids;
+    },
+
+    // Abkämpf-Reihenfolge auf einer Matte: Chunked-Round-Robin über die Listen
+    // (`bracketId`) je Matte (`tableId`), siehe fightOrder.js + CLAUDE.md-Invariant
+    // (Decision 2026-06-02). Ersetzt das frühere Geschlechter-Interleave. Byes/
+    // finished stehen nie zur Disposition — immer unten, als gewonnen markiert.
     autoInterleaveMatches() {
         const matches = State.activeMatches;
-        const finished = matches.filter(m => m.status === 'finished' || m.status === 'bye').sort((a, b) => a.order - b.order);
-        const upcoming = matches.filter(m => m.status !== 'finished' && m.status !== 'bye');
+        const finished = matches
+            .filter(m => m.status === 'finished' || m.status === 'bye')
+            .sort((a, b) => (a.order ?? a.fightNr) - (b.order ?? b.fightNr));
+        const open = matches.filter(m => m.status !== 'finished' && m.status !== 'bye');
 
-        const males = upcoming.filter(m => m.gender === 'm').sort((a, b) => a.matchId - b.matchId);
-        const females = upcoming.filter(m => m.gender === 'w').sort((a, b) => a.matchId - b.matchId);
-        const others = upcoming.filter(m => m.gender !== 'm' && m.gender !== 'w').sort((a, b) => a.matchId - b.matchId);
+        const ordered = chunkedRoundRobinOrder(open, FIGHT_ORDER_CHUNK_SIZE);
 
-        const interleaved = [];
-        const maxLen = Math.max(males.length, females.length);
-        for (let i = 0; i < maxLen; i++) {
-            if (i < males.length) interleaved.push(males[i]);
-            if (i < females.length) interleaved.push(females[i]);
-        }
-
-        const finalOrder = [...interleaved, ...others, ...finished];
+        const finalOrder = [...ordered, ...finished];
         finalOrder.forEach((m, i) => m.order = i + 1);
         State.activeMatches = finalOrder;
     },
 
-    createFightCard(match, assignedTable, nextMatchIds, isAdminMode) {
+    // Wendet die Auto-Reihenfolge (Chunked-RR) bewusst per Button an und
+    // persistiert sie via REORDER (Backend schreibt fight_number) — gilt damit
+    // für alle Tablets und überlebt den nächsten Fetch. Überschreibt manuelle
+    // Drag&Drop-Umsortierungen (das ist der Zweck: zurück zur Auto-Ordnung).
+    applyAutoOrder() {
+        this.autoInterleaveMatches();
+        // Auto-Reihenfolge baut die Sequenz neu — ein manuell gesetztes "als nächster"
+        // würde sonst auf dem alten Kampf kleben und den neuen Rang 2 überstimmen.
+        // Marker zurücksetzen, damit er aus der frischen Ordnung neu abgeleitet wird.
+        State.nextUpMatchId = null;
+        localStorage.removeItem('nextUpMatchId');
+        const orders = {};
+        State.activeMatches.forEach(m => orders[m.matchId] = m.order);
+        Network.send({ type: 'REORDER', orders });
+        this.renderFightList();
+    },
+
+    createFightCard(match, assignedTable, nextMatchIds, isAdminMode, queueRank, nextUpIds) {
         let isReadOnly = assignedTable && String(match.tableId) !== String(assignedTable);
         if (isAdminMode) isReadOnly = false;
         const isCurrent = State.currentMatchId === match.matchId;
@@ -247,22 +383,55 @@ const UI = {
             (isUpcoming ? (isNextOnTable ? 'NÄCHSTE' : 'WARTEND') :
             (match.status === 'live' ? 'LIVE' : 'BEENDET'));
 
+        const rankLabel = (queueRank && (match.status === 'upcoming' || match.status === 'pending'))
+            ? `<div class="queue-rank-badge" title="Reihenfolge auf dieser Matte — so wird abgekämpft">Matte ${match.tableId}, Kampf ${queueRank}</div>`
+            : '';
+
+        // Endkampf-Marker (Finale / Kampf um Platz 3) — neben "Matte X, Kampf N".
+        const stageLabel = match.stageLabel
+            ? `<div class="stage-label-badge" title="Entscheidungskampf">${match.stageLabel}</div>`
+            : '';
+
+        // A Freilos/Walkover is stored as p1==p2 (or both empty). Show the real
+        // fighter once vs "Freilos" — never the same name twice (consistent with
+        // renderKoTree's isBye handling).
+        const isBye = match.status === 'bye'
+            || (match.p1.gpId != null && match.p1.gpId === match.p2.gpId);
+        const p1HasName = match.p1.firstName || match.p1.lastName;
+        const p2HasName = match.p2.firstName || match.p2.lastName;
+        let p1Display, p2Display, p1Club, p2Club;
+        if (isBye) {
+            const realName = p1HasName ? `${match.p1.firstName} ${match.p1.lastName}`.trim()
+                : (p2HasName ? `${match.p2.firstName} ${match.p2.lastName}`.trim() : 'Freilos');
+            p1Display = realName;
+            p2Display = 'Freilos';
+            p1Club = p1HasName ? (match.p1.club || '') : (match.p2.club || '');
+            p2Club = '';
+        } else {
+            p1Display = `${match.p1.firstName} ${match.p1.lastName}`;
+            p2Display = `${match.p2.firstName} ${match.p2.lastName}`;
+            p1Club = match.p1.club;
+            p2Club = match.p2.club;
+        }
+
         card.innerHTML = `
-            <div class="fight-nr-badge"><div class="fight-num-circle">${match.fightNr}</div></div>
+            <div class="fight-nr-badge"><div class="fight-num-circle" title="Kampfnummer">${match.fightNr}</div></div>
             <div class="category-box">
                 <span class="table-label">Tisch ${match.tableId}</span>
+                ${rankLabel}
+                ${stageLabel}
                 <span class="category-name">${match.categoryLabel || match.category}</span>
                 <a href="#" class="bracket-link" onclick="UI.handleBracketClick(event, ${match.matchId})">Live-Turnierbaum</a>
             </div>
             <div class="fighters-display">
                 <div class="fighter p1">
-                    <span class="fighter-name">${match.p1.firstName} ${match.p1.lastName}</span>
-                    <span class="fighter-club">${match.p1.club}</span>
+                    <span class="fighter-name">${p1Display}</span>
+                    <span class="fighter-club">${p1Club}</span>
                 </div>
                 <div class="vs-divider">VS</div>
-                <div class="fighter p2">
-                    <span class="fighter-name">${match.p2.firstName} ${match.p2.lastName}</span>
-                    <span class="fighter-club">${match.p2.club}</span>
+                <div class="fighter p2${isBye ? ' fighter--freilos' : ''}">
+                    <span class="fighter-name">${p2Display}</span>
+                    <span class="fighter-club">${p2Club}</span>
                 </div>
             </div>
             <div class="status-box">
@@ -272,7 +441,7 @@ const UI = {
             <div class="action-area">
                 ${(match.status !== 'finished' && match.status !== 'bye') ?
                 `<button class="btn-start" ${isReadOnly ? 'disabled' : ''} onclick="event.stopPropagation(); sendToIpponboard(${match.matchId})" title="An Ipponboard senden">Start</button>
-                 <button class="btn-next-up ${State.nextUpMatchId === match.matchId ? 'active' : ''}" ${isReadOnly ? 'disabled' : ''} onclick="event.stopPropagation(); markAsNext(${match.matchId})" title="Als nächsten markieren — wird bei Auto-Send aktiv automatisch ans Ipponboard gesendet, sobald der aktuelle Kampf endet.">${State.nextUpMatchId === match.matchId ? '⏭ NÄCHSTER' : '⏭ Als nächster'}</button>
+                 <button class="btn-next-up ${nextUpIds && nextUpIds.has(match.matchId) ? 'active' : ''}" ${isReadOnly ? 'disabled' : ''} onclick="event.stopPropagation(); markAsNext(${match.matchId})" title="Als nächsten markieren — rutscht auf Position 2 (Kampf 2) der Matte und wird bei Auto-Send automatisch ans Ipponboard gesendet, sobald der aktuelle Kampf endet.">${nextUpIds && nextUpIds.has(match.matchId) ? '⏭ NÄCHSTER' : '⏭ Als nächster'}</button>
                  <button class="btn-result" ${isReadOnly ? 'disabled' : ''} onclick="event.stopPropagation(); openResultDialog(${match.matchId})">Ergebnis setzen</button>` :
                 (match.status === 'bye'
                     ? `<span class="winner-badge bye-badge" title="Freilos">🏆 ${match.winnerName || 'Freilos'} <span class="bye-tag">Freilos</span></span>`
@@ -314,14 +483,30 @@ const UI = {
         const list = document.getElementById('bracket-category-list');
         if (!list) return;
         list.innerHTML = '';
+
+        // Only list categories whose fights run on the selected mat — mirrors the
+        // "Nur mein Tisch" filter of the Kampfliste. Admin (or filter off) → all lists.
+        const tableNum = document.getElementById('table-select')?.value || "1";
+        const filterByMat = State.isTableFilterActive && tableNum !== 'admin';
+        const visible = State.activeMatches.filter(m =>
+            !filterByMat || String(m.tableId) === String(tableNum));
+
         const byKey = new Map();
-        State.activeMatches.forEach(m => {
+        visible.forEach(m => {
             const key = m.category;
             if (!byKey.has(key)) {
                 const base = m.groupLabel || m.categoryLabel || m.category;
                 byKey.set(key, m.bracketTypeLabel ? `${base} · ${m.bracketTypeLabel}` : base);
             }
         });
+
+        // If the active category no longer runs on this mat, fall back to the
+        // first visible list so the tree never shows an off-mat category.
+        if (State.currentBracketCategory && !byKey.has(State.currentBracketCategory)) {
+            State.currentBracketCategory = byKey.size > 0 ? byKey.keys().next().value : null;
+            this.renderBracketVisualization();
+        }
+
         byKey.forEach((label, key) => {
             const div = document.createElement('div');
             div.className = `category-item ${State.currentBracketCategory === key ? 'active' : ''}`;
@@ -357,6 +542,31 @@ const UI = {
             return;
         }
 
+        // Single pool: render the DJB score sheet (fighters in rows, bouts in
+        // columns) instead of the KO tree, matching the edv Excel pool list.
+        if (matches.length > 0 && matches.every(m => m.phase === 'pool')) {
+            viz.style.display = 'block';
+            viz.style.position = 'static';
+            viz.style.minWidth = '';
+            viz.style.minHeight = '';
+            const container = document.createElement('div');
+            container.className = 'pools-container';
+            container.appendChild(this.renderRoundRobinPool(0, matches));
+            viz.appendChild(container);
+            return;
+        }
+
+        // Standalone KO bracket → Los-seeded tree (matches the Excel Doppel-KO form).
+        this.renderKoTree(viz, matches);
+    },
+
+    /**
+     * Render a KO bracket as a Los-seeded tree into `container`. First-round
+     * leaves are ordered by pos_in_round (Los/seed order); empty leaf slots show
+     * "Freilos". Reused by the standalone KO view and the double-pool KO stage.
+     */
+    renderKoTree(container, matches) {
+        const rankByMatch = this.computeMatRanks();
         // Build a map of matches and their children (matches that feed INTO them)
         const matchMap = new Map();
         matches.forEach(m => matchMap.set(m.matchId, { ...m, children: [] }));
@@ -420,8 +630,12 @@ const UI = {
             const node = matchMap.get(matchId);
             const children = node.children.map(cid => matchMap.get(cid));
 
-            // Sort children so p1 is above p2
+            // Order children top-to-bottom by Los/seed (pos_in_round); this makes
+            // the first-round leaves come out in Los order like the Excel sheet.
+            // Fall back to the feeder's slot (p1 above p2), then matchId.
             children.sort((a, b) => {
+                const pa = a.posInRound ?? 0, pb = b.posInRound ?? 0;
+                if (pa !== pb) return pa - pb;
                 if (a.nextMatchPos === 'p1' && b.nextMatchPos === 'p2') return -1;
                 if (a.nextMatchPos === 'p2' && b.nextMatchPos === 'p1') return 1;
                 return a.matchId - b.matchId;
@@ -462,11 +676,15 @@ const UI = {
         const OFFSET_X = 40;
         const OFFSET_Y = 40;
 
-        viz.style.position = 'relative';
-        viz.style.minWidth = `${maxX + MATCH_WIDTH + OFFSET_X * 2}px`;
-        viz.style.minHeight = `${maxY + MATCH_HEIGHT + OFFSET_Y * 2}px`;
+        container.style.position = 'relative';
+        container.style.minWidth = `${maxX + MATCH_WIDTH + OFFSET_X * 2}px`;
+        container.style.minHeight = `${maxY + MATCH_HEIGHT + OFFSET_Y * 2}px`;
         // Cleanup old flex properties
-        viz.style.display = 'block';
+        container.style.display = 'block';
+
+        // Leaf matches (first round) have no feeders → an empty slot is a Freilos,
+        // not a yet-to-be-decided TBD.
+        const leafIds = new Set([...matchMap.values()].filter(n => n.children.length === 0).map(n => n.matchId));
 
         // Draw SVG lines first
         const svgNS = "http://www.w3.org/2000/svg";
@@ -497,7 +715,7 @@ const UI = {
                 svg.appendChild(path);
             }
         });
-        viz.appendChild(svg);
+        container.appendChild(svg);
 
         // Draw nodes
         matches.forEach(m => {
@@ -517,23 +735,56 @@ const UI = {
 
             const p1Score = m.p1.score.points || 0;
             const p2Score = m.p2.score.points || 0;
-            const p1Won = m.status === 'finished' && m.winnerId != null && m.winnerId === m.p1.gpId;
-            const p2Won = m.status === 'finished' && m.winnerId != null && m.winnerId === m.p2.gpId;
+            // A KO Freilos is stored as a self-pairing (p1==p2) with status 'bye' and
+            // the present fighter already set as winner_id → mark it as won.
+            const isBye = m.status === 'bye'
+                || (m.p1.gpId != null && m.p1.gpId === m.p2.gpId);
+            let p1Won = m.status === 'finished' && m.winnerId != null && m.winnerId === m.p1.gpId;
+            let p2Won = m.status === 'finished' && m.winnerId != null && m.winnerId === m.p2.gpId;
 
             const p1Real = (m.p1.firstName || m.p1.lastName) ? `${m.p1.firstName || ''} ${m.p1.lastName || ''}`.trim() : '';
             const p2Real = (m.p2.firstName || m.p2.lastName) ? `${m.p2.firstName || ''} ${m.p2.lastName || ''}`.trim() : '';
             const p1Proj = projectedName(m, 'p1');
             const p2Proj = projectedName(m, 'p2');
-            // Empty TBD slots get filled with the projected winner from the feeder fight,
-            // shown italic + dimmed so it's clearly "not yet locked in".
-            const p1Display = p1Real || p1Proj || 'TBD';
-            const p2Display = p2Real || p2Proj || 'TBD';
-            const p1ProjectedClass = !p1Real && p1Proj ? ' projected' : '';
-            const p2ProjectedClass = !p2Real && p2Proj ? ' projected' : '';
+            // Where an empty slot's fighter comes from: "Sieger/Verlierer aus #N"
+            // (N = the Kampfnummer shown on the source node), from the backend's
+            // p1From/p2From. Falls back to the projected winner name, then TBD/Freilos.
+            const sourceLabel = (from) => from
+                ? (from.kind === 'loser' ? `Verlierer aus #${from.fightNr}` : `Sieger aus #${from.fightNr}`)
+                : '';
+            const emptyLabel = leafIds.has(m.matchId) ? 'Freilos' : 'TBD';
+            let p1Display = p1Real || sourceLabel(m.p1From) || p1Proj || emptyLabel;
+            let p2Display = p2Real || sourceLabel(m.p2From) || p2Proj || emptyLabel;
+            // Any non-real slot reads as tentative (italic + dimmed).
+            let p1ProjectedClass = !p1Real ? ' projected' : '';
+            let p2ProjectedClass = !p2Real ? ' projected' : '';
+            // Projected winner name (if the feeder is already decided) as a hover hint.
+            const p1Title = (!p1Real && p1Proj) ? `voraussichtlich: ${p1Proj}` : '';
+            const p2Title = (!p2Real && p2Proj) ? `voraussichtlich: ${p2Proj}` : '';
 
-            const badge = isLB ? '<span class="match-node-badge match-node-badge--lb">LB</span>'
+            if (isBye) {
+                // Freilos: the present fighter advances kampflos → winner on top,
+                // an empty "Freilos" seat below; no score boxes.
+                p1Display = p1Real || p2Real || 'Freilos';
+                p2Display = 'Freilos';
+                p1Won = true;
+                p2Won = false;
+                p1ProjectedClass = '';
+                p2ProjectedClass = ' projected';
+            }
+            const p1ScoreBox = isBye ? '' : p1Score;
+            const p2ScoreBox = isBye ? '' : p2Score;
+
+            const badge = isBye ? '<span class="match-node-badge match-node-badge--bye">Freilos</span>'
+                         : isLB ? '<span class="match-node-badge match-node-badge--lb">LB</span>'
                          : isPool ? `<span class="match-node-badge match-node-badge--pool">Pool ${(m.poolIndex ?? 0) + 1}</span>`
                          : '';
+            // Endkampf-Marker (Finale / Bronze) aus dem Backend-stageLabel — der Baum
+            // zeigt jeden dritten Platz als eigenen, beschrifteten Strang.
+            const stageBadge = m.stageLabel
+                ? `<span class="match-node-badge match-node-badge--stage">${
+                    m.stageLabel === 'Finale' ? '🏆 Finale' : '🥉 3. Platz'}</span>`
+                : '';
 
             // Click on a bracket node opens the Result-picker dialog (Teil B).
             // Only fightable matches react — TBD / bye / future-only nodes show a hint.
@@ -541,7 +792,10 @@ const UI = {
             const p2HasFighter = m.p2.gpId != null;
             const isReady = p1HasFighter && p2HasFighter;
             const isFinished = m.status === 'finished';
-            if (isReady && !isFinished) {
+            if (isBye) {
+                node.classList.add('bye-node');
+                node.title = `Kampf #${m.fightNr} — Freilos: ${p1Display} kampflos weiter`;
+            } else if (isReady && !isFinished) {
                 node.classList.add('clickable');
                 node.title = `Kampf #${m.fightNr} — Ergebnis eintragen`;
                 node.onclick = () => openResultDialog(m.matchId);
@@ -557,18 +811,20 @@ const UI = {
             node.innerHTML = `
                 <div class="match-node-header">
                     <span class="match-node-num">#${m.fightNr}</span>
+                    ${this.matRankBadge(m.matchId, rankByMatch, m.tableId)}
                     ${badge}
+                    ${stageBadge}
                 </div>
                 <div class="match-node-p ${p1Won ? 'winner' : ''}${p1ProjectedClass}">
-                    <span class="p-name">${p1Display}</span>
-                    <span class="p-score-box">${p1Score}</span>
+                    <span class="p-name"${p1Title ? ` title="${p1Title}"` : ''}>${p1Display}</span>
+                    <span class="p-score-box">${p1ScoreBox}</span>
                 </div>
                 <div class="match-node-p ${p2Won ? 'winner' : ''}${p2ProjectedClass}">
-                    <span class="p-name">${p2Display}</span>
-                    <span class="p-score-box">${p2Score}</span>
+                    <span class="p-name"${p2Title ? ` title="${p2Title}"` : ''}>${p2Display}</span>
+                    <span class="p-score-box">${p2ScoreBox}</span>
                 </div>
             `;
-            viz.appendChild(node);
+            container.appendChild(node);
         });
     },
 
@@ -599,9 +855,8 @@ const UI = {
         viz.style.minHeight = '';
         viz.appendChild(poolsContainer);
 
-        // If there are KO matches (winners of pools fight each other), render them
-        // below the pool tables using a simplified vertical list. The full DAG
-        // layout would be overkill for typically 1–3 KO fights here.
+        // KO stage (pool winners) — render as the HF→Finale tree, same diagram as
+        // the standalone KO, instead of the old flat cards.
         if (koFights.length > 0) {
             const koSection = document.createElement('div');
             koSection.className = 'pool-ko-section';
@@ -610,19 +865,76 @@ const UI = {
             heading.textContent = 'KO-Phase';
             koSection.appendChild(heading);
 
-            koFights.sort((a, b) => (a.round ?? 0) - (b.round ?? 0) || (a.fightNr ?? 0) - (b.fightNr ?? 0))
-                .forEach(m => koSection.appendChild(this.renderPoolKoCard(m)));
-
+            const koTree = document.createElement('div');
+            koSection.appendChild(koTree);
             viz.appendChild(koSection);
+            this.renderKoTree(koTree, koFights);
         }
     },
 
     /**
-     * Build one round-robin table for a single pool.
-     * Returns a DOM element.
+     * Canonical DJB pool fight order — mirrors edv
+     * pool_renderer._generate_fight_schedule(n). Returns [a,b] slot pairs
+     * (0-indexed) in run order. n===2 is best-of-three (the lone pair, 3x).
+     * (Cross-repo contract, see WSP/CLAUDE.md.)
+     */
+    poolFightSchedule(n) {
+        if (n < 2) return [];
+        if (n === 2) return [[0, 1], [0, 1], [0, 1]];
+        if (n === 3) return [[0, 2], [1, 2], [0, 1]];
+        if (n === 4) return [[0, 3], [1, 2], [0, 2], [1, 3], [0, 1], [2, 3]];
+        if (n === 5) return [[0, 3], [1, 4], [0, 2], [1, 3], [2, 4], [0, 1], [2, 3], [0, 4], [1, 2], [3, 4]];
+        // circle method for larger pools
+        const m = n % 2 === 0 ? n : n + 1;
+        let players = Array.from({ length: m }, (_, i) => i);
+        const out = [];
+        for (let r = 0; r < m - 1; r++) {
+            for (let i = 0; i < m / 2; i++) {
+                const p1 = players[i], p2 = players[m - 1 - i];
+                if (p1 < n && p2 < n) out.push([p1, p2]);
+            }
+            players = [players[0], players[players.length - 1], ...players.slice(1, -1)];
+        }
+        return out;
+    },
+
+    /**
+     * Recover the real pool Start-Nr order (slots 0..n-1) from the DB fights.
+     * edv `_build_pool_pairs` assigns pos_in_round in combinations(range(n),2)
+     * order with p1 = the lower slot, so fight at pos p sits on slot pair combo[p]
+     * (p1→combo[p][0], p2→combo[p][1]). A complete round-robin contains every pair,
+     * so this is exact (the schedule alone can't recover it — every permutation
+     * reproduces the full pair set). Fallback: the given (name-sorted) order.
+     */
+    solvePoolSlots(gpIds, poolFights) {
+        const n = gpIds.length;
+        const combos = [];
+        for (let a = 0; a < n; a++) for (let b = a + 1; b < n; b++) combos.push([a, b]);
+        const slotOfGp = new Map();
+        let consistent = true;
+        poolFights.forEach(f => {
+            const p = f.posInRound;
+            if (p == null || p >= combos.length || f.p1?.gpId == null || f.p2?.gpId == null) return;
+            const [sa, sb] = combos[p];
+            if (slotOfGp.has(f.p1.gpId) && slotOfGp.get(f.p1.gpId) !== sa) consistent = false;
+            if (slotOfGp.has(f.p2.gpId) && slotOfGp.get(f.p2.gpId) !== sb) consistent = false;
+            slotOfGp.set(f.p1.gpId, sa);
+            slotOfGp.set(f.p2.gpId, sb);
+        });
+        if (!consistent || slotOfGp.size !== n) return gpIds.slice();
+        const slotGpIds = new Array(n);
+        slotOfGp.forEach((slot, gp) => { if (slot < n) slotGpIds[slot] = gp; });
+        return slotGpIds.every(x => x != null) ? slotGpIds : gpIds.slice();
+    },
+
+    /**
+     * Build one pool as the official DJB score sheet: fighters in ROWS,
+     * one COLUMN per bout in canonical schedule order (best-of-three = 3 columns
+     * for a 2-fighter pool). Mirrors edv excel_form_filler. Returns a DOM element.
      */
     renderRoundRobinPool(poolIndex, poolFights) {
-        // Collect unique fighters as {gpId, displayName} pairs.
+        const rankByMatch = this.computeMatRanks();
+        // Collect unique fighters.
         const fighterByGp = new Map();
         const collect = (slot) => {
             if (!slot || slot.gpId == null) return;
@@ -633,17 +945,33 @@ const UI = {
         };
         poolFights.forEach(m => { collect(m.p1); collect(m.p2); });
 
-        // Stable ordering by last name then first name.
-        const fighters = [...fighterByGp.values()].sort((a, b) => a.name.localeCompare(b.name, 'de'));
+        // Base order by name, then solve the pool slot order so the bout columns
+        // follow the canonical schedule (= the order on the Excel sheet).
+        const baseGpIds = [...fighterByGp.keys()].sort(
+            (a, b) => fighterByGp.get(a).name.localeCompare(fighterByGp.get(b).name, 'de'));
+        const slotGpIds = this.solvePoolSlots(baseGpIds, poolFights);
+        const fighters = slotGpIds.map(gp => fighterByGp.get(gp));
+        const n = fighters.length;
+        const schedule = this.poolFightSchedule(n);
 
-        // Lookup: pair (a,b) -> fight, with a-side score / b-side score
-        const matchByPair = new Map();
+        // Resolve each scheduled bout to a concrete fight. Best-of-three shares the
+        // pair, so consume the pair's fights in fightNr order (one per column).
+        const pairKey = (a, b) => [a, b].sort((x, y) => x - y).join('|');
+        const fightsByPair = new Map();
         poolFights.forEach(m => {
             if (m.p1?.gpId == null || m.p2?.gpId == null) return;
-            const k1 = `${m.p1.gpId}|${m.p2.gpId}`;
-            const k2 = `${m.p2.gpId}|${m.p1.gpId}`;
-            matchByPair.set(k1, { fight: m, swap: false });
-            matchByPair.set(k2, { fight: m, swap: true });
+            const k = pairKey(m.p1.gpId, m.p2.gpId);
+            if (!fightsByPair.has(k)) fightsByPair.set(k, []);
+            fightsByPair.get(k).push(m);
+        });
+        fightsByPair.forEach(list => list.sort((a, b) => (a.fightNr ?? a.matchId) - (b.fightNr ?? b.matchId)));
+        const consumed = new Map();
+        const bouts = schedule.map(([a, b]) => {
+            const k = pairKey(slotGpIds[a], slotGpIds[b]);
+            const list = fightsByPair.get(k) || [];
+            const idx = consumed.get(k) || 0;
+            consumed.set(k, idx + 1);
+            return { slotA: a, slotB: b, fight: list[idx] || null };
         });
 
         const wrapper = document.createElement('div');
@@ -657,23 +985,36 @@ const UI = {
         const table = document.createElement('table');
         table.className = 'pool-table';
 
-        // Header row: empty cell + one column per fighter
+        // Header: "" + one column per bout, numbered 1..k (run order).
         const thead = document.createElement('thead');
         const headRow = document.createElement('tr');
-        headRow.appendChild(document.createElement('th'));
-        fighters.forEach(f => {
+        const corner = document.createElement('th');
+        corner.className = 'pool-header-cell';
+        headRow.appendChild(corner);
+        bouts.forEach((bout, i) => {
             const th = document.createElement('th');
-            th.className = 'pool-header-cell';
-            th.title = f.club ? `${f.name} (${f.club})` : f.name;
-            th.textContent = f.name;
+            th.className = 'pool-header-cell pool-bout-header';
+            const fa = fighters[bout.slotA], fb = fighters[bout.slotB];
+            // Top: tournament-wide fight number (same as list/tree); fall back to the
+            // in-pool run order if the fight isn't created yet. Below: the mat-rank
+            // ("Matte X, Kampf N") so you can see when/where the bout is due.
+            const fNum = bout.fight ? bout.fight.fightNr : (i + 1);
+            const rank = bout.fight ? rankByMatch.get(bout.fight.matchId) : null;
+            const matLine = (bout.fight && rank && bout.fight.tableId != null)
+                ? `<span class="pool-bout-mat">M${bout.fight.tableId}·${rank}</span>` : '';
+            th.innerHTML = `<span class="pool-bout-num">${fNum}</span>${matLine}`;
+            th.title = `Kampf-Nr. ${bout.fight ? bout.fight.fightNr : '—'} · Reihenfolge ${i + 1}`
+                + `${rank ? ` · Matte ${bout.fight.tableId}, Kampf ${rank}` : ''}`
+                + `: ${fa?.name || '?'} vs ${fb?.name || '?'}`;
             headRow.appendChild(th);
         });
         thead.appendChild(headRow);
         table.appendChild(thead);
 
-        // Body rows: one per fighter, with score cells
+        // One row per fighter; a bout column carries the fighter's own score cell
+        // when they are in that bout, otherwise it is blocked (mirrors the shading).
         const tbody = document.createElement('tbody');
-        fighters.forEach(rowFighter => {
+        fighters.forEach((rowFighter, slot) => {
             const tr = document.createElement('tr');
             const rowHeader = document.createElement('th');
             rowHeader.className = 'pool-header-cell pool-row-header';
@@ -681,39 +1022,37 @@ const UI = {
             rowHeader.textContent = rowFighter.name;
             tr.appendChild(rowHeader);
 
-            fighters.forEach(colFighter => {
+            bouts.forEach((bout, i) => {
                 const td = document.createElement('td');
-                td.className = 'pool-cell';
-                if (rowFighter.gpId === colFighter.gpId) {
-                    td.classList.add('pool-cell--diagonal');
-                    td.textContent = '—';
-                } else {
-                    const entry = matchByPair.get(`${rowFighter.gpId}|${colFighter.gpId}`);
-                    if (!entry) {
-                        td.textContent = '·';
-                        td.classList.add('pool-cell--missing');
-                    } else {
-                        const { fight, swap } = entry;
-                        const rowSide = swap ? fight.p2 : fight.p1;
-                        const colSide = swap ? fight.p1 : fight.p2;
-                        const rs = rowSide.score?.points ?? 0;
-                        const cs = colSide.score?.points ?? 0;
-                        const isFinished = fight.status === 'finished';
-                        const rowWon = isFinished && fight.winnerId === rowSide.gpId;
-                        const colWon = isFinished && fight.winnerId === colSide.gpId;
-
-                        td.title = `Kampf #${fight.fightNr} — ${rowSide.lastName} vs ${colSide.lastName}`;
-                        td.textContent = isFinished ? `${rs}:${cs}` : (fight.status === 'live' ? '…' : '?');
-                        td.classList.add('pool-cell--match');
-                        if (rowWon) td.classList.add('pool-cell--row-won');
-                        if (colWon) td.classList.add('pool-cell--col-won');
-
-                        td.onclick = () => openResultDialog(fight.matchId);
-                    }
+                const inBout = bout.slotA === slot || bout.slotB === slot;
+                if (!inBout) {
+                    td.className = 'pool-cell pool-cell--blocked';
+                    tr.appendChild(td);
+                    return;
                 }
+                td.className = 'pool-cell pool-cell--match';
+                const fight = bout.fight;
+                if (!fight) {
+                    td.textContent = '·';
+                    td.classList.add('pool-cell--missing');
+                    tr.appendChild(td);
+                    return;
+                }
+                const mySide = fight.p1?.gpId === rowFighter.gpId ? fight.p1 : fight.p2;
+                const oppName = (fight.p1?.gpId === rowFighter.gpId ? fight.p2 : fight.p1)?.lastName || '?';
+                const isFinished = fight.status === 'finished';
+                const myPts = mySide?.score?.points ?? 0;
+                if (isFinished) {
+                    td.textContent = myPts;
+                    if (fight.winnerId === rowFighter.gpId) td.classList.add('pool-cell--row-won');
+                    else if (fight.winnerId != null) td.classList.add('pool-cell--col-won');
+                } else {
+                    td.textContent = fight.status === 'live' ? '…' : '';
+                }
+                td.title = `Kampf-Nr. ${fight.fightNr} (Reihenfolge ${i + 1}) — ${rowFighter.name} vs ${oppName}`;
+                td.onclick = () => openResultDialog(fight.matchId);
                 tr.appendChild(td);
             });
-
             tbody.appendChild(tr);
         });
         table.appendChild(tbody);
@@ -978,6 +1317,7 @@ const App = {
         document.getElementById('my-table-filter').onchange = (e) => {
             State.isTableFilterActive = e.target.checked;
             UI.renderFightList();
+            UI.updateBracketSidebar();
         };
 
 
@@ -1027,6 +1367,7 @@ window.switchTable = function (tableId) {
         }
     }
     UI.renderFightList();
+    UI.updateBracketSidebar();
 };
 
 window.winByDecision = function (playerNum) {
@@ -1121,15 +1462,18 @@ window.reopenMatch = async function (matchId) {
 };
 
 window.markAsNext = function (matchId) {
-    // Toggle: clicking the same card again clears the marker.
+    // Toggle off: clear the manual marker; the mat's default (Kampf 2) takes over again.
     if (State.nextUpMatchId === matchId) {
         State.nextUpMatchId = null;
         localStorage.removeItem('nextUpMatchId');
-    } else {
-        State.nextUpMatchId = matchId;
-        localStorage.setItem('nextUpMatchId', String(matchId));
+        UI.renderFightList();
+        return;
     }
-    UI.renderFightList();
+    // Manual pick: mark it AND pull it up to position 2 (Kampf 2) of its mat,
+    // so the "als nächstes" marker and the running order stay consistent.
+    State.nextUpMatchId = matchId;
+    localStorage.setItem('nextUpMatchId', String(matchId));
+    UI.moveMatchToSecondOnMat(matchId);
 };
 
 window.sendToIpponboard = async function (matchId) {

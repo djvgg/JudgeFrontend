@@ -63,7 +63,7 @@
         </header>
 
         <!-- Navigation tabs for switching between list and bracket view -->
-        <nav class="view-tabs" style="display: none;">
+        <nav class="view-tabs">
             <button class="view-tab-btn active" id="tab-fights" onclick="UI.switchView('fights')">KAMPFLISTE</button>
             <button class="view-tab-btn" id="tab-brackets" onclick="UI.switchView('brackets')">LIVE-TURNIERBAUM</button>
         </nav>
@@ -88,6 +88,8 @@
                         </label>
                     </div>
                     <div class="header-actions">
+                        <button id="auto-order-btn" class="btn-auto-order" onclick="UI.applyAutoOrder()"
+                            title="Sortiert alle Matten nach der automatischen Reihenfolge (Chunked-Round-Robin; Doppel-KO-Erstspalte am Stück) und übernimmt sie für alle Tablets. Überschreibt manuelle Umsortierungen.">↻ Auto-Reihenfolge</button>
                         <span class="match-count" id="match-count">0 Kämpfe</span>
                     </div>
                 </div>
@@ -228,6 +230,7 @@
         </div>
 
     </div>
+    <script src="fightOrder.js"></script>
     <script src="app.js"></script>
 </body>
 
