@@ -21,6 +21,7 @@ const State = {
     isTableFilterActive: true,
     nextUpMatchId: null,           // which match is queued ("⏭ Als nächster")
     autoSendEnabled: false,        // toggle state, persisted to localStorage
+    hideCompletedLists: false,     // hide fully-finished brackets, persisted to localStorage
     scoreHistory: [],
     timer: {
         interval: null,
@@ -101,6 +102,7 @@ const Network = {
         } else if (data.type === 'CURRENT_MATCH_SET') {
             State.currentMatchId = data.matchId ?? null;
             UI.renderFightList();
+            UI.renderBracketVisualization(); // rote "aktueller Kampf"-Umrandung im Baum mitziehen
         } else if (data.type === 'REFRESH_LIST') {
             App.init();
         }
@@ -205,6 +207,15 @@ const UI = {
         // the queue shows real fightable bouts + already-decided ones.
         let displayMatches = [...State.activeMatches].filter(m => this.queueEligible(m));
 
+        // Hide whole lists (brackets) that are completely done, when the user
+        // opted in. Completeness is judged over the entire bracket (all mats),
+        // not the table-filtered slice, so a list only disappears once every one
+        // of its real bouts is finished/bye.
+        if (State.hideCompletedLists) {
+            const doneBrackets = this.completedGroups(m => m.bracketId);
+            displayMatches = displayMatches.filter(m => !doneBrackets.has(m.bracketId));
+        }
+
         // Apply table filter if active AND we are not admin
         if (State.isTableFilterActive && tableNum !== 'admin') {
             displayMatches = displayMatches.filter(m => String(m.tableId) === String(tableNum));
@@ -250,6 +261,27 @@ const UI = {
     queueEligible(m) {
         return (m.p1?.gpId != null && m.p2?.gpId != null)
             || m.status === 'finished' || m.status === 'bye';
+    },
+
+    // Set of group keys (via `keyOf`) whose every queue-eligible bout is
+    // finished/bye — i.e. the lists that are completely done. TBD phantoms are
+    // excluded (not queueEligible), so an eager-materialized tree with open
+    // future rounds is NOT counted as complete. A group with no eligible bout
+    // yet is omitted. Used with `m => m.bracketId` for the Kampfliste and
+    // `m => m.category` for the Live-Turnierbaum sidebar.
+    completedGroups(keyOf) {
+        const tally = new Map(); // key -> { total, done }
+        State.activeMatches.forEach(m => {
+            const k = keyOf(m);
+            if (k == null || !this.queueEligible(m)) return;
+            const e = tally.get(k) || { total: 0, done: 0 };
+            e.total += 1;
+            if (m.status === 'finished' || m.status === 'bye') e.done += 1;
+            tally.set(k, e);
+        });
+        const done = new Set();
+        tally.forEach((e, k) => { if (e.total > 0 && e.done === e.total) done.add(k); });
+        return done;
     },
 
     // Active AND startable (both fighters known, not yet done) — the set the mat
@@ -491,8 +523,13 @@ const UI = {
         const visible = State.activeMatches.filter(m =>
             !filterByMat || String(m.tableId) === String(tableNum));
 
+        // Same opt-in as the Kampfliste: drop lists whose every bout is done.
+        // Keyed by category here (the sidebar's grouping unit).
+        const doneCats = State.hideCompletedLists ? this.completedGroups(m => m.category) : null;
+
         const byKey = new Map();
         visible.forEach(m => {
+            if (doneCats && doneCats.has(m.category)) return;
             const key = m.category;
             if (!byKey.has(key)) {
                 const base = m.groupLabel || m.categoryLabel || m.category;
@@ -567,6 +604,9 @@ const UI = {
      */
     renderKoTree(container, matches) {
         const rankByMatch = this.computeMatRanks();
+        // Same on-deck set the Kampfliste uses, so the tree's gold "in
+        // Vorbereitung" border matches the ⏭-marker / running order exactly.
+        const nextUpIds = this.computeNextUpIds();
         // Build a map of matches and their children (matches that feed INTO them)
         const matchMap = new Map();
         matches.forEach(m => matchMap.set(m.matchId, { ...m, children: [] }));
@@ -797,15 +837,22 @@ const UI = {
                 node.title = `Kampf #${m.fightNr} — Freilos: ${p1Display} kampflos weiter`;
             } else if (isReady && !isFinished) {
                 node.classList.add('clickable');
-                node.title = `Kampf #${m.fightNr} — Ergebnis eintragen`;
-                node.onclick = () => openResultDialog(m.matchId);
+                node.title = `Kampf #${m.fightNr} — Aktionen (senden / als nächster / Ergebnis)`;
+                node.onclick = (e) => this.showFightActionMenu(m.matchId, e);
             } else if (isReady && isFinished) {
                 node.classList.add('clickable');
-                node.title = `Kampf #${m.fightNr} (beendet) — Ergebnis ändern`;
-                node.onclick = () => openResultDialog(m.matchId);
+                node.title = `Kampf #${m.fightNr} (beendet) — Aktionen (Ergebnis / wiederholen)`;
+                node.onclick = (e) => this.showFightActionMenu(m.matchId, e);
             } else if (!isReady && !isFinished) {
                 node.classList.add('not-ready');
                 node.title = 'Kampf noch nicht startbar — beide Kämpfer fehlen';
+            }
+
+            // Live-Status-Umrandung: aktueller Kampf (rot) bzw. in Vorbereitung
+            // (gold). Nicht für Freilose — die sind kampflos entschieden.
+            if (!isBye) {
+                if (State.currentMatchId === m.matchId) node.classList.add('bracket-match-node--current');
+                if (nextUpIds.has(m.matchId)) node.classList.add('bracket-match-node--next');
             }
 
             node.innerHTML = `
@@ -828,7 +875,66 @@ const UI = {
         });
     },
 
-   
+    // Floating action menu for a fight tile in the Live-Turnierbaum. Offers the
+    // same actions as the Kampfliste card buttons (senden / als nächster /
+    // Ergebnis / wiederholen), filtered to what the fight's state allows.
+    // Reuses the existing global handlers so the WS/REORDER paths stay identical.
+    showFightActionMenu(matchId, ev) {
+        ev.stopPropagation();
+        document.querySelectorAll('.fight-action-menu').forEach(el => el.remove());
+        const m = State.activeMatches.find(x => x.matchId === matchId);
+        if (!m) return;
+        const isReady = m.p1?.gpId != null && m.p2?.gpId != null;
+        const isFinished = m.status === 'finished';
+        if (m.status === 'bye') return; // Freilos: nichts zu tun
+
+        const items = [];
+        if (!isFinished && isReady) {
+            items.push({ act: 'send', label: '▶ An Ipponboard senden' });
+            const isNext = State.nextUpMatchId === matchId;
+            items.push({ act: 'next', label: isNext ? '⏭ Nicht mehr als nächster' : '⏭ Als nächster' });
+        }
+        if (isReady) items.push({ act: 'result', label: '✏️ Ergebnis setzen' });
+        if (isFinished) items.push({ act: 'reopen', label: '🔄 Kampf wiederholen' });
+        if (!items.length) return;
+
+        const menu = document.createElement('div');
+        menu.className = 'fight-action-menu';
+        menu.innerHTML = `<div class="fam-title">Kampf #${m.fightNr}</div>`
+            + items.map(it => `<button class="fam-item" data-act="${it.act}">${it.label}</button>`).join('');
+        document.body.appendChild(menu);
+
+        // Position near the cursor, clamped to the viewport.
+        const mw = menu.offsetWidth, mh = menu.offsetHeight;
+        let x = ev.clientX, y = ev.clientY;
+        if (x + mw > window.innerWidth) x = window.innerWidth - mw - 8;
+        if (y + mh > window.innerHeight) y = window.innerHeight - mh - 8;
+        menu.style.left = `${Math.max(8, x)}px`;
+        menu.style.top = `${Math.max(8, y)}px`;
+
+        const close = () => {
+            menu.remove();
+            document.removeEventListener('click', close);
+            document.removeEventListener('keydown', onKey);
+        };
+        const onKey = (e) => { if (e.key === 'Escape') close(); };
+        menu.querySelectorAll('.fam-item').forEach(btn => btn.onclick = (e) => {
+            e.stopPropagation();
+            const act = btn.dataset.act;
+            close();
+            if (act === 'send') sendToIpponboard(matchId);
+            else if (act === 'next') markAsNext(matchId);
+            else if (act === 'result') openResultDialog(matchId);
+            else if (act === 'reopen') reopenMatch(matchId);
+        });
+        // Defer so this very click doesn't immediately re-close the menu.
+        setTimeout(() => {
+            document.addEventListener('click', close);
+            document.addEventListener('keydown', onKey);
+        }, 0);
+    },
+
+
     renderDoublePool(viz, matches) {
         const poolFights = matches.filter(m => m.phase === 'pool');
         const koFights   = matches.filter(m => m.phase !== 'pool');
@@ -974,6 +1080,17 @@ const UI = {
             return { slotA: a, slotB: b, fight: list[idx] || null };
         });
 
+        // Live-Status je Bout-Spalte: aktueller Kampf (gold) bzw. in Vorbereitung
+        // (rot). Im Pool wird die GANZE Spalte umrandet (kein Einzel-Kachel-Rand) —
+        // gleiche Logik wie der Tree-Rand (currentMatchId / computeNextUpIds).
+        const nextUpIds = this.computeNextUpIds();
+        const boutHL = bouts.map(b => {
+            if (!b.fight) return null;
+            if (State.currentMatchId === b.fight.matchId) return 'current';
+            if (nextUpIds.has(b.fight.matchId)) return 'next';
+            return null;
+        });
+
         const wrapper = document.createElement('div');
         wrapper.className = 'pool-table-wrapper';
 
@@ -1006,6 +1123,7 @@ const UI = {
             th.title = `Kampf-Nr. ${bout.fight ? bout.fight.fightNr : '—'} · Reihenfolge ${i + 1}`
                 + `${rank ? ` · Matte ${bout.fight.tableId}, Kampf ${rank}` : ''}`
                 + `: ${fa?.name || '?'} vs ${fb?.name || '?'}`;
+            if (boutHL[i]) th.classList.add(`pool-col--${boutHL[i]}`, 'pool-col-top');
             headRow.appendChild(th);
         });
         thead.appendChild(headRow);
@@ -1022,11 +1140,20 @@ const UI = {
             rowHeader.textContent = rowFighter.name;
             tr.appendChild(rowHeader);
 
+            const isLastRow = slot === fighters.length - 1;
+            // Tag a cell with its column's live-status border (left+right on every
+            // row; the header carries the top edge, the last row the bottom edge).
+            const applyCol = (el, i) => {
+                if (!boutHL[i]) return;
+                el.classList.add(`pool-col--${boutHL[i]}`);
+                if (isLastRow) el.classList.add('pool-col-bottom');
+            };
             bouts.forEach((bout, i) => {
                 const td = document.createElement('td');
                 const inBout = bout.slotA === slot || bout.slotB === slot;
                 if (!inBout) {
                     td.className = 'pool-cell pool-cell--blocked';
+                    applyCol(td, i);
                     tr.appendChild(td);
                     return;
                 }
@@ -1035,6 +1162,7 @@ const UI = {
                 if (!fight) {
                     td.textContent = '·';
                     td.classList.add('pool-cell--missing');
+                    applyCol(td, i);
                     tr.appendChild(td);
                     return;
                 }
@@ -1051,6 +1179,7 @@ const UI = {
                 }
                 td.title = `Kampf-Nr. ${fight.fightNr} (Reihenfolge ${i + 1}) — ${rowFighter.name} vs ${oppName}`;
                 td.onclick = () => openResultDialog(fight.matchId);
+                applyCol(td, i);
                 tr.appendChild(td);
             });
             tbody.appendChild(tr);
@@ -1331,6 +1460,18 @@ const App = {
             };
         }
 
+        const hideDoneToggle = document.getElementById('hide-completed-toggle');
+        if (hideDoneToggle) {
+            State.hideCompletedLists = localStorage.getItem('hideCompletedLists') === 'true';
+            hideDoneToggle.checked = State.hideCompletedLists;
+            hideDoneToggle.onchange = (e) => {
+                State.hideCompletedLists = e.target.checked;
+                localStorage.setItem('hideCompletedLists', String(State.hideCompletedLists));
+                UI.renderFightList();
+                UI.updateBracketSidebar();
+            };
+        }
+
         const savedNext = localStorage.getItem('nextUpMatchId');
         if (savedNext) State.nextUpMatchId = parseInt(savedNext, 10) || null;
     },
@@ -1467,6 +1608,7 @@ window.markAsNext = function (matchId) {
         State.nextUpMatchId = null;
         localStorage.removeItem('nextUpMatchId');
         UI.renderFightList();
+        UI.renderBracketVisualization(); // goldene "in Vorbereitung"-Umrandung mitziehen
         return;
     }
     // Manual pick: mark it AND pull it up to position 2 (Kampf 2) of its mat,
@@ -1474,6 +1616,7 @@ window.markAsNext = function (matchId) {
     State.nextUpMatchId = matchId;
     localStorage.setItem('nextUpMatchId', String(matchId));
     UI.moveMatchToSecondOnMat(matchId);
+    UI.renderBracketVisualization(); // goldene "in Vorbereitung"-Umrandung mitziehen
 };
 
 window.sendToIpponboard = async function (matchId) {
