@@ -1,4 +1,5 @@
 import contextlib
+import json
 import os
 from contextlib import asynccontextmanager
 
@@ -9,7 +10,43 @@ from sqlalchemy import text
 
 from src.database import MatchModel, SessionLocal, init_db
 
+# Global fallback board (single-mat setups, or any mat not listed in the per-mat map).
 IPPONBOARD_URL = os.getenv("IPPONBOARD_URL", "http://localhost:8080")
+
+
+def _parseIpponboardUrls(raw):
+    """Parse IPPONBOARD_URLS — a JSON map {table_id: baseUrl} for per-mat routing.
+
+    Tolerant by design: empty / malformed / non-dict input yields an empty map so
+    the IPPONBOARD_URL fallback always stays usable and the app never fails to boot.
+    Keys are coerced to str (table_id is looked up as str); blank/non-str values dropped.
+    """
+    if not raw or not raw.strip():
+        return {}
+    try:
+        parsed = json.loads(raw)
+    except (ValueError, TypeError):
+        return {}
+    if not isinstance(parsed, dict):
+        return {}
+    return {
+        str(key): value.strip()
+        for key, value in parsed.items()
+        if isinstance(value, str) and value.strip()
+    }
+
+
+# Per-mat routing: table_id -> Ipponboard base URL (e.g. {"1": "http://192.168.0.21:8080"}).
+IPPONBOARD_URLS = _parseIpponboardUrls(os.getenv("IPPONBOARD_URLS"))
+
+
+def _ipponboardUrlForTable(tableId):
+    """Resolve the Ipponboard base URL for a fight's mat, falling back to IPPONBOARD_URL."""
+    if tableId is not None:
+        mapped = IPPONBOARD_URLS.get(str(tableId))
+        if mapped:
+            return mapped
+    return IPPONBOARD_URL
 
 # Tracks the most recent match pushed to Ipponboard so the /api/ippon-score
 # callback can attribute the incoming result (Ipponboard's webhook payload
@@ -289,6 +326,8 @@ def get_matches():
         # WB-Freilose hinterlassen tote LB-Slots → als Walkover-Freilos aufloesen,
         # sonst kommt der Trostrunden-Kampf nie zustande.
         _resolve_lb_byes(session)
+        # Solo-Pool (1-Teilnehmer-Ausreisser, 0 Fights) auto-abschliessen → Platz 1.
+        _finalize_solo_pool_brackets(session)
         fights = session.query(FightModel).order_by(FightModel.fight_number).all()
         fight_lookup = {
             (f.bracket_id, f.bracket_phase, f.round, f.pos_in_round): f.id
@@ -706,12 +745,12 @@ def _resolve_lb_byes(session):
 def _compute_pool_standings(session, bracket_id, pool_index=None):
     """Welle 2B.1+2B.2: Sortiere alle GroupParticipants eines Pools nach DJB-Hierarchie.
 
-    Hierarchie (hoeher gewinnt):
-      1. Anzahl Siege (winner_id == gp_id ueber finished/bye Fights).
-      2. Direkter Vergleich bei 2-Personen-Gleichstand: Sieger des
-         Head-to-Head-Pool-Fights kommt vorne.
-      3. Pluspunkt-Differenz (Σ eigene Scores − Σ Gegner-Scores).
-      4. Stabile gp_id-Sortierung als deterministischer Pseudo-Zufall.
+    Hierarchie (hoeher gewinnt; Decision 2026-06-08, CLAUDE.md — Merlin/DJB):
+      1. Anzahl Siege gesamt (winner_id == gp_id ueber finished/bye Fights).
+      2. Direkter Vergleich = Siege NUR gegen die anderen Gleichplatzierten
+         (2er-Tie = Duell-Sieger; 3er+-Tie = Anzahl geschlagener Tie-Mitglieder).
+      3. Stabile gp_id-Sortierung als deterministisches Los (Ringschluss).
+      PUNKTE/Pluspunkt-Differenz zaehlen NICHT (nur gewonnene Kaempfe).
 
     Referenz: Libraries/wichtigedocs/20763-DJB_Regeln_und_Ordnungen_Platzierungen_im_Pool_2023.pdf.
     Spiegel-Funktion in edv (tournament_service.compute_pool_standings).
@@ -765,28 +804,34 @@ def _compute_pool_standings(session, bracket_id, pool_index=None):
                 key = tuple(sorted([f.participant1_id, f.participant2_id]))
                 head_to_head[key] = f.winner_id
 
-    def sort_key(gp: int):
-        # Negativ fuer absteigend bei reverse=False
-        return (
-            -wins.get(gp, 0),
-            -(plus.get(gp, 0) - minus.get(gp, 0)),
-            gp,
+    # DJB-Tiebreaker (Decision 2026-06-08, CLAUDE.md): Siege gesamt → direkter
+    # Vergleich (Siege NUR gegen die anderen Gleichplatzierten) → stabile gp.id
+    # (Los). PUNKTE/Pluspunkt-Differenz zählen NICHT. plus/minus werden oben nur
+    # noch für die Anzeige gefuehrt, nicht fuer die Platzierung.
+    base = sorted(gp_ids, key=lambda g: (-wins.get(g, 0), g))
+
+    def _subgroup_h2h(gp: int, run: list[int]) -> int:
+        """Siege von ``gp`` gegen die anderen sieg-gleichen Mitglieder ``run``."""
+        return sum(
+            1 for other in run
+            if other != gp and head_to_head.get(tuple(sorted([gp, other]))) == gp
         )
 
-    ordered = sorted(gp_ids, key=sort_key)
-
-    # H2H-Tie-Break bei exakt 2-Personen-Gleichstand auf der Wins-Stufe
-    # (Pluspunkt-Diff laesst's evtl. trotzdem auseinander; wenn auch das
-    # gleich ist, entscheidet H2H ueber die alphabetische gp-id-Sortierung).
+    ordered: list[int] = []
     i = 0
-    while i < len(ordered) - 1:
-        a, b = ordered[i], ordered[i + 1]
-        if wins.get(a, 0) == wins.get(b, 0) and (plus.get(a, 0) - minus.get(a, 0)) == (plus.get(b, 0) - minus.get(b, 0)):
-            key = tuple(sorted([a, b]))
-            h2h_winner = head_to_head.get(key)
-            if h2h_winner == b:
-                ordered[i], ordered[i + 1] = b, a
-        i += 1
+    while i < len(base):
+        j = i
+        while j < len(base) and wins.get(base[j], 0) == wins.get(base[i], 0):
+            j += 1
+        run = base[i:j]
+        if len(run) > 1:
+            # Counts VOR dem Sortieren berechnen: list.sort() macht `run`
+            # waehrend des Sortierens intern leer, ein key der `run` liest
+            # bekaeme sonst 0 (CPython-Fallstrick).
+            h2h_count = {g: _subgroup_h2h(g, run) for g in run}
+            run.sort(key=lambda g: (-h2h_count[g], g))
+        ordered.extend(run)
+        i = j
 
     return ordered
 
@@ -904,6 +949,59 @@ def _finalize_pool_bracket_if_complete(session, fight):
             "third_2": bracket.third_place_2,
         },
     }
+
+
+def _finalize_solo_pool_brackets(session):
+    """Solo-Pool = Auto-Platz-1 (Decision 2026-06-09, Merlin).
+
+    edv schneidet U9/U11-Pools nach Gewichtsspannweite; ein echter Ausreisser
+    ohne Partner im Schwellen-Fenster wird ein 1-Teilnehmer-Pool
+    (bracket_type='pools', 0 Fights — combinations(1,2)=[]). Ein 0-Fight-Pool
+    erreicht den normalen Pool-Finalize-Trigger (_finalize_pool_bracket_if_complete
+    keyt auf "letzter Pool-Fight beendet") NIE, also blieben first_place=NULL und
+    status='pending' — der Solo-Kaempfer faellt aus Platzierungs-Anzeige UND
+    Urkunden-Export (get_completed_bracket_keys filtert status='completed',
+    get_bracket_placements joint NULL-first_place weg). Diese Funktion schliesst
+    genau diesen Fall im Lade-Pfad ab: der eine GroupParticipant wird Platz 1,
+    status='completed'.
+
+    Trigger ist eindeutig: 0 Fights UND genau 1 GroupParticipant in der Gruppe.
+    Ein 1er-Pool kann NIE Fights bekommen, daher keine Verwechslung mit einem
+    noch-nicht-materialisierten Mehr-Teilnehmer-Pool (>=2 GP, der spaeter Fights
+    bekommt). Idempotent (ueberspringt bereits completed). JF ist laut CLAUDE.md
+    alleiniger Writer der Einzelpool-Plaetze — edv setzt hier nichts.
+
+    Returns: Liste der neu abgeschlossenen bracket_ids.
+    """
+    from src.database import BracketModel
+    from src.database import FightModel as _FightModel
+    from src.database import GroupParticipantModel as _GPModel
+
+    finalized: list[int] = []
+    pool_brackets = session.query(BracketModel).filter(
+        BracketModel.bracket_type == "pools",
+    ).all()
+    for bracket in pool_brackets:
+        if bracket.status == "completed":
+            continue
+        fight_count = session.query(_FightModel).filter(
+            _FightModel.bracket_id == bracket.id,
+        ).count()
+        if fight_count > 0:
+            continue
+        gps = session.query(_GPModel).filter(_GPModel.group_id == bracket.group_id).all()
+        if len(gps) != 1:
+            continue
+        bracket.first_place = gps[0].id
+        bracket.second_place = None
+        bracket.third_place_1 = None
+        bracket.third_place_2 = None
+        bracket.status = "completed"
+        finalized.append(bracket.id)
+
+    if finalized:
+        session.commit()
+    return finalized
 
 
 def _initialize_double_pool_ko_stage(session, bracket):
@@ -1674,6 +1772,7 @@ def import_brackets(groups: list[dict]):
         # (beide idempotent), damit Struktur + Bye-Folgekaempfe sofort bereitstehen.
         _ensure_ko_tree_materialized(session)
         _resolve_pending_byes(session)
+        _finalize_solo_pool_brackets(session)
         return {"status": "success", "matches_imported": matches_imported}
 
 @app.post("/api/push-to-ipponboard/{match_id}")
@@ -1711,8 +1810,11 @@ async def push_to_ipponboard(match_id: int):
         # optional pool label, top-level sibling of fighter1/fighter2 (empty for non-pool fights)
         payload = {"fighter1": fighter_json(f1), "fighter2": fighter_json(f2), "pool": _pool_label(fight)}
 
+        # capture inside the session — fight is detached once the with-block closes
+        targetUrl = _ipponboardUrlForTable(fight.table_id)
+
     try:
-        resp = requests.post(f"{IPPONBOARD_URL}/fighters", json=payload, timeout=3)
+        resp = requests.post(f"{targetUrl}/fighters", json=payload, timeout=3)
     except requests.RequestException as e:
         raise HTTPException(status_code=502, detail=f"Ipponboard unreachable: {e}") from e
 
