@@ -1,4 +1,4 @@
-const CACHE_NAME = 'judo-judge-v5';
+const CACHE_NAME = 'judo-judge-v7';
 const ASSETS = [
     './',
     './index.html',

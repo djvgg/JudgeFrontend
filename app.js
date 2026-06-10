@@ -1178,7 +1178,11 @@ const UI = {
                     td.textContent = fight.status === 'live' ? '…' : '';
                 }
                 td.title = `Kampf-Nr. ${fight.fightNr} (Reihenfolge ${i + 1}) — ${rowFighter.name} vs ${oppName}`;
-                td.onclick = () => openResultDialog(fight.matchId);
+                // Same action menu as the KO tree nodes: senden / als nächster /
+                // Ergebnis (state-gated in showFightActionMenu), instead of jumping
+                // straight to the result dialog — so pool fights can be pushed too.
+                td.classList.add('clickable');
+                td.onclick = (e) => UI.showFightActionMenu(fight.matchId, e);
                 applyCol(td, i);
                 tr.appendChild(td);
             });
@@ -1507,8 +1511,70 @@ window.switchTable = function (tableId) {
             State.isTableFilterActive = false;
         }
     }
+    // Tisch-IP-Admin-Button nur im Admin-Modus zeigen
+    const matIpsBtn = document.getElementById('mat-ips-btn');
+    if (matIpsBtn) matIpsBtn.style.display = (tableId === 'admin') ? '' : 'none';
     UI.renderFightList();
     UI.updateBracketSidebar();
+};
+
+// --- Tisch-IP / Ipponboard-Routing (Admin) -------------------------------- #
+window.openMatIpDialog = async function () {
+    const rows = document.getElementById('mat-ip-rows');
+    const status = document.getElementById('mat-ip-status');
+    status.textContent = '';
+    rows.innerHTML = 'Lade…';
+    try {
+        const resp = await fetch(`${Config.API_BASE}/api/ipponboard-mats`);
+        const data = await resp.json();
+        const mats = data.mats || {};
+        // Immer Tisch 1-4 anbieten (= table-select-Dropdown), plus etwaige höhere
+        // table_ids aus Fights/Map. Union, sortiert (numerisch-stabil).
+        const tables = [...new Set(['1', '2', '3', '4', ...(data.tables || []), ...Object.keys(mats)])]
+            .sort((a, b) => (a.length - b.length) || a.localeCompare(b));
+        rows.innerHTML = tables.map(t =>
+            `<div class="mat-ip-row" style="display:flex;align-items:center;gap:8px;margin:6px 0;">
+                <label style="min-width:84px;color:#fff;">Tisch ${t}</label>
+                <input type="text" class="mat-ip-input" data-table="${t}"
+                    value="${(mats[t] || '').replace(/"/g, '&quot;')}"
+                    placeholder="z.B. 192.168.0.79:8080"
+                    style="flex:1;padding:6px;color:#fff;">
+            </div>`).join('');
+        status.textContent = `Fallback (nicht zugeordnet): ${data.fallback || '—'}`;
+        document.getElementById('mat-ip-modal').style.display = 'flex';
+    } catch (e) {
+        rows.innerHTML = `<p class="error-msg">Konnte Tisch-IPs nicht laden: ${e}</p>`;
+        document.getElementById('mat-ip-modal').style.display = 'flex';
+    }
+};
+
+window.saveMatIpDialog = async function () {
+    const status = document.getElementById('mat-ip-status');
+    const mats = {};
+    document.querySelectorAll('#mat-ip-rows .mat-ip-input').forEach(inp => {
+        const v = inp.value.trim();
+        if (v) mats[inp.dataset.table] = v;   // leere Felder = Tisch nicht zugeordnet (Fallback)
+    });
+    status.textContent = 'Speichere…';
+    try {
+        const resp = await fetch(`${Config.API_BASE}/api/ipponboard-mats`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mats })
+        });
+        if (!resp.ok) {
+            const err = await resp.json().catch(() => ({}));
+            status.textContent = `Fehler: ${err.detail || resp.statusText}`;
+            return;
+        }
+        closeMatIpDialog();
+    } catch (e) {
+        status.textContent = `Fehler: ${e}`;
+    }
+};
+
+window.closeMatIpDialog = function () {
+    document.getElementById('mat-ip-modal').style.display = 'none';
 };
 
 window.winByDecision = function (playerNum) {

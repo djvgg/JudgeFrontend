@@ -95,6 +95,8 @@
                         </label>
                     </div>
                     <div class="header-actions">
+                        <button id="mat-ips-btn" class="btn-auto-order" style="display: none;" onclick="openMatIpDialog()"
+                            title="Ipponboard-IP je Tisch eintragen (nur Admin). Greift sofort, ohne Neustart.">⚙ Tisch-IPs</button>
                         <button id="auto-order-btn" class="btn-auto-order" onclick="UI.applyAutoOrder()"
                             title="Sortiert alle Matten nach der automatischen Reihenfolge (Chunked-Round-Robin; Doppel-KO-Erstspalte am Stück) und übernimmt sie für alle Tablets. Überschreibt manuelle Umsortierungen.">↻ Auto-Reihenfolge</button>
                         <span class="match-count" id="match-count">0 Kämpfe</span>
@@ -147,6 +149,22 @@
                 </div>
                 <div class="result-modal-footer">
                     <button class="footer-btn btn-undo" onclick="closeResultDialog()">Abbrechen</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tisch-IP / Ipponboard-Routing Modal (Admin) -->
+        <div id="mat-ip-modal" class="modal-overlay" style="display: none;">
+            <div class="modal-content result-modal-content">
+                <div class="result-modal-header">
+                    <h2>Tisch-IPs (Ipponboard)</h2>
+                    <p class="text-muted">Pro Tisch die Ipponboard-Adresse (IP:Port). <code>http://</code> optional.</p>
+                </div>
+                <div id="mat-ip-rows"></div>
+                <p id="mat-ip-status" class="text-muted"></p>
+                <div class="result-modal-footer">
+                    <button class="footer-btn" onclick="saveMatIpDialog()">Speichern</button>
+                    <button class="footer-btn btn-undo" onclick="closeMatIpDialog()">Abbrechen</button>
                 </div>
             </div>
         </div>
